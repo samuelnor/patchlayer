@@ -1,0 +1,10 @@
+{
+  "id": "transferir",
+  "cwe": "CWE-20",
+  "vulnerabilidad": "transferir solo valida que el monto no supere el saldo de origen; un monto negativo aumenta el saldo de origen y deja negativo el de destino.",
+  "propiedad": "Para todo origen >= 0 y destino >= 0, el dinero se conserva y el saldo de origen queda entre 0 y su valor inicial, o la transferencia se rechaza con ValueError.",
+  "limites": [
+    "Solo cubre enteros (céntimos); no cubre float ni Decimal.",
+    "No cubre saldos iniciales negativos."
+  ]
+}
