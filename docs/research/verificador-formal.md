@@ -1,6 +1,6 @@
 # Verificador formal para parches en Python: CrossHair, Z3 directo, Dafny
 
-Investigación para el ticket [#2](https://github.com/samuelnor/patchwise/issues/2). Fecha: 2026-11-14.
+Investigación para el ticket [#2](https://github.com/samuelnor/patchlayer/issues/2). Fecha: 2026-11-14.
 Máquina: WSL2, Python 3.10.12, `uv`, sin dotnet ni Docker.
 
 Todo lo marcado **[medido]** se ejecutó en esta máquina; lo marcado **[leído]** viene de documentación o de la ayuda de la herramienta y no se comprobó más allá de eso.
