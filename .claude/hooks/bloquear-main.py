@@ -13,7 +13,11 @@ import sys
 entrada = json.load(sys.stdin)
 comando = entrada.get("tool_input", {}).get("command", "")
 
-if not re.search(r"\bgit\b[^;&|]*\b(commit|push)\b", comando):
+# Solo cuentan los segmentos que empiezan con `git` (no el texto de un
+# heredoc o de un mensaje que mencione git push main).
+segmentos = [s.strip() for s in re.split(r"&&|\|\||[;|\n]", comando)]
+git = [s for s in segmentos if re.match(r"(\w+=\S*\s+)*git\s", s)]
+if not any(re.search(r"\b(commit|push)\b", s) for s in git):
     sys.exit(0)
 
 try:
@@ -24,7 +28,9 @@ try:
 except OSError:
     sys.exit(0)
 
-empuja_a_main = re.search(r"\bgit\b[^;&|]*\bpush\b[^;&|]*\bmain\b", comando)
+empuja_a_main = any(
+    re.search(r"\bpush\b.*\s(\S+:)?main\b", s) for s in git
+)
 if rama == "main" or empuja_a_main:
     print(
         "Bloqueado: no se hace commit ni push en main. Crea primero una rama "
