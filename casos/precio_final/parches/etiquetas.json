@@ -1,0 +1,6 @@
+{
+  "control": {"clase": "superficial", "origen": "control"},
+  "correcto": {"clase": "correcto", "origen": "humano"},
+  "superficial": {"clase": "superficial", "origen": "humano"},
+  "regresivo": {"clase": "regresivo", "origen": "humano"}
+}

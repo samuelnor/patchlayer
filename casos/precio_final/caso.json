@@ -1,0 +1,9 @@
+{
+  "id": "precio_final",
+  "cwe": "CWE-20",
+  "vulnerabilidad": "El descuento no se valida: un descuento mayor al 100 % da un precio negativo y uno negativo sube el precio.",
+  "propiedad": "Para todo precio >= 0, el precio final queda entre 0 y el precio original, o se rechaza con ValueError.",
+  "limites": [
+    "Solo cubre precios y descuentos enteros (céntimos y puntos porcentuales)."
+  ]
+}
