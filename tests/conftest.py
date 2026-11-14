@@ -1,13 +1,16 @@
 import shutil
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
 
 CASOS = Path(__file__).resolve().parents[1] / "casos"
 
+Armar = Callable[[str, str], Path]
+
 
 @pytest.fixture
-def armar(tmp_path):
+def armar(tmp_path: Path) -> Armar:
     """Arma el directorio como la compuerta (#6): contrato/ + parche como objetivo.py."""
 
     def _armar(caso: str, parche: str) -> Path:

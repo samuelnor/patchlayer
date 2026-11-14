@@ -2,6 +2,8 @@
 
 from pathlib import Path
 
+from conftest import Armar
+
 from patchwise.formal import verificar
 
 CASOS = Path(__file__).resolve().parents[1] / "casos"
@@ -14,7 +16,7 @@ def precio_final(precio, descuento_pct):
 """
 
 
-def test_el_parche_de_control_falla_con_contraejemplo(armar):
+def test_el_parche_de_control_falla_con_contraejemplo(armar: Armar) -> None:
     control = (CASOS / "precio_final" / "parches" / "control.py").read_text()
 
     capa = verificar(armar("precio_final", control), timeout_s=30)
@@ -24,7 +26,7 @@ def test_el_parche_de_control_falla_con_contraejemplo(armar):
     assert capa.pendiente is None
 
 
-def test_un_parche_que_valida_el_rango_pasa(armar):
+def test_un_parche_que_valida_el_rango_pasa(armar: Armar) -> None:
     capa = verificar(armar("precio_final", PRECIO_FINAL_CORRECTO), timeout_s=30)
 
     assert capa.resultado == "pasa"
@@ -32,7 +34,7 @@ def test_un_parche_que_valida_el_rango_pasa(armar):
     assert capa.pendiente is None
 
 
-def test_un_parche_superficial_falla_con_contraejemplo_distinto_del_exploit(armar):
+def test_un_parche_superficial_falla_con_contraejemplo_distinto_del_exploit(armar: Armar) -> None:
     superficial = PRECIO_FINAL_CORRECTO.replace("descuento_pct < 0 or ", "")
 
     capa = verificar(armar("precio_final", superficial), timeout_s=30)
@@ -41,7 +43,7 @@ def test_un_parche_superficial_falla_con_contraejemplo_distinto_del_exploit(arma
     assert capa.contraejemplo == "precio_entre_cero_y_original(1, -1)"
 
 
-def test_una_excepcion_no_prevista_por_el_contrato_es_falla(armar):
+def test_una_excepcion_no_prevista_por_el_contrato_es_falla(armar: Armar) -> None:
     parche = "def precio_final(precio, descuento_pct):\n    raise TypeError('x')\n"
 
     capa = verificar(armar("precio_final", parche), timeout_s=30)
@@ -50,7 +52,7 @@ def test_una_excepcion_no_prevista_por_el_contrato_es_falla(armar):
     assert capa.contraejemplo == "precio_entre_cero_y_original(0, 0)"
 
 
-def test_un_parche_que_no_carga_es_no_concluyente(armar):
+def test_un_parche_que_no_carga_es_no_concluyente(armar: Armar) -> None:
     capa = verificar(armar("precio_final", "def (\n"), timeout_s=30)
 
     assert capa.resultado == "no_concluyente"
@@ -58,7 +60,7 @@ def test_un_parche_que_no_carga_es_no_concluyente(armar):
     assert "SyntaxError" in capa.salida
 
 
-def test_un_parche_que_no_termina_agota_el_tiempo_de_pared(armar):
+def test_un_parche_que_no_termina_agota_el_tiempo_de_pared(armar: Armar) -> None:
     parche = "def precio_final(precio, descuento_pct):\n    while True:\n        pass\n"
 
     capa = verificar(armar("precio_final", parche), timeout_s=3)
@@ -68,7 +70,7 @@ def test_un_parche_que_no_termina_agota_el_tiempo_de_pared(armar):
     assert capa.duracion_s < 6
 
 
-def test_un_parche_que_corta_el_verificador_sin_resultado_no_pasa(armar):
+def test_un_parche_que_corta_el_verificador_sin_resultado_no_pasa(armar: Armar) -> None:
     parche = "import os\nos._exit(0)\n"
 
     capa = verificar(armar("precio_final", parche), timeout_s=30)
@@ -77,7 +79,7 @@ def test_un_parche_que_corta_el_verificador_sin_resultado_no_pasa(armar):
     assert capa.pendiente is not None
 
 
-def test_una_propiedad_que_crosshair_no_cierra_es_no_concluyente(tmp_path):
+def test_una_propiedad_que_crosshair_no_cierra_es_no_concluyente(tmp_path: Path) -> None:
     (tmp_path / "contrato").mkdir()
     (tmp_path / "objetivo.py").write_text(
         "import hashlib\n\n"
@@ -98,7 +100,7 @@ def test_una_propiedad_que_crosshair_no_cierra_es_no_concluyente(tmp_path):
     assert "Not confirmed." in capa.salida
 
 
-def test_la_capa_registra_su_procedencia(armar):
+def test_la_capa_registra_su_procedencia(armar: Armar) -> None:
     capa = verificar(armar("precio_final", PRECIO_FINAL_CORRECTO), timeout_s=30)
 
     assert capa.herramienta == "crosshair"

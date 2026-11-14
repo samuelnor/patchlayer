@@ -35,6 +35,20 @@ fix: 🐛 handle empty diff in parser
 feat(config)!: 💥 rename settings file to patchwise.toml
 ```
 
+## Checks
+
+Run all three before you call a change done; each must exit 0. CI (`.github/workflows/ci.yml`) runs the same three on every PR to `main`:
+
+```
+uv run ruff check        # lint; every function needs annotations (ANN)
+uv run basedpyright      # type checker, strict mode
+uv run pytest -q
+```
+
+- Both checkers cover `patchwise/` and `tests/`. `casos/` is excluded: contracts and patches import `objetivo`, which only exists once the gate assembles the directory.
+- Fix the type, don't silence it. A `# pyright: ignore[rule]` needs the rule name and a reason on the same line, and is only for tests that pass an invalid value on purpose.
+- The expediente and experiment shapes are `TypedDict`s (`Expediente` in `patchwise/capas.py`, `ResultadoExperimento` in `patchwise/experimento.py`). Change them there when the format in issue #6 changes.
+
 ## Agent skills
 
 ### Issue tracker

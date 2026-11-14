@@ -10,7 +10,7 @@ import time
 from importlib.metadata import version
 from pathlib import Path
 
-from patchwise.capas import ResultadoCapa
+from patchwise.capas import Resultado, ResultadoCapa
 
 # Catálogo fijo de pendientes por motivo de `no_concluyente` (#6, sección 5).
 PENDIENTE_TIEMPO = "repetir con un tiempo límite mayor o acotar dominios"
@@ -53,7 +53,12 @@ def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
     codigo, salida = _correr(comando, Path(directorio), timeout_s)
     duracion_s = round(time.monotonic() - inicio, 3)
 
-    def capa(resultado, detalle, pendiente=None, contraejemplo=None) -> ResultadoCapa:
+    def capa(
+        resultado: Resultado,
+        detalle: str,
+        pendiente: str | None = None,
+        contraejemplo: str | None = None,
+    ) -> ResultadoCapa:
         return ResultadoCapa(
             resultado=resultado,
             herramienta="crosshair",
