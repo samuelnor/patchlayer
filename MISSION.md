@@ -7,6 +7,7 @@ El 14-nov-2026 a las 15:55 el equipo entrega Patchwise en la hackatón Defensive
 - Decir de memoria, en una frase cada una, las cuatro respuestas: vector de riesgo, mecanismo defensivo, validación empírica, límites y riesgo dual.
 - Responder en dos frases las objeciones previsibles sobre la capa formal (¿es una prueba?, ¿por qué no Dafny?, ¿y si el contrato está mal?).
 - Citar las cifras reales del experimento A/B/C en conteos absolutos, y ninguna que no esté medida.
+- Responder «¿dónde se usaría en la vida real?» con el lugar en el ciclo de desarrollo (el PR, la CI), quién lo usaría y tres datos públicos, distinguiendo el destino del prototipo.
 - Usar los términos de `GLOSSARY.md` (evidencia favorable, compuerta, expediente) sin recaer en «seguro» o «pipeline».
 
 ## Constraints

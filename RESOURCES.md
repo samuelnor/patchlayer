@@ -24,6 +24,16 @@
   Revisita el sobreajuste con reparación basada en LLM. Sin leer a fondo todavía: no citar cifras de aquí sin revisarlo.
 - [OWASP API Security Top 10:2023](https://api-security.owasp.org/editions/2023/en/0x11-t10) y [OWASP Top 10:2025 A01](https://top10.owasp.org/2025/A01_2025-Broken_Access_Control)
   Use for: justificar que IDOR/BOLA es frecuente.
+- [GitHub Blog: "Fixing security vulnerabilities with AI"](https://github.blog/engineering/platform-security/fixing-security-vulnerabilities-with-ai/)
+  Cómo funciona Copilot Autofix: escáner (CodeQL), LLM que propone el parche, sugerencia en el PR. Use for: el punto del ciclo donde viviría la compuerta (lección 3).
+- [GitHub Changelog: agentic autofix GA (oct. 2026)](https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability) y [Microsoft Learn: code scanning autofix](https://learn.microsoft.com/en-us/azure/devops/repos/security/github-advanced-security-code-scanning-autofix)
+  Hoy las alertas se asignan a un agente que abre un PR; el proveedor admite que los arreglos no garantizan ser correctos, completos ni seguros. Use for: «¿dónde se usaría?».
+- [Google Research: "AI-powered patching: the future of automated vulnerability fixes"](https://research.google/pubs/ai-powered-patching-the-future-of-automated-vulnerability-fixes/)
+  Gemini parchea bugs de sanitizers; los ingenieros aprueban ~15 %. Use for: la revisión humana como cuello de botella.
+- [DARPA: AIxCC final results](https://darpa.mil/news/2025/aixcc-results)
+  43 de 63 vulnerabilidades sembradas parcheadas por sistemas autónomos. Use for: parcheo autónomo a escala.
+- [Irish NCSC: EU Cyber Resilience Act](https://ncsc.gov.ie/cra/) y [NIST SP 800-218 (SSDF), RV.3](https://csrc.nist.gov/pubs/sp/800/218/final)
+  Obligaciones de reportar y gestionar vulnerabilidades; análisis de causas raíz. Use for: por qué un expediente con procedencia tiene valor de cumplimiento. Ojo: las fechas de la CRA vienen de fuentes secundarias.
 
 ## Wisdom (Communities)
 
@@ -32,6 +42,7 @@
 
 ## Gaps
 
+- Cuánto cuesta escribir contratos de seguridad por función en una organización real: sin fuente primaria todavía.
 - Cifras del experimento A/B/C (issue #13): no existen todavía.
 - Respuesta acordada del equipo sobre riesgo dual: la Propuesta solo dice «orientación exclusivamente defensiva»; lo de la lección 2 es propuesta de Claude.
 - Criterios de evaluación oficiales del jurado más allá de las cuatro preguntas.

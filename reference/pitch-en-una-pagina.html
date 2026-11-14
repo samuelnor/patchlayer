@@ -118,6 +118,32 @@
 </table>
 </div>
 
+<h2 id="mundo-real">Dónde viviría en el mundo real <small>(lección 3)</small></h2>
+<p><strong>Una frase:</strong> un control obligatorio del pull request en la CI, entre «una IA propuso un parche de seguridad» y el merge. No corre en producción.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+<tbody>
+<tr><td>Qué la alimenta</td><td>Parches de agentes como Copilot Autofix, de Gemini en Google o de sistemas tipo AIxCC</td></tr>
+<tr><td>Qué código</td><td>Funciones críticas con propiedad escribible: dinero, control de acceso, validación</td></tr>
+<tr><td>Quién la usa</td><td>Equipos de seguridad de aplicaciones, mantenedores de open source, fabricantes regulados (CRA, SSDF RV.3)</td></tr>
+<tr><td>Qué cuesta</td><td>Escribir el contrato de seguridad; lo hacen humanos</td></tr>
+<tr><td>Qué no hay en el prototipo</td><td>Escáner, LLM en vivo e integración con CI: el caso llega con contrato y el corpus es estático</td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Dato público</th><th>Fuente</th></tr></thead>
+<tbody>
+<tr><td>GitHub: una alerta de seguridad se asigna a un agente que abre un PR con el arreglo para revisión.</td><td><a href="https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability">GitHub, oct. 2026</a></td></tr>
+<tr><td>GitHub: los autofixes «no garantizan ser correctos, completos ni seguros».</td><td><a href="https://learn.microsoft.com/en-us/azure/devops/repos/security/github-advanced-security-code-scanning-autofix">Microsoft Learn</a></td></tr>
+<tr><td>Google: los ingenieros aprobaron ~15 % de los parches de Gemini para bugs de sanitizers.</td><td><a href="https://research.google/pubs/ai-powered-patching-the-future-of-automated-vulnerability-fixes/">Google Research, 2024</a></td></tr>
+<tr><td>DARPA AIxCC: 43 de 63 vulnerabilidades sembradas, parcheadas por sistemas autónomos.</td><td><a href="https://darpa.mil/news/2025/aixcc-results">DARPA, 2025</a></td></tr>
+</tbody>
+</table>
+</div>
+
 <h2>Palabras</h2>
 <div class="table-wrap">
 <table>
@@ -132,7 +158,7 @@
 </tbody>
 </table>
 </div>
-<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Objeciones del jurado y cómo responderlas: <a href="../lessons/0002-limites-sin-sobreprometer.html">lección 2</a>. Esqueleto de las respuestas: <a href="../lessons/0001-las-cuatro-respuestas.html">lección 1</a>.</p>
+<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Objeciones del jurado y cómo responderlas: <a href="../lessons/0002-limites-sin-sobreprometer.html">lección 2</a>. Esqueleto de las respuestas: <a href="../lessons/0001-las-cuatro-respuestas.html">lección 1</a>. Dónde se usaría: <a href="../lessons/0003-donde-vive-patchwise.html">lección 3</a>.</p>
 
 </main>
 </body>

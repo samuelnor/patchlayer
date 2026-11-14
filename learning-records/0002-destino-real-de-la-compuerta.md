@@ -1,0 +1,3 @@
+# El destino real de la compuerta: un control del PR en la CI
+
+Daniel (carril Núcleo) conocía el diseño (CLI, expediente, reporte) pero no hacia qué software e instalación apunta Patchwise fuera del hackatón. Se estableció que la compuerta viviría como control obligatorio del pull request en la CI, entre un agente de IA que propone el parche y el merge, sobre funciones críticas con propiedad escribible, para equipos de seguridad de aplicaciones, mantenedores de open source y fabricantes regulados. Lección 3. Aún sin evidencia de recuerdo: repetir su práctica en una sesión posterior antes de construir sobre ella.
