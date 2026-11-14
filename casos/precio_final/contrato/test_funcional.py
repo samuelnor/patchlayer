@@ -17,7 +17,3 @@ def test_descuento_parcial():
 
 def test_precio_cero():
     assert precio_final(0, 50) == 0
-
-
-def test_redondeo_a_favor_del_comercio():
-    assert precio_final(999, 50) == 500

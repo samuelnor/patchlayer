@@ -5,7 +5,7 @@ import argparse
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="patchwise", description=__doc__)
-    sub = parser.add_subparsers(dest="comando", required=True)
+    sub = parser.add_subparsers(dest="subcomando", required=True)
 
     revisar = sub.add_parser(
         "revisar", help="corre la cadena sobre un parche y escribe su expediente"
@@ -18,4 +18,4 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     args = parser.parse_args(argv)
-    parser.exit(1, f"patchwise {args.comando}: aún no implementado\n")
+    parser.exit(1, f"patchwise {args.subcomando}: aún no implementado\n")

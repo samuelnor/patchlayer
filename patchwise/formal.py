@@ -9,7 +9,9 @@ def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
     """Corre CrossHair sobre `contrato/propiedad.py` contra el parche ya armado.
 
     `directorio` es el directorio temporal que arma la compuerta: `contrato/`
-    copiado del caso y el parche copiado como `objetivo.py`.
+    copiado del caso y el parche copiado como `objetivo.py`. `timeout_s` es un
+    tope de tiempo de pared para toda la corrida (no el `--per_condition_timeout`
+    de CrossHair, que es CPU por propiedad).
 
     Devuelve `falla` con `contraejemplo` si CrossHair lo encuentra, `pasa` si
     confirma todos los caminos, y `no_concluyente` (con `pendiente` del catálogo)
