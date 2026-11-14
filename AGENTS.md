@@ -53,6 +53,8 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 
 Nothing lands on `main` without a PR and one peer approval. Work on a short-lived branch named after its lane (`nucleo/...`, `formal/...`, `corpus/...`, `entrega/...`) and open small PRs, one per piece that unblocks another lane.
 
+Never commit or push on `main`. Before the first edit of a task, if the current branch is `main`, pull and create the branch yourself without asking: `git switch -c <lane>/<short-topic>` (for example `nucleo/esqueleto`, `formal/precio-final`). Pick the lane from the table below and the topic from the issue. In Claude Code, `.claude/hooks/bloquear-main.py` blocks `git commit` and `git push` on `main`.
+
 When you open a PR, request the author's paired reviewer with `gh pr create --reviewer <login>`:
 
 | Lane              | Author login    | Reviewer login  |
