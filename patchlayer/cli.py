@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 from patchlayer.compuerta import escribir_expediente, revisar
-from patchlayer.experimento import experimento, tabla_markdown
+from patchlayer.experimento import experimento, metricas_markdown, tabla_markdown
 from patchlayer.mutacion import correr_mutmut, mutacion, reporte_markdown
 
 
