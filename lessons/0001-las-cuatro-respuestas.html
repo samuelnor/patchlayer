@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 1 · Las cuatro respuestas</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchwise · Pitch · Lección 1 de 2 · 10 minutos</p>
+<h1>Las cuatro respuestas, en una frase cada una</h1>
+<p class="lede">El jurado puntúa cuatro cosas. Si puedes decir cada una de memoria en una frase, el pitch de dos minutos ya tiene esqueleto y solo le faltan las cifras.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Al terminar puedes recitar, sin mirar, la respuesta de Patchwise a las cuatro preguntas del jurado, con las palabras del <a href="../GLOSSARY.md">glosario</a>.
+</div>
+
+<h2>La idea que sostiene todo</h2>
+<blockquote>No confíes en el parche. Confía en la evidencia.</blockquote>
+<p>Patchwise no repara código ni encuentra vulnerabilidades. Es una <strong>compuerta</strong>: recibe un parche candidato que alguien más escribió (una IA) y decide, con evidencia independiente, si hay razones para aceptarlo.<sup><a href="#f1">1</a></sup></p>
+
+<h2>1 · Vector de riesgo</h2>
+<p><strong>Aceptar un parche plausible que deja la vulnerabilidad explotable.</strong> Un equipo le pide a un asistente de IA que corrija una vulnerabilidad; el parche pasa las pruebas y se fusiona. Pero pasar las pruebas no es estar corregido: un <em>parche superficial</em> bloquea el exploit conocido y deja el defecto abierto.</p>
+<p>No es una sospecha nuestra. En reparación automática de programas está medido desde 2015: los parches se sobreajustan a la suite que los valida,<sup><a href="#f2">2</a></sup> y la mayoría de los parches "plausibles" de los sistemas de la época equivalían a borrar funcionalidad.<sup><a href="#f3">3</a></sup></p>
+
+<h2>2 · Mecanismo defensivo</h2>
+<p><strong>Un contrato de seguridad escrito por humanos antes de pedir el parche, y una cadena de tres capas que lo comprueba.</strong> El modelo nunca define ni modifica el contrato.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Capa</th><th>Qué pregunta</th><th>Qué atrapa</th></tr></thead>
+<tbody>
+<tr><td>Prueba funcional</td><td>¿Sigue funcionando lo legítimo?</td><td>Parches regresivos</td></tr>
+<tr><td>Exploit</td><td>¿Sigue funcionando el ataque conocido?</td><td>Parches que no cambian nada (el de control)</td></tr>
+<tr><td>Verificador (CrossHair)</td><td>¿Existe <em>alguna</em> entrada que viole la propiedad?</td><td>Parches superficiales</td></tr>
+</tbody>
+</table>
+</div>
+<p>Las tres capas corren siempre. La salida es un <strong>expediente</strong>: el resultado de cada capa con su procedencia, el veredicto y, de forma explícita, lo que quedó <strong>sin verificar</strong>. Si una capa no concluye, no hay aceptación: la compuerta <em>falla cerrada</em>.<sup><a href="#f4">4</a></sup></p>
+
+<h2>3 · Validación empírica</h2>
+<p><strong>El mismo corpus de parches, juzgado con tres configuraciones.</strong> A mira solo la prueba funcional; B añade el exploit; C es la cadena completa. La métrica principal es cuántos parches superficiales acepta cada una, en conteos absolutos.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Configuración</th><th>Capas que cuentan</th><th class="num">Superficiales aceptados</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>Funcional</td><td class="num"><span class="blank">? de ?</span></td></tr>
+<tr><td>B</td><td>Funcional + exploit</td><td class="num"><span class="blank">? de ?</span></td></tr>
+<tr><td>C</td><td>Funcional + exploit + verificador</td><td class="num"><span class="blank">? de ?</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="warn">
+<span class="label">Aún no hay cifras</span>
+El experimento está previsto para las 14:45 (<a href="https://github.com/samuelnor/patchwise/issues/13">#13</a>). Hasta entonces no digas ningún número del experimento. Lo que sí está medido en la investigación previa está en la <a href="../reference/pitch-en-una-pagina.html#medido">hoja de referencia</a>.
+</div>
+<p>El corpus: 5 casos de dos familias (validación numérica, CWE-20, e IDOR, CWE-639), 20 parches etiquetados por revisión humana cruzada, más el código vulnerable original como parche de control.<sup><a href="#f5">5</a></sup></p>
+
+<h2>4 · Límites y riesgo dual</h2>
+<p><strong>Es búsqueda simbólica acotada, no una prueba certificada, y cubre solo lo que el contrato dice.</strong> Además: funciones puras, el verificador no ve parches regresivos, y el aislamiento es un subproceso con tiempo límite. El detalle, y cómo defenderlo, es la <a href="0002-limites-sin-sobreprometer.html">lección 2</a>.</p>
+
+<hr>
+
+<h2>Práctica 1 · Reconocer</h2>
+<p>Responde sin subir a releer. La dificultad es el punto.</p>
+<div class="quiz" data-quiz-src="q1"></div>
+<script type="application/json" id="q1">
+[
+ {"q":"¿Cuál es el vector de riesgo de Patchwise?",
+  "opts":["Aceptar parches plausibles que dejan la vulnerabilidad explotable","Detectar tarde vulnerabilidades que ya estaban en producción","Publicar exploits que atacantes reutilizan contra otros sistemas"],
+  "ok":0,"why":"El riesgo es la aceptación injustificada. La detección de vulnerabilidades está fuera de alcance."},
+ {"q":"¿Quién escribe el contrato de seguridad, y cuándo?",
+  "opts":["El modelo, mientras genera el parche candidato","Humanos, después de revisar el parche candidato","Humanos, antes de pedir el parche candidato"],
+  "ok":2,"why":"Si el modelo definiera el contrato podría verificar perfectamente una propiedad equivocada: es la circularidad que la Propuesta critica."},
+ {"q":"¿Qué capas toma en cuenta la configuración B?",
+  "opts":["Solo la capa funcional","Funcional más el exploit","Funcional, exploit y verificador","Exploit más el verificador"],
+  "ok":1,"why":"A = funcional; B = más exploit; C = cadena completa. Las tres capas corren siempre; A, B y C son vistas sobre los mismos resultados."},
+ {"q":"Ninguna capa falla, pero el verificador queda no concluyente. Para la métrica principal, eso es…",
+  "opts":["Aceptación: ninguna capa llegó a fallar","No aceptación: la compuerta falla cerrada","Exclusión: no entra en ninguna tabla"],
+  "ok":1,"why":"El veredicto es «no concluyente» y solo «evidencia favorable» cuenta como aceptación. Se reporta aparte."},
+ {"q":"¿Qué capa atrapa un parche regresivo?",
+  "opts":["El exploit conocido","El verificador formal","La prueba funcional"],
+  "ok":2,"why":"Un parche que rechaza todo cumple la propiedad de seguridad. Solo las pruebas funcionales en los bordes legítimos lo delatan."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<p>Esto es lo que harás frente al jurado. Escribe las cuatro respuestas, una frase cada una, y luego compara.</p>
+<div class="recall" data-prompt="Riesgo · Mecanismo · Validación · Límites, de memoria">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p><strong>Riesgo:</strong> aceptar un parche de IA que pasa las pruebas pero deja la vulnerabilidad explotable.</p>
+<p><strong>Mecanismo:</strong> un contrato de seguridad humano, fijado antes del parche, y una cadena de tres capas (funcional, exploit, verificador) que emite un expediente con veredicto y con lo que quedó sin verificar.</p>
+<p><strong>Validación:</strong> el mismo corpus etiquetado por humanos bajo las configuraciones A, B y C; contamos cuántos parches superficiales acepta cada una.</p>
+<p><strong>Límites:</strong> búsqueda simbólica acotada y no prueba; solo cubre lo que dice el contrato; funciones puras; aislamiento débil.</p>
+<p>¿Dijiste «seguro» o «aprobado»? El veredicto se llama <em>evidencia favorable</em>. Esa palabra es el proyecto entero.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p>Lee la resolución de <a href="https://github.com/samuelnor/patchwise/issues/6">Contrato de caso y formato del expediente (#6)</a>. Son cinco minutos y es la descripción más precisa que existe de lo que la compuerta hace de verdad. Si te queda tiempo, el resumen de <a href="https://www.cs.washington.edu/homes/brun/pubs/pubs/Smith15fse.pdf">Smith et al. (2015)</a> te da la cita para el vector de riesgo.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat: es tu profesor en este curso. Pídele que te interrogue como jurado o que te explique cualquier capa con un caso concreto.</p>
+<p>Siguiente: <a href="0002-limites-sin-sobreprometer.html">Lección 2 · Límites sin sobreprometer</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html">El pitch en una página</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. Mapa del proyecto, <a href="https://github.com/samuelnor/patchwise/issues/1">issue #1</a>: «sin detección de vulnerabilidades».</small></p>
+<p id="f2" class="why"><small>2. Smith, Barr, Le Goues y Brun, <a href="https://www.cs.washington.edu/homes/brun/pubs/pubs/Smith15fse.pdf">«Is the Cure Worse Than the Disease? Overfitting in Automated Program Repair»</a>, ESEC/FSE 2015.</small></p>
+<p id="f3" class="why"><small>3. Qi, Long, Achour y Rinard, <a href="https://www.cs.toronto.edu/~fanl/papers/kali-issta2015.pdf">«An Analysis of Patch Plausibility and Correctness for Generate-and-Validate Patch Generation Systems»</a>, ISSTA 2015.</small></p>
+<p id="f4" class="why"><small>4. Resolución de <a href="https://github.com/samuelnor/patchwise/issues/6">#6</a>, secciones 3 a 5.</small></p>
+<p id="f5" class="why"><small>5. Resoluciones de <a href="https://github.com/samuelnor/patchwise/issues/3">#3</a> (familias y casos) y <a href="https://github.com/samuelnor/patchwise/issues/5">#5</a> (origen y etiquetado).</small></p>
+
+</main>
+</body>
+</html>
