@@ -32,14 +32,14 @@ Examples:
 ```
 feat(api): ✨ add patch preview endpoint
 fix: 🐛 handle empty diff in parser
-feat(config)!: 💥 rename settings file to patchwise.toml
+feat(config)!: 💥 rename settings file to patchlayer.toml
 ```
 
 ## Agent skills
 
 ### Issue tracker
 
-Issues live in GitHub Issues for samuelnor/patchwise, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues for samuelnor/patchlayer, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
