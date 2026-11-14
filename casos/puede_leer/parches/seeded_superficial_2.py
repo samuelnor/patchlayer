@@ -18,8 +18,8 @@ class Documento:
 
 
 def puede_leer(doc: Documento, actor: Actor) -> bool:
-    """Permite leer solo dentro de la misma organización según visibilidad y rol."""
-    if doc.org_id != actor.org_id:
+    """Indica si el actor puede leer el documento."""
+    if doc.owner_id != actor.id and doc.org_id != actor.org_id:
         return False
     if doc.privado:
         return doc.owner_id == actor.id or actor.rol == ADMIN

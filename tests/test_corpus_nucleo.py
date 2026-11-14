@@ -11,12 +11,14 @@ import pytest
 DIR_CASOS = Path(__file__).resolve().parents[1] / "casos"
 CASOS_ADICIONALES = ["transferir", "ver_factura", "cancelar_pedido", "puede_leer"]
 
-# (funcional_rc, exploit_rc, crosshair_rc) esperados por rol/etiqueta
-RESULTADOS_ESPERADOS: dict[str, tuple[int, int, int]] = {
-    "control": (0, 1, 1),
-    "correcto": (0, 0, 0),
-    "superficial": (0, 0, 1),
-    "regresivo": (1, 0, 0),
+# (funcional_rc, exploit_rc, crosshair_rcs_validos) esperados por rol/etiqueta
+RESULTADOS_ESPERADOS: dict[str, tuple[int, int, tuple[int, ...]]] = {
+    "control": (0, 1, (1,)),
+    "correcto": (0, 0, (0,)),
+    "superficial": (0, 0, (1,)),
+    # Un regresivo falla en funcional y pasa exploit; en CrossHair pasa o falla por
+    # excepción no declarada (p. ej. ValueError en cancelar_pedido LLM), nunca por postcondición.
+    "regresivo": (1, 0, (0, 1)),
 }
 
 
@@ -38,7 +40,7 @@ def _ejecutar_en_directorio(
 
 def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> None:
     """Comprueba que funcional, exploit y CrossHair devuelven los códigos esperados."""
-    esp_funcional, esp_exploit, esp_formal = RESULTADOS_ESPERADOS[clase]
+    esp_funcional, esp_exploit, esp_formales = RESULTADOS_ESPERADOS[clase]
 
     rc_funcional = _ejecutar_en_directorio(
         caso,
@@ -78,11 +80,13 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     )
-    assert res_formal.returncode == esp_formal, (
+    assert res_formal.returncode in esp_formales, (
         f"{parche.name}: {res_formal.stdout}{res_formal.stderr}"
     )
-    if esp_formal == 1:
+    if esp_formales == (1,):
         assert "error:" in res_formal.stdout
+    elif clase == "regresivo" and res_formal.returncode == 1:
+        assert "false when calling" not in res_formal.stdout
 
 
 def _leer_etiquetas(caso: str) -> dict[str, dict[str, str]]:
@@ -110,6 +114,7 @@ def test_estructura_de_caso_y_etiquetas(caso: str) -> None:
     assert clases.count("correcto") == 1
     assert clases.count("superficial") == 2
     assert clases.count("regresivo") == 1
+    assert any(v["origen"].startswith("llm:") for v in candidatos.values())
 
     for nombre, meta in etiquetas.items():
         assert set(meta) == {"clase", "origen"}
