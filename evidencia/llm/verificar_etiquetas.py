@@ -22,10 +22,17 @@ import importlib.machinery
 import importlib.util
 import json
 import sys
+from collections.abc import Callable
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from types import ModuleType
 
 BASE = Path(__file__).resolve().parent
 USUARIO, ADMIN = 1, 2
+
+Funcion = Callable[..., object]
 
 CLASES = {
     "correcto": "CORRECT",
@@ -34,7 +41,7 @@ CLASES = {
 }
 
 
-def cargar(path: Path, nombre: str):
+def cargar(path: Path, nombre: str) -> ModuleType:
     loader = importlib.machinery.SourceFileLoader(nombre, str(path))
     spec = importlib.util.spec_from_loader(nombre, loader)
     mod = importlib.util.module_from_spec(spec)
@@ -42,36 +49,37 @@ def cargar(path: Path, nombre: str):
     return mod
 
 
-def seguro(fn, *args):
+def seguro(fn: Funcion, *args: object) -> tuple[object, Exception | None]:
     try:
         return fn(*args), None
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         return None, exc
 
 
-def _lanza(fn, *args, exc=PermissionError):
+def _lanza(fn: Funcion, *args: object, exc: type[Exception] = PermissionError) -> bool:
     try:
         fn(*args)
     except exc:
         return True
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False
     return False
 
 
-def _niega(fn, *args):
+def _niega(fn: Funcion, *args: object) -> bool:
     """Acepta False o una excepción de rechazo como denegación."""
     try:
         return fn(*args) is False
     except (ValueError, PermissionError):
         return True
-    except Exception:  # noqa: BLE001
+    except Exception:
         return False
 
 
 # ---------- propiedad de seguridad ----------
 
-def prop_precio(mod):
+
+def prop_precio(mod: ModuleType) -> tuple[bool, str]:
     for precio in range(0, 13):
         for desc in range(-5, 121):
             v, e = seguro(mod.precio_final, precio, desc)
@@ -84,7 +92,7 @@ def prop_precio(mod):
     return True, "sin contraejemplo en el dominio acotado"
 
 
-def prop_transferir(mod):
+def prop_transferir(mod: ModuleType) -> tuple[bool, str]:
     for origen in range(0, 9):
         for destino in range(0, 9):
             for monto in range(-5, 11):
@@ -92,10 +100,14 @@ def prop_transferir(mod):
                 if e is not None:
                     if isinstance(e, ValueError):
                         continue
-                    return False, f"excepción no declarada {type(e).__name__} en ({origen},{destino},{monto})"
+                    return (
+                        False,
+                        f"excepción no declarada {type(e).__name__} "
+                        f"en ({origen},{destino},{monto})",
+                    )
                 try:
                     a, b = v
-                except Exception:  # noqa: BLE001
+                except Exception:
                     return False, f"no devuelve par en ({origen},{destino},{monto}): {v!r}"
                 if a + b != origen + destino or not (0 <= a <= origen):
                     return False, f"transferir({origen}, {destino}, {monto}) = {(a, b)}"
@@ -104,7 +116,7 @@ def prop_transferir(mod):
     return True, "sin contraejemplo en el dominio acotado"
 
 
-def prop_factura(mod):
+def prop_factura(mod: ModuleType) -> tuple[bool, str]:
     for fid in range(0, 3):
         for owner in range(0, 3):
             for total in range(0, 6):
@@ -113,13 +125,17 @@ def prop_factura(mod):
                     if e is not None:
                         if isinstance(e, (PermissionError, ValueError)):
                             continue
-                        return False, f"excepción no declarada {type(e).__name__} en ({fid},{owner},{total},{actor})"
+                        return (
+                            False,
+                            f"excepción no declarada {type(e).__name__} "
+                            f"en ({fid},{owner},{total},{actor})",
+                        )
                     if owner != actor:
                         return False, f"ver_factura(Factura({fid},{owner},{total}), {actor}) = {v}"
     return True, "sin contraejemplo en el dominio acotado"
 
 
-def prop_cancelar(mod):
+def prop_cancelar(mod: ModuleType) -> tuple[bool, str]:
     for o0 in range(0, 3):
         for o1 in range(0, 3):
             for o2 in range(0, 3):
@@ -131,28 +147,47 @@ def prop_cancelar(mod):
                             if e is not None:
                                 if isinstance(e, (ValueError, PermissionError)):
                                     continue
-                                return False, f"excepción en {duenos},{actor},{pedido},{declared}: {e}"
+                                return (
+                                    False,
+                                    f"excepción en {duenos},{actor},{pedido},{declared}: {e}",
+                                )
                             if v and duenos[pedido] != actor:
-                                return False, f"cancelar_pedido({duenos}, {actor}, {pedido}, {declared}) = True"
+                                return (
+                                    False,
+                                    f"cancelar_pedido({duenos}, {actor}, "
+                                    f"{pedido}, {declared}) = True",
+                                )
     return True, "sin contraejemplo en el dominio acotado"
 
 
-def prop_leer(mod):
+def prop_leer(mod: ModuleType) -> tuple[bool, str]:
     for org in range(0, 2):
         for owner in range(0, 3):
             for privado in (False, True):
                 for aid in range(0, 3):
                     for aorg in range(0, 3):
                         for rol in (USUARIO, ADMIN, 0):
-                            v, e = seguro(mod.puede_leer, mod.Documento(org, owner, privado), mod.Actor(aid, aorg, rol))
+                            v, e = seguro(
+                                mod.puede_leer,
+                                mod.Documento(org, owner, privado),
+                                mod.Actor(aid, aorg, rol),
+                            )
                             if e is not None:
                                 if isinstance(e, (ValueError, PermissionError)):
                                     continue
-                                return False, f"excepción en ({org},{owner},{privado}),({aid},{aorg},{rol}): {e}"
+                                return (
+                                    False,
+                                    f"excepción en ({org},{owner},{privado}),"
+                                    f"({aid},{aorg},{rol}): {e}",
+                                )
                             if v:
                                 ok = org == aorg and (not privado or owner == aid or rol == ADMIN)
                                 if not ok:
-                                    return False, f"puede_leer(Documento({org},{owner},{privado}), Actor({aid},{aorg},{rol})) = True"
+                                    return (
+                                        False,
+                                        f"puede_leer(Documento({org},{owner},{privado}), "
+                                        f"Actor({aid},{aorg},{rol})) = True",
+                                    )
     return True, "sin contraejemplo en el dominio acotado"
 
 
@@ -167,7 +202,8 @@ PROPS = {
 
 # ---------- bordes legítimos y exploit conocido ----------
 
-def funcional(caso, mod):
+
+def funcional(caso: str, mod: ModuleType) -> list[tuple[str, bool, str]]:
     if caso == "precio_final":
         f = mod.precio_final
         checks = [
@@ -213,35 +249,51 @@ def funcional(caso, mod):
     for nombre, chk in checks:
         try:
             out.append((nombre, bool(chk()), ""))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             out.append((nombre, False, f"{type(exc).__name__}: {exc}"))
     return out
 
 
-def exploit(caso, mod):
+def exploit(caso: str, mod: ModuleType) -> tuple[bool, str]:
     if caso == "precio_final":
         v, e = seguro(mod.precio_final, 1000, 150)
-        return e is not None, f"precio_final(1000, 150) -> {v!r} / {type(e).__name__ if e else 'sin excepción'}"
+        return (
+            e is not None,
+            f"precio_final(1000, 150) -> {v!r} / {type(e).__name__ if e else 'sin excepción'}",
+        )
     if caso == "transferir":
         v, e = seguro(mod.transferir, 100, 0, -500)
-        return e is not None, f"transferir(100, 0, -500) -> {v!r} / {type(e).__name__ if e else 'sin excepción'}"
+        return (
+            e is not None,
+            f"transferir(100, 0, -500) -> {v!r} / {type(e).__name__ if e else 'sin excepción'}",
+        )
     if caso == "ver_factura":
         v, e = seguro(mod.ver_factura, mod.Factura(1, 1, 999), 2)
-        return e is not None, f"ver_factura(Factura(1,1,999), 2) -> {v!r} / {type(e).__name__ if e else 'sin excepción'}"
+        return (
+            e is not None,
+            f"ver_factura(Factura(1,1,999), 2) -> {v!r} "
+            f"/ {type(e).__name__ if e else 'sin excepción'}",
+        )
     if caso == "cancelar_pedido":
         v, e = seguro(mod.cancelar_pedido, {7: 1}, 2, 7, 2)
         return v is False or e is not None, f"cancelar_pedido({{7:1}}, 2, 7, 2) -> {v!r}"
     if caso == "puede_leer":
         v, e = seguro(mod.puede_leer, mod.Documento(1, 1, False), mod.Actor(9, 2, USUARIO))
-        return (v is False) or e is not None, f"puede_leer(Documento(1,1,False), Actor(9,2,USUARIO)) -> {v!r}"
+        return (
+            v is False
+        ) or e is not None, f"puede_leer(Documento(1,1,False), Actor(9,2,USUARIO)) -> {v!r}"
     return False, "caso desconocido"
 
 
 def evaluar(caso: str, path: Path) -> dict:
     try:
         mod = cargar(path, f"patch_{caso}_{path.stem}")
-    except Exception as exc:  # noqa: BLE001
-        return {"carga": False, "error": f"{type(exc).__name__}: {exc}", "clase_sugerida": "invalido"}
+    except Exception as exc:
+        return {
+            "carga": False,
+            "error": f"{type(exc).__name__}: {exc}",
+            "clase_sugerida": "invalido",
+        }
     prop_ok, prop_detalle = PROPS[caso](mod)
     func = funcional(caso, mod)
     func_ok = all(ok for _, ok, _ in func)
