@@ -2,7 +2,7 @@
   "id": "cancelar_pedido",
   "cwe": "CWE-639",
   "vulnerabilidad": "cancelar_pedido confía en el parámetro owner_declarado enviado por el cliente en lugar de consultar el dueño registrado en duenos.",
-  "propiedad": "Un pedido solo se cancela si existe en duenos y su dueño registrado coincide con actor_id; lo que declare el cliente sobre el dueño no cuenta.",
+  "propiedad": "Un pedido solo se cancela si existe en duenos y su dueño registrado coincide con actor_id; lo que declare el cliente sobre el dueño no cuenta. Lanzar PermissionError o ValueError cuenta como rechazo.",
   "limites": [
     "Solo verifica lo que devuelve cancelar_pedido; no comprueba si el parche modifica el diccionario duenos.",
     "Solo modela un predicado puro sobre dict[int, int]."

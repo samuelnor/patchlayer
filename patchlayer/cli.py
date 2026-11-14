@@ -18,8 +18,15 @@ def main(argv: list[str] | None = None) -> int:
     p_revisar.add_argument("caso", help="nombre del caso en casos/")
     p_revisar.add_argument("parche", help="nombre del parche en casos/<caso>/parches/")
 
-    sub.add_parser(
-        "experimento", help="corre todos los pares (caso, parche) y escribe resultados/"
+    p_experimento = sub.add_parser(
+        "experimento", help="corre todos los pares (caso, parche) y escribe sus resultados"
+    )
+    p_experimento.add_argument(
+        "--salida",
+        type=Path,
+        default=Path("resultados"),
+        help="carpeta de resultados (por defecto resultados/, ignorada por git); "
+        "la corrida oficial va a evidencia/experimento/",
     )
 
     p_mutacion = sub.add_parser(
@@ -54,9 +61,12 @@ def main(argv: list[str] | None = None) -> int:
         print("resultados: resultados/mutacion.json, resultados/mutacion.md")
         return 0
 
+    salida: Path = args.salida
     resultado = experimento(
-        Path("casos"), expedientes_dir=Path("expedientes"), resultados_dir=Path("resultados")
+        Path("casos"), expedientes_dir=Path("expedientes"), resultados_dir=salida
     )
-    print(tabla_markdown(resultado["tabla"]), end="")
-    print("resultados: resultados/experimento.json, resultados/reporte.html, resultados/tabla.md")
+    print(tabla_markdown(resultado["tabla"]))
+    print(metricas_markdown(resultado["metricas"]), end="")
+    archivos = ("experimento.json", "reporte.html", "tabla.md")
+    print("resultados: " + ", ".join(str(salida / a) for a in archivos))
     return 0

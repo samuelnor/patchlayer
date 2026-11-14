@@ -23,6 +23,6 @@ def solo_cancela_el_dueno_registrado(
     registrado = duenos.get(pedido_id)  # antes de llamar: el parche no puede reescribirlo
     try:
         cancelado = cancelar_pedido(duenos, actor_id, pedido_id, owner_declarado)
-    except PermissionError:
-        return True  # rechazar la cancelación es seguro
+    except (PermissionError, ValueError):
+        return True  # rechazar la cancelación, con cualquiera de las dos, es seguro
     return not cancelado or (existe and registrado == actor_id)

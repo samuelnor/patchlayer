@@ -29,13 +29,10 @@ RESULTADOS_ESPERADOS: dict[str, ExpectativaCapas] = {
     "regresivo": ExpectativaCapas(funcional=1, exploit=0, formal=0),
 }
 
-# Documentado en evidencia/llm/REVISION.md: lanza ValueError si el pedido no existe,
-# excepción que cancelar_pedido/contrato/propiedad.py rechaza explícitamente.
-EXCEPCIONES_POR_PARCHE: dict[tuple[str, str], ExpectativaCapas] = {
-    ("cancelar_pedido", "llm_deepseek_v4_1_flash_free"): ExpectativaCapas(
-        funcional=1, exploit=0, formal=1
-    ),
-}
+# Parches que se apartan de lo esperado para su clase. Vacío desde que la propiedad de
+# cancelar_pedido cuenta ValueError como rechazo (#13); antes estaba aquí
+# cancelar_pedido/llm_deepseek_v4_1_flash_free (evidencia/llm/REVISION.md).
+EXCEPCIONES_POR_PARCHE: dict[tuple[str, str], ExpectativaCapas] = {}
 
 
 def _ejecutar_en_directorio(

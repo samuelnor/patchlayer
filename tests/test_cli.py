@@ -70,8 +70,20 @@ def test_mutacion_escribe_el_reporte_fuera_de_la_tabla_del_experimento(tmp_path:
         capture_output=True,
         text=True,
     )
+    
+def test_experimento_con_salida_escribe_los_resultados_en_esa_carpeta(tmp_path: Path) -> None:
+    shutil.copytree(CASOS / "precio_final", tmp_path / "casos" / "precio_final")
+
+    proc = subprocess.run(
+        ["patchlayer", "experimento", "--salida", "evidencia/experimento"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
 
     assert proc.returncode == 0, proc.stderr
     assert "Mutantes semánticos" in proc.stdout
     assert (tmp_path / "resultados" / "mutacion.json").exists()
     assert (tmp_path / "expedientes" / "mutantes" / "precio_final" / "sem_1.json").exists()
+    assert (tmp_path / "evidencia" / "experimento" / "tabla.md").exists()
+    assert not (tmp_path / "resultados").exists()
