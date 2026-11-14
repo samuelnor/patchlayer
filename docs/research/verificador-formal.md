@@ -9,7 +9,7 @@ Todo lo marcado **[medido]** se ejecutó en esta máquina; lo marcado **[leído]
 
 1. **Verificador principal: CrossHair** (`crosshair check`). Es el único de los tres que ejecuta el **archivo real del parche**; el contrato vive en otro archivo que el LLM no toca. Encuentra el contraejemplo y da por buena la versión corregida en unos 0,2 s.
 2. **Plan B: Hypothesis** (pruebas basadas en propiedades) con la misma propiedad. Es más débil (muestreo aleatorio) pero no depende de ejecución simbólica. Sirve también como capa barata previa. Ojo: no encontró una puerta trasera que CrossHair sí encontró (ver abajo).
-3. **Dafny: papel opcional y acotado.** Se instala sin dotnet (zip autocontenido, medido) y da una prueba deductiva real, pero **sobre un modelo escrito a mano**, no sobre el parche. Solo vale como "especificación de referencia" de un caso para el pitch, y hay que decir explícitamente que no verifica el Python. No debe ir en la cadena automática.
+3. **Dafny: papel opcional y acotado.** Se instala sin dotnet (zip autocontenido, medido) y da una prueba deductiva real, pero **sobre un modelo escrito a mano**, no sobre el parche. Solo vale como "especificación de referencia" de un caso para el pitch, y hay que decir explícitamente que no verifica el Python. No debe ir en la cadena automática. El motivo es la brecha modelo-parche, no la instalación (ver la adenda).
 4. **Z3 directo (`z3-solver`): descartado como capa propia.** Igual que Dafny, obliga a traducir a mano cada parche a fórmulas; CrossHair ya usa Z3 por debajo y hace esa traducción a partir del código real.
 
 ## Instalación [medido]
@@ -143,6 +143,32 @@ Conclusión: los casos IDOR del corpus deben modelar los datos con **dataclasses
 - Costo de instalación: bajo (zip de 65 MB, sin dotnet, 5 s de descarga; `dafny verify` tarda ~1 s por archivo).
 - Exit codes medidos: 0 verificado, 4 error de verificación.
 - Brecha: el archivo `.dfy` es una **traducción manual** de la función (las excepciones se modelan como `datatype Res = Ok(nuevo) | Rechazo`). Nada garantiza que el modelo corresponda al Python del parche. Si el LLM genera el parche, alguien (humano u otro LLM) tendría que traducirlo cada vez, y esa traducción es justo el eslabón no confiable que la compuerta quiere evitar. Por eso queda fuera de la cadena automática.
+
+## Adenda: Dafny y Docker evaluados por sus méritos
+
+Cambio de restricción posterior: Dafny y Docker ya no están descartados (hay USD 300 de cómputo en Oracle Cloud). La recomendación **no cambia**, pero el motivo ya no es la instalación.
+
+### Dafny [medido]
+
+- Instalación local: 5 s de descarga más descomprimir; sin dotnet, sin Docker, sin nube. No hace falta ninguna instancia de Oracle para usarlo.
+- `dafny verify` sobre el modelo de `transferir`: vulnerable falla en 1,2 s (exit 4, señala la ruta de retorno y la postcondición); corregido `2 verified, 0 errors` en 1,0 s (exit 0).
+- `dafny translate py dfy/corregido.dfy` genera Python a partir del Dafny verificado en 1,4 s (58 líneas en `module_.py`, con `def Transferir(saldo, monto)` que devuelve `Res_Ok`/`Res_Rechazo`). Con el modelo vulnerable se niega a generar (exit 4). No se ejecutó el Python generado; depende del runtime `_dafny` de Dafny [leído].
+
+### El costo de la brecha modelo-parche
+
+Dafny prueba el archivo `.dfy`. Para que eso diga algo del parche en Python, alguien tiene que traducir **cada parche candidato**:
+
+| Quién traduce | Problema |
+| --- | --- |
+| Un humano | No escala al corpus del experimento A/B/C (decenas de parches) en las horas que quedan. |
+| El LLM | **Reintroduce la confianza en el LLM**, que es justo lo que la compuerta quiere eliminar. Una traducción "optimista" (que omite la puerta trasera o arregla de paso el defecto) produce un modelo verificado de un parche inseguro, con sello de "prueba formal". Es el peor resultado posible para el mensaje del proyecto. |
+| Nadie: el LLM escribe el parche en Dafny y se genera el Python | Cierra la brecha de verdad, pero cambia el producto: ya no se evalúan parches a código Python existente, y el Python generado no es idiomático ni se integra con el caso original. Es otro proyecto. |
+
+Por eso Dafny queda como pieza opcional de demostración: un caso con el contrato escrito también en Dafny para enseñar qué sería una prueba deductiva, diciendo en "límites" que no cubre el Python. Si sobra tiempo, la tercera fila es la única vía honesta para darle más papel.
+
+### Docker como caja de arena [valoración, no medido]
+
+Sí vale la pena **solo si se corre en una instancia de Oracle** donde instalarlo es un comando: CrossHair, Hypothesis y el exploit importan y ejecutan de verdad el código del parche, así que hace falta aislamiento, y `docker run --network none --read-only` con límites de CPU y memoria es la forma más barata de prometerlo ante el jurado. En esta máquina no hay Docker ni podman ni bubblewrap (solo `unshare`); instalarlo en WSL2 a mitad de hackatón es un riesgo de tiempo, así que en local lo razonable es subproceso con `timeout` y límites de recursos, declarándolo como aislamiento débil.
 
 ## Reproducir
 
