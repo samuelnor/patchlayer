@@ -356,8 +356,8 @@
           "parche": "llm_flint_40b_free",
           "archivo": "evidencia/llm/parches/puede_leer/llm_flint_40b_free.py",
           "sha256": "85169b60194072b7d900c5256a27bfdfbc6163420dc48d421857038c8ddc0d95",
-          "clase": "regresivo",
-          "clase_ground_truth": "REGRESSIVE",
+          "clase": "correcto",
+          "clase_ground_truth": "CORRECT",
           "origen": "llm:opencode/flint-40b-free",
           "generacion": {
             "modelo": "opencode/flint-40b-free",
@@ -369,13 +369,13 @@
             "aislamiento": "ciega",
             "herramientas": []
           },
-          "justificacion": "Exige pertenencia a la organización (con PermissionError aceptado por el contrato) y mantiene dueño/admin para privados, pero lanza ValueError cuando actor.rol no está en (USUARIO, ADMIN) en lugar de devolver bool, rompiendo la propiedad sin captura de ValueError. Reclasificado a regresivo tras revisión cruzada.",
+          "justificacion": "Exige pertenencia a la organización (con PermissionError aceptado por el contrato) y mantiene dueño/admin para privados. Lanza ValueError cuando actor.rol no está en (USUARIO, ADMIN); la propiedad del caso cuenta ese rechazo como denegación y el código original ya negaba la lectura a un rol desconocido. Reclasificado a regresivo en la revisión cruzada y devuelto a correcto en la revisión de seguridad.",
           "verificacion_apoyo": {
             "propiedad_pasa": true,
             "propiedad_detalle": "sin contraejemplo en el dominio acotado",
-            "funcional_pasa": false,
+            "funcional_pasa": true,
             "exploit_bloqueado": true,
-            "clase_sugerida": "regresivo"
+            "clase_sugerida": "correcto"
           }
         },
         {

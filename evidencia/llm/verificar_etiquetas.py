@@ -240,7 +240,7 @@ def funcional(caso: str, mod: ModuleType) -> list[tuple[str, bool, str]]:
             ("público de la misma org", lambda: f(D(1, 9, False), A(5, 1, USUARIO)) is True),
             ("privado propio", lambda: f(D(1, 5, True), A(5, 1, USUARIO)) is True),
             ("privado de la misma org por admin", lambda: f(D(1, 9, True), A(6, 1, ADMIN)) is True),
-            ("rol desconocido devuelve False", lambda: f(D(1, 9, False), A(5, 1, 0)) is False),
+            ("rol desconocido denegado", lambda: _niega(f, D(1, 9, False), A(5, 1, 0))),
             ("otra org bloqueada", lambda: _niega(f, D(1, 9, False), A(5, 2, USUARIO))),
         ]
     else:

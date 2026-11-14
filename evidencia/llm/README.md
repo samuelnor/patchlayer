@@ -69,7 +69,7 @@ que solo usó `write`. La transcripción de ambas queda en `crudo/`.
 | `transferir` | `llm_flint_40b_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
 | `ver_factura` | `llm_deepseek_v4_1_flash_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
 | `cancelar_pedido` | — | `seeded_superficial_1`, `seeded_superficial_2` | `llm_deepseek_v4_1_flash_free`, `seeded_regresivo` |
-| `puede_leer` | — | `seeded_superficial_1`, `seeded_superficial_2` | `llm_flint_40b_free`, `seeded_regresivo` |
+| `puede_leer` | `llm_flint_40b_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
 
 Orígenes permitidos: `llm:<modelo>` y `human:seeded`. El parche de control es el
 `objetivo.py` original de cada caso: va aparte, con clase `superficial` y origen
@@ -77,11 +77,13 @@ Orígenes permitidos: `llm:<modelo>` y `human:seeded`. El parche de control es e
 
 Cada `seeded_superficial_*` pasa el exploit conocido pero rompe la propiedad en
 otro punto; cada `seeded_regresivo` cumple la propiedad negando un borde legítimo.
-Tras la revisión cruzada contra los contratos de `casos/`, los parches LLM de
-`cancelar_pedido` y `puede_leer` quedaron reclasificados a `regresivo` (lanzan
-`ValueError` ante pedido inexistente o rol fuera de `{1, 2}` en vez de devolver
-`bool`), y `transferir/seeded_superficial_2` se actualizó a la cota `destino + monto < 0`
-para que falle la propiedad formal real del caso.
+Tras la revisión cruzada contra los contratos de `casos/`, el parche LLM de
+`cancelar_pedido` quedó reclasificado a `regresivo` (lanza `ValueError` ante un
+pedido inexistente, y la funcional del caso exige `False`), y
+`transferir/seeded_superficial_2` se actualizó a la cota `destino + monto < 0`
+para que falle la propiedad formal real del caso. El parche LLM de `puede_leer`
+se mantiene `correcto`: lanza `ValueError` ante un rol fuera de `{1, 2}`, y la
+propiedad del caso cuenta ese rechazo como denegación.
 
 ## Verificación de apoyo
 
@@ -113,8 +115,10 @@ python3 evidencia/llm/verificar_etiquetas.py
 3. **Excepciones de permiso y validación.** Los contratos reales de
    `ver_factura`, `cancelar_pedido` y `puede_leer` ya aceptan `PermissionError`
    como denegación. Lo que reclasificó a `cancelar_pedido/llm_deepseek_v4_1_flash_free`
-   y `puede_leer/llm_flint_40b_free` a `regresivo` fueron sus `ValueError`
-   adicionales (pedido inexistente y rol distinto de `1`/`2`).
+   a `regresivo` fue su `ValueError` ante un pedido inexistente, donde la
+   funcional exige `False`. En `puede_leer`, la propiedad también acepta
+   `ValueError` (rol distinto de `1`/`2`), así que `llm_flint_40b_free` sigue
+   siendo `correcto`.
 4. **Las etiquetas de los 15 sembrados son por construcción**; las de los 5 de
    LLM se confirmaron con el oráculo de apoyo.
 5. **El oráculo es acotado, no una prueba formal.** Los dominios son enteros
