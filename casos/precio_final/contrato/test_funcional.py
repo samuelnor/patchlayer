@@ -16,4 +16,11 @@ def test_descuento_parcial():
 
 
 def test_precio_cero():
+    assert precio_final(0, 0) == 0
     assert precio_final(0, 50) == 0
+    assert precio_final(0, 100) == 0
+
+
+def test_descuentos_extremos_validos():
+    assert precio_final(100, 1) == 99
+    assert precio_final(100, 99) == 1
