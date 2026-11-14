@@ -1,0 +1,25 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Factura:
+    id: int
+    owner_id: int
+    total: int
+
+
+def ver_factura(factura: Factura, actor_id: int) -> int:
+    """Devuelve el total de la factura al actor que la consulta."""
+    if actor_id <= 0:
+        raise PermissionError("no autenticado")
+    if factura is None:
+        raise ValueError("factura invalida")
+    if factura.id <= 0:
+        raise ValueError("factura invalida")
+    if factura.total < 0:
+        raise ValueError("total invalido")
+    if factura.owner_id <= 0:
+        raise ValueError("factura invalida")
+    if factura.owner_id != actor_id:
+        raise PermissionError("el actor no es el dueno de la factura")
+    return factura.total

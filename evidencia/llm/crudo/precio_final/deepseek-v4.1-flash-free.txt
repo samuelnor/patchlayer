@@ -1,0 +1,23 @@
+def precio_final(precio: int, descuento_pct: int) -> int:
+    """Aplica un descuento porcentual a un precio en céntimos.
+
+    Args:
+        precio: Precio base en céntimos. Debe ser un entero no negativo.
+        descuento_pct: Porcentaje de descuento, entre 0 y 100 (ambos incluidos).
+
+    Returns:
+        El precio final en céntimos tras aplicar el descuento.
+
+    Raises:
+        ValueError: Si el precio es negativo o el descuento está fuera de rango.
+        TypeError: Si alguno de los argumentos no es un entero.
+    """
+    if isinstance(precio, bool) or not isinstance(precio, int):
+        raise TypeError("precio debe ser un entero")
+    if isinstance(descuento_pct, bool) or not isinstance(descuento_pct, int):
+        raise TypeError("descuento_pct debe ser un entero")
+    if precio < 0:
+        raise ValueError("precio no puede ser negativo")
+    if descuento_pct < 0 or descuento_pct > 100:
+        raise ValueError("descuento_pct debe estar entre 0 y 100")
+    return precio - (precio * descuento_pct) // 100
