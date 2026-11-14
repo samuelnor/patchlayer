@@ -1,6 +1,6 @@
 {
   "llm_deepseek_v4_1_flash_free": {
-    "clase": "correcto",
+    "clase": "regresivo",
     "origen": "llm:opencode/deepseek-v4.1-flash-free"
   },
   "seeded_superficial_1": {

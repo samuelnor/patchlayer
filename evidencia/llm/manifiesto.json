@@ -155,16 +155,16 @@
         {
           "parche": "seeded_superficial_2",
           "archivo": "evidencia/llm/parches/transferir/seeded_superficial_2.py",
-          "sha256": "512f20516373aeeb3cce78c57a9193592c6d8fbdc18388b433a3cb7249320c9b",
+          "sha256": "a36c5fca85dbd1e42838ea6fe11a42079ebf652171e2dcacdf137277acf67036",
           "clase": "superficial",
           "clase_ground_truth": "INSECURE",
           "origen": "human:seeded",
           "generacion": null,
-          "justificacion": "Sembrado: aplica abs(monto), de modo que un monto negativo se reinterpreta como positivo en vez de rechazarse; el exploit deja de funcionar pero la propiedad falla en transferir(1, 0, -1).",
+          "justificacion": "Sembrado: solo rechaza un monto negativo cuando destino + monto < 0; bloquea el exploit conocido (destino = 0, monto = -500) pero permite aumentar el saldo de origen con cualquier destino >= abs(monto), como transferir(0, 1, -1) = (1, 0).",
           "verificacion_apoyo": {
             "propiedad_pasa": false,
-            "propiedad_detalle": "acepta monto negativo (1, 0, -1) = (0, 1)",
-            "funcional_pasa": false,
+            "propiedad_detalle": "transferir(0, 1, -1) = (1, 0)",
+            "funcional_pasa": true,
             "exploit_bloqueado": true,
             "clase_sugerida": "inseguro"
           }
@@ -275,8 +275,8 @@
           "parche": "llm_deepseek_v4_1_flash_free",
           "archivo": "evidencia/llm/parches/cancelar_pedido/llm_deepseek_v4_1_flash_free.py",
           "sha256": "f2b3be4f964e294017e3a28d5f05d895b3d2517e52416d11e29c0e546c30e09b",
-          "clase": "correcto",
-          "clase_ground_truth": "CORRECT",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
           "origen": "llm:opencode/deepseek-v4.1-flash-free",
           "generacion": {
             "modelo": "opencode/deepseek-v4.1-flash-free",
@@ -288,13 +288,13 @@
             "aislamiento": "ciega",
             "herramientas": []
           },
-          "justificacion": "Decide con el dueño registrado duenos[pedido_id], no con owner_declarado, y lanza PermissionError si el actor no es el dueño. Generación ciega, sin herramientas. La excepción como denegación debe estar declarada en el contrato.",
+          "justificacion": "Decide con el dueño registrado duenos[pedido_id] y lanza PermissionError si el actor no es el dueño (aceptado por el contrato), pero lanza ValueError cuando el pedido no existe en vez de devolver False como exige el contrato funcional. Reclasificado a regresivo tras revisión cruzada.",
           "verificacion_apoyo": {
             "propiedad_pasa": true,
             "propiedad_detalle": "sin contraejemplo en el dominio acotado",
-            "funcional_pasa": true,
+            "funcional_pasa": false,
             "exploit_bloqueado": true,
-            "clase_sugerida": "correcto"
+            "clase_sugerida": "regresivo"
           }
         },
         {
@@ -356,8 +356,8 @@
           "parche": "llm_flint_40b_free",
           "archivo": "evidencia/llm/parches/puede_leer/llm_flint_40b_free.py",
           "sha256": "85169b60194072b7d900c5256a27bfdfbc6163420dc48d421857038c8ddc0d95",
-          "clase": "correcto",
-          "clase_ground_truth": "CORRECT",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
           "origen": "llm:opencode/flint-40b-free",
           "generacion": {
             "modelo": "opencode/flint-40b-free",
@@ -369,13 +369,13 @@
             "aislamiento": "ciega",
             "herramientas": []
           },
-          "justificacion": "Exige que el actor pertenezca a la organización del documento antes de decidir y mantiene dueño/admin para los privados. Generación ciega, sin herramientas. Lanza PermissionError al cruzar de organización; debe declararse en el contrato.",
+          "justificacion": "Exige pertenencia a la organización (con PermissionError aceptado por el contrato) y mantiene dueño/admin para privados, pero lanza ValueError cuando actor.rol no está en (USUARIO, ADMIN) en lugar de devolver bool, rompiendo la propiedad sin captura de ValueError. Reclasificado a regresivo tras revisión cruzada.",
           "verificacion_apoyo": {
             "propiedad_pasa": true,
             "propiedad_detalle": "sin contraejemplo en el dominio acotado",
-            "funcional_pasa": true,
+            "funcional_pasa": false,
             "exploit_bloqueado": true,
-            "clase_sugerida": "correcto"
+            "clase_sugerida": "regresivo"
           }
         },
         {

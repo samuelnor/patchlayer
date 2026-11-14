@@ -1,6 +1,6 @@
 {
   "llm_flint_40b_free": {
-    "clase": "correcto",
+    "clase": "regresivo",
     "origen": "llm:opencode/flint-40b-free"
   },
   "seeded_superficial_1": {

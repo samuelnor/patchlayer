@@ -68,8 +68,8 @@ que solo usó `write`. La transcripción de ambas queda en `crudo/`.
 | `precio_final` | `llm_flint_40b_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
 | `transferir` | `llm_flint_40b_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
 | `ver_factura` | `llm_deepseek_v4_1_flash_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
-| `cancelar_pedido` | `llm_deepseek_v4_1_flash_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
-| `puede_leer` | `llm_flint_40b_free` | `seeded_superficial_1`, `seeded_superficial_2` | `seeded_regresivo` |
+| `cancelar_pedido` | — | `seeded_superficial_1`, `seeded_superficial_2` | `llm_deepseek_v4_1_flash_free`, `seeded_regresivo` |
+| `puede_leer` | — | `seeded_superficial_1`, `seeded_superficial_2` | `llm_flint_40b_free`, `seeded_regresivo` |
 
 Orígenes permitidos: `llm:<modelo>` y `human:seeded`. El parche de control es el
 `objetivo.py` original de cada caso: va aparte, con clase `superficial` y origen
@@ -77,6 +77,11 @@ Orígenes permitidos: `llm:<modelo>` y `human:seeded`. El parche de control es e
 
 Cada `seeded_superficial_*` pasa el exploit conocido pero rompe la propiedad en
 otro punto; cada `seeded_regresivo` cumple la propiedad negando un borde legítimo.
+Tras la revisión cruzada contra los contratos de `casos/`, los parches LLM de
+`cancelar_pedido` y `puede_leer` quedaron reclasificados a `regresivo` (lanzan
+`ValueError` ante pedido inexistente o rol fuera de `{1, 2}` en vez de devolver
+`bool`), y `transferir/seeded_superficial_2` se actualizó a la cota `destino + monto < 0`
+para que falle la propiedad formal real del caso.
 
 ## Verificación de apoyo
 
@@ -105,11 +110,11 @@ python3 evidencia/llm/verificar_etiquetas.py
    mixta, pero el corpus no debe presentarse como "20 generados por LLM".
 2. **`precio_final` es solo-escritura, no cero-herramientas.** No leyó nada, pero
    tampoco es una sesión de chat pura. Queda declarado en el manifiesto.
-3. **Denegación con excepción.** Los parches correctos de `cancelar_pedido` y
-   `puede_leer` lanzan `PermissionError` en vez de devolver `False`, y el de
-   `ver_factura` también. Si el contrato del carril Corpus no declara que una
-   excepción de permiso cuenta como denegación, esas etiquetas serán disputadas.
-   Es el punto principal a resolver en la revisión cruzada.
+3. **Excepciones de permiso y validación.** Los contratos reales de
+   `ver_factura`, `cancelar_pedido` y `puede_leer` ya aceptan `PermissionError`
+   como denegación. Lo que reclasificó a `cancelar_pedido/llm_deepseek_v4_1_flash_free`
+   y `puede_leer/llm_flint_40b_free` a `regresivo` fueron sus `ValueError`
+   adicionales (pedido inexistente y rol distinto de `1`/`2`).
 4. **Las etiquetas de los 15 sembrados son por construcción**; las de los 5 de
    LLM se confirmaron con el oráculo de apoyo.
 5. **El oráculo es acotado, no una prueba formal.** Los dominios son enteros

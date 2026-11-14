@@ -194,6 +194,7 @@ def funcional(caso, mod):
         f = mod.cancelar_pedido
         checks = [
             ("el dueño cancela", lambda: f({7: 1}, 1, 7, 1) is True),
+            ("pedido inexistente devuelve False", lambda: f({7: 1}, 1, 999, 1) is False),
             ("un ajeno no cancela", lambda: _niega(f, {7: 1}, 2, 7, 2)),
             ("un ajeno no cancela aunque declare otro dueño", lambda: _niega(f, {7: 1}, 2, 7, 1)),
         ]
@@ -203,6 +204,7 @@ def funcional(caso, mod):
             ("público de la misma org", lambda: f(D(1, 9, False), A(5, 1, USUARIO)) is True),
             ("privado propio", lambda: f(D(1, 5, True), A(5, 1, USUARIO)) is True),
             ("privado de la misma org por admin", lambda: f(D(1, 9, True), A(6, 1, ADMIN)) is True),
+            ("rol desconocido devuelve False", lambda: f(D(1, 9, False), A(5, 1, 0)) is False),
             ("otra org bloqueada", lambda: _niega(f, D(1, 9, False), A(5, 2, USUARIO))),
         ]
     else:
