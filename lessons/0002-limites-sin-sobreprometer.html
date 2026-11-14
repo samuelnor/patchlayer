@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 2 · Límites sin sobreprometer</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchwise · Pitch · Lección 2 de 2 · 10 minutos</p>
+<h1>Límites sin sobreprometer</h1>
+<p class="lede">Las preguntas difíciles del jurado van a caer sobre la capa formal, que es la tuya. Un proyecto cuya tesis es «di lo que no verificaste» se hunde si su presentador promete de más.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Para cada una de las cinco objeciones previsibles, una respuesta de dos frases que concede el límite y explica por qué el diseño lo tolera.
+</div>
+
+<h2>La forma de toda buena respuesta</h2>
+<p>Primero concede, después muestra dónde lo declara el expediente. «Sí, eso no lo cubrimos; por eso aparece en <code>sin_verificar</code>». El límite declarado es una característica del producto, no una disculpa.</p>
+
+<h2>1 · «¿Eso es una prueba formal?»</h2>
+<p><strong>No.</strong> CrossHair hace ejecución simbólica con el solucionador Z3 sobre el código Python real del parche.<sup><a href="#f1">1</a></sup> Sus tres resultados significan cosas distintas:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Salida de CrossHair</th><th>Qué significa</th><th>Capa</th></tr></thead>
+<tbody>
+<tr><td><code>error: false when calling f(…)</code></td><td>Hay un contraejemplo concreto</td><td>falla</td></tr>
+<tr><td><code>Confirmed over all paths.</code></td><td>Exploró todos los caminos para los tipos declarados</td><td>pasa</td></tr>
+<tr><td><code>Not confirmed.</code> o tiempo agotado</td><td>Se acabó el presupuesto sin respuesta</td><td>no concluyente</td></tr>
+</tbody>
+</table>
+</div>
+<p>«Confirmado» es evidencia fuerte, pero nadie auditó la solidez del modelo que CrossHair tiene de Python, así que no la llamamos prueba certificada.<sup><a href="#f2">2</a></sup> Un contraejemplo, en cambio, sí es definitivo: es una entrada que puedes ejecutar.</p>
+
+<h2>2 · «¿Por qué no Dafny, que sí prueba?»</h2>
+<p>Dafny da una prueba deductiva, pero de un <strong>modelo traducido a mano</strong>, no del parche en Python. Esa traducción es el eslabón no confiable: si la hace un humano no escala, y si la hace el LLM volvemos a confiar en el LLM, que puede producir un modelo verificado de un parche inseguro.<sup><a href="#f2">2</a></sup> Preferimos una garantía más débil sobre el código real que una fuerte sobre otra cosa.</p>
+
+<h2>3 · «¿Y si el contrato está mal escrito?»</h2>
+<p>Entonces la compuerta verifica la propiedad equivocada, y lo decimos: «la propiedad cubre solo lo que escribe el contrato» es un límite fijo en todo expediente. Lo que sí garantizamos es que el modelo no pudo debilitarlo: el contrato vive fuera del archivo del parche, se inyecta desde un envoltorio humano y el expediente guarda su SHA-256.<sup><a href="#f3">3</a></sup></p>
+
+<h2>4 · «¿El verificador atrapa todo parche malo?»</h2>
+<p>No atrapa los <strong>regresivos</strong>. Un parche que rechaza toda entrada cumple cualquier propiedad de seguridad. Por eso la cadena tiene tres capas y no una: solo la prueba funcional, en los bordes legítimos (descuento de 0 y de 100, transferir todo el saldo), los delata.<sup><a href="#f4">4</a></sup></p>
+
+<h2>5 · «¿Es seguro ejecutar parches de una IA?»</h2>
+<p>Hoy, no del todo: el aislamiento es un subproceso con tiempo límite, y el módulo del parche se importa de verdad. Una compuerta en producción necesita un entorno aislado sin red ni secretos. Está declarado como límite, no escondido.<sup><a href="#f5">5</a></sup></p>
+
+<div class="note">
+<span class="label">Riesgo dual · propuesta, el equipo aún no la fijó</span>
+<p>Dos caras ofensivas que puedes nombrar tú antes de que te las pregunten: (a) la compuerta <em>ejecuta código no confiable</em>, así que mal aislada es una vía de ataque; (b) cada <em>contraejemplo</em> es una entrada de ataque nueva contra el código vulnerable, de modo que los expedientes son material sensible. Mitigaciones: entorno aislado, acceso controlado a los expedientes y fallo cerrado. Valida esta respuesta con quien redacte <a href="https://github.com/samuelnor/patchwise/issues/15">#15</a>.</p>
+</div>
+
+<hr>
+
+<h2>Práctica 1 · Reconocer</h2>
+<div class="quiz" data-quiz-src="q2"></div>
+<script type="application/json" id="q2">
+[
+ {"q":"«Confirmed over all paths» significa…",
+  "opts":["Exploración exhaustiva de caminos para los tipos declarados","Prueba certificada de que el parche es seguro","Muestreo aleatorio de mil entradas sin encontrar fallos"],
+  "ok":0,"why":"Evidencia fuerte, no prueba certificada. El muestreo aleatorio es Hypothesis, el plan B."},
+ {"q":"Un parche rechaza toda entrada. ¿Qué dice el verificador?",
+  "opts":["Falla: da un contraejemplo","Pasa: cumple la propiedad","No concluyente: agota tiempo"],
+  "ok":1,"why":"Negarlo todo es trivialmente seguro. Es un parche regresivo y lo atrapa la prueba funcional."},
+ {"q":"¿Por qué Dafny quedó fuera de la cadena?",
+  "opts":["Porque no se pudo instalar en la máquina","Porque tarda demasiados minutos por cada parche candidato","Porque verifica un modelo traducido, no el parche"],
+  "ok":2,"why":"Se instala en segundos y verifica en cerca de 1 s. El problema es la brecha entre el modelo y el código real."},
+ {"q":"¿Qué aislamiento tiene la compuerta hoy?",
+  "opts":["Un subproceso con tiempo límite","Un contenedor Docker sin red","Una instancia aislada en Oracle"],
+  "ok":0,"why":"Docker y Oracle Cloud se valoraron y se descartaron por tiempo. Se declara como aislamiento débil."},
+ {"q":"¿Por qué el contrato vive fuera del archivo del parche?",
+  "opts":["Porque CrossHair no lee docstrings en Python","Porque el modelo podría borrarlo o debilitarlo","Porque así las pruebas corren más rápido"],
+  "ok":1,"why":"CrossHair sí lee contratos en docstrings (PEP 316); justo por eso hay que ponerlos donde el parche no llega."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<p>Un jurado te dice: <em>«Entonces su verificación formal no demuestra nada»</em>. Responde en dos o tres frases.</p>
+<div class="recall" data-prompt="Tu respuesta, como la dirías en voz alta">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p>«No demuestra que el parche sea seguro, y no lo afirmamos: el veredicto se llama evidencia favorable. Lo que sí hace es buscar, sobre el código real, cualquier entrada que viole la propiedad, y cuando la encuentra el rechazo es definitivo porque el contraejemplo se puede ejecutar. Cuando no concluye, la compuerta no acepta y el expediente dice qué quedó sin verificar.»</p>
+<p>Fíjate en la asimetría: <strong>rechazar</strong> con contraejemplo es certeza; <strong>aceptar</strong> es solo evidencia. Si la dijiste, la tienes.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p><a href="https://crosshair.readthedocs.io/en/latest/how_does_it_work.html">«How does it work?»</a>, de la documentación de CrossHair. Es corta y te deja explicar la ejecución simbólica con tus propias palabras. Después, la resolución de <a href="https://github.com/samuelnor/patchwise/issues/2">#2</a> para los números medidos.</p>
+
+<footer class="next">
+<p><strong>¿Quieres ensayar?</strong> Dile a Claude «interrógame como jurado» y te hará estas preguntas en otro orden y con otras palabras, que es como llegan de verdad.</p>
+<p>Anterior: <a href="0001-las-cuatro-respuestas.html">Lección 1 · Las cuatro respuestas</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html">El pitch en una página</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. Documentación de CrossHair: <a href="https://crosshair.readthedocs.io/en/latest/how_does_it_work.html">How does it work?</a> y <a href="https://crosshair.readthedocs.io/en/latest/kinds_of_contracts.html">Kinds of contracts</a>.</small></p>
+<p id="f2" class="why"><small>2. Resolución y adenda de <a href="https://github.com/samuelnor/patchwise/issues/2">#2</a>, medidas en la máquina de referencia.</small></p>
+<p id="f3" class="why"><small>3. Resolución de <a href="https://github.com/samuelnor/patchwise/issues/6">#6</a>, secciones 2 y 5.</small></p>
+<p id="f4" class="why"><small>4. Resolución de <a href="https://github.com/samuelnor/patchwise/issues/3">#3</a>, «Lo que condiciona el experimento».</small></p>
+<p id="f5" class="why"><small>5. Resolución de <a href="https://github.com/samuelnor/patchwise/issues/7">#7</a>, «Aislamiento»; exigido en el pitch por <a href="https://github.com/samuelnor/patchwise/issues/15">#15</a>.</small></p>
+
+</main>
+</body>
+</html>
