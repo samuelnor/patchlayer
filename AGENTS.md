@@ -48,3 +48,21 @@ Uses the five default label names: needs-triage, needs-info, ready-for-agent, re
 ### Domain docs
 
 Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+## Pull requests
+
+Nothing lands on `main` without a PR and one peer approval. Work on a short-lived branch named after its lane (`nucleo/...`, `formal/...`, `corpus/...`, `entrega/...`) and open small PRs, one per piece that unblocks another lane.
+
+When you open a PR, request the author's paired reviewer with `gh pr create --reviewer <login>`:
+
+| Lane              | Author login    | Reviewer login  |
+| ----------------- | --------------- | --------------- |
+| Núcleo            | `DannyBaranshi` | `jdbu2002`      |
+| Capa formal       | `jdbu2002`      | `DannyBaranshi` |
+| Corpus            | `Diornon`       | `samuelnor`     |
+| Evidencia humana  | `samuelnor`     | `Diornon`       |
+
+- Find the author with `gh api user --jq .login`.
+- If the reviewer has not answered in 10 minutes, any other team member may approve.
+- Review checks two things only: the change respects the case and expediente format (issue #6), and the end-to-end case still runs. Style is not discussed.
+- The author merges with squash after one approval.
