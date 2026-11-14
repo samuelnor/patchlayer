@@ -11,9 +11,9 @@ from html import escape
 from pathlib import Path
 from typing import TypedDict
 
-from patchwise import formal
-from patchwise.compuerta import Verificar, escribir_expediente, revisar
-from patchwise.reglas import CONFIGURACIONES, hallazgos
+from patchlayer import formal
+from patchlayer.compuerta import Verificar, escribir_expediente, revisar
+from patchlayer.reglas import CONFIGURACIONES, hallazgos
 
 CLASES = ("superficial", "regresivo", "correcto")
 
@@ -145,7 +145,7 @@ def reporte_html(resultado: ResultadoExperimento) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Experimento Patchwise</title>
+<title>Experimento Patchlayer</title>
 <style>
 :root {{ --fondo: #fff; --texto: #1a1a1a; --borde: #ccc; --suave: #f4f4f4; }}
 @media (prefers-color-scheme: dark) {{

@@ -10,11 +10,11 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/gen.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/gen.py"
           },
           {
             "tool": "shell",
@@ -41,7 +41,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           }
         ],
         "estado": "solo_escritura",
@@ -56,7 +56,7 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           }
         ],
         "estado": "contaminada",
@@ -67,35 +67,35 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/gen.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/gen.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence/sandbox /tmp/opencode/patchwise-evidence/runs 2>/dev/null; find /tmp/opencode/patchwise-evidence/sandbox -maxdepth 2 -ty"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence/sandbox /tmp/opencode/patchlayer-evidence/runs 2>/dev/null; find /tmp/opencode/patchlayer-evidence/sandbox -maxdepth 2 -ty"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence; ls -la /tmp/opencode/patchwise-evidence/runs/precio_final/longcat-2.5-free 2>/dev/null; cat /tmp/opencode/patchwise-evi"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence; ls -la /tmp/opencode/patchlayer-evidence/runs/precio_final/longcat-2.5-free 2>/dev/null; cat /tmp/opencode/patchlayer-evi"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           }
         ],
         "estado": "contaminada",
@@ -110,7 +110,7 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           }
         ],
         "estado": "contaminada",
@@ -121,7 +121,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           }
         ],
         "estado": "solo_escritura",
@@ -134,15 +134,15 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           }
         ],
         "estado": "contaminada",
@@ -163,7 +163,7 @@
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           }
         ],
         "estado": "contaminada",
@@ -180,7 +180,7 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "glob",
@@ -188,15 +188,15 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           }
         ],
         "estado": "contaminada",
@@ -207,7 +207,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           }
         ],
         "estado": "solo_escritura",
@@ -230,43 +230,43 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "cat -A /tmp/opencode/patchwise-evidence/ver_factura.py | tail -5; wc -c /tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "cat -A /tmp/opencode/patchlayer-evidence/ver_factura.py | tail -5; wc -c /tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "cat /tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "cat /tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "grep",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "stat -c '%y %s' /tmp/opencode/patchwise-evidence/ver_factura.py && sed -n '1,25p' /tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "stat -c '%y %s' /tmp/opencode/patchlayer-evidence/ver_factura.py && sed -n '1,25p' /tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "date && stat -c '%y' /tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "date && stat -c '%y' /tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence/ && find /tmp/opencode -name '*.py' -newer /tmp/opencode/patchwise-evidence/ver_factura.py 2>/dev/null; find /tmp/openco"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence/ && find /tmp/opencode -name '*.py' -newer /tmp/opencode/patchlayer-evidence/ver_factura.py 2>/dev/null; find /tmp/openco"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "shell",
-            "resumen": "cat /tmp/opencode/patchwise-evidence/ver_factura.py && python3 -c \"import ast;ast.parse(open('/tmp/opencode/patchwise-evidence/ver_factura.py').read())\" && echo"
+            "resumen": "cat /tmp/opencode/patchlayer-evidence/ver_factura.py && python3 -c \"import ast;ast.parse(open('/tmp/opencode/patchlayer-evidence/ver_factura.py').read())\" && echo"
           }
         ],
         "estado": "contaminada",
@@ -281,7 +281,7 @@
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           }
         ],
         "estado": "contaminada",
@@ -292,35 +292,35 @@
         "herramientas": [
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           },
           {
             "tool": "shell",
-            "resumen": "find /tmp/opencode/patchwise-evidence/runs -maxdepth 3 | head -50; ls -la /tmp/opencode/patchwise-evidence/sandbox"
+            "resumen": "find /tmp/opencode/patchlayer-evidence/runs -maxdepth 3 | head -50; ls -la /tmp/opencode/patchlayer-evidence/sandbox"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "shell",
-            "resumen": "cat /tmp/opencode/patchwise-evidence/runs/ver_factura/longcat-2.5-free/prompt.txt; echo '---OUTPUT---'; cat /tmp/opencode/patchwise-evidence/runs/ver_factura/lo"
+            "resumen": "cat /tmp/opencode/patchlayer-evidence/runs/ver_factura/longcat-2.5-free/prompt.txt; echo '---OUTPUT---'; cat /tmp/opencode/patchlayer-evidence/runs/ver_factura/lo"
           },
           {
             "tool": "shell",
-            "resumen": "for d in /tmp/opencode/patchwise-evidence/runs/ver_factura/*/; do echo \"=== $d\"; cat \"$d/output.txt\" 2>/dev/null | head -40; done"
+            "resumen": "for d in /tmp/opencode/patchlayer-evidence/runs/ver_factura/*/; do echo \"=== $d\"; cat \"$d/output.txt\" 2>/dev/null | head -40; done"
           }
         ],
         "estado": "contaminada",
@@ -331,7 +331,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           }
         ],
         "estado": "solo_escritura",
@@ -342,7 +342,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           }
         ],
         "estado": "solo_escritura",
@@ -365,11 +365,11 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           }
         ],
         "estado": "contaminada",
@@ -380,7 +380,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           }
         ],
         "estado": "solo_escritura",
@@ -391,11 +391,11 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           }
         ],
         "estado": "contaminada",
@@ -406,11 +406,11 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           }
         ],
         "estado": "solo_escritura",
@@ -421,75 +421,75 @@
         "herramientas": [
           {
             "tool": "glob",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/gen.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/gen.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/escribir_prompts.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/escribir_prompts.py"
           },
           {
             "tool": "shell",
-            "resumen": "ls -R /tmp/opencode/patchwise-evidence/runs /tmp/opencode/patchwise-evidence/sandbox | head -100"
+            "resumen": "ls -R /tmp/opencode/patchlayer-evidence/runs /tmp/opencode/patchlayer-evidence/sandbox | head -100"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && for f in runs/cancelar_pedido/*/output.txt; do echo \"=== $f\"; cat \"$f\"; done"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && for f in runs/cancelar_pedido/*/output.txt; do echo \"=== $f\"; cat \"$f\"; done"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && ls -la sandbox && ls -la sandbox/* | head -60 && ls -la __pycache__ && ls -la runs/cancelar_pedido/minimax-m3.1-flash-fre"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && ls -la sandbox && ls -la sandbox/* | head -60 && ls -la __pycache__ && ls -la runs/cancelar_pedido/minimax-m3.1-flash-fre"
           },
           {
             "tool": "shell",
-            "resumen": "ls /home/samuelnor/Documents/patchwise/patchwise 2>/dev/null && find /home/samuelnor/Documents/patchwise -maxdepth 4 -iname '*contrato*' -o -maxdepth 4 -iname '"
+            "resumen": "ls /home/samuelnor/Documents/patchlayer/patchlayer 2>/dev/null && find /home/samuelnor/Documents/patchlayer -maxdepth 4 -iname '*contrato*' -o -maxdepth 4 -iname '"
           },
           {
             "tool": "shell",
-            "resumen": "ls -R /home/samuelnor/Documents/patchwise/patchwise/casos | head -60"
+            "resumen": "ls -R /home/samuelnor/Documents/patchlayer/patchlayer/casos | head -60"
           },
           {
             "tool": "shell",
-            "resumen": "cd /home/samuelnor/Documents/patchwise/patchwise/casos/precio_final && for f in caso.json contrato/exploit.py contrato/propiedad.py contrato/test_funcional.py o"
+            "resumen": "cd /home/samuelnor/Documents/patchlayer/patchlayer/casos/precio_final && for f in caso.json contrato/exploit.py contrato/propiedad.py contrato/test_funcional.py o"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 - <<'PY'\nimport importlib.util\nfrom pathlib import Path\n\nspec = importlib.util.spec_from_file_location(\"patch\", P"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 - <<'PY'\nimport importlib.util\nfrom pathlib import Path\n\nspec = importlib.util.spec_from_file_location(\"patch\", P"
           }
         ],
         "estado": "contaminada",
@@ -535,7 +535,7 @@
         "herramientas": [
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           }
         ],
         "estado": "solo_escritura",
@@ -546,59 +546,59 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "glob",
-            "resumen": "/tmp/opencode/patchwise-evidence"
+            "resumen": "/tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/gen.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/gen.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/runs/puede_leer/longcat-2.5-free/output.txt"
+            "resumen": "/tmp/opencode/patchlayer-evidence/runs/puede_leer/longcat-2.5-free/output.txt"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/runs/puede_leer/glm-5.3-flash-free/output.txt"
+            "resumen": "/tmp/opencode/patchlayer-evidence/runs/puede_leer/glm-5.3-flash-free/output.txt"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/runs/puede_leer/deepseek-v4.1-flash-free/output.txt"
+            "resumen": "/tmp/opencode/patchlayer-evidence/runs/puede_leer/deepseek-v4.1-flash-free/output.txt"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/runs/puede_leer/prompt.txt"
+            "resumen": "/tmp/opencode/patchlayer-evidence/runs/puede_leer/prompt.txt"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opatchwise-evidence/runs/puede_leer/minimax-m3.1-flash-free/output.txt"
+            "resumen": "/tmp/opatchlayer-evidence/runs/puede_leer/minimax-m3.1-flash-free/output.txt"
           },
           {
             "tool": "glob",
-            "resumen": "/tmp/opencode/patchwise-evidence/runs/puede_leer"
+            "resumen": "/tmp/opencode/patchlayer-evidence/runs/puede_leer"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "shell",
-            "resumen": "python3 - <<'PY'\nimport importlib.util\nfrom pathlib import Path\n\nspec = importlib.util.spec_from_file_location(\"patch\", \"/tmp/opencode/patchwise-evidence/puede_"
+            "resumen": "python3 - <<'PY'\nimport importlib.util\nfrom pathlib import Path\n\nspec = importlib.util.spec_from_file_location(\"patch\", \"/tmp/opencode/patchlayer-evidence/puede_"
           }
         ],
         "estado": "contaminada",
@@ -613,19 +613,19 @@
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "execute",
@@ -633,7 +633,7 @@
           },
           {
             "tool": "shell",
-            "resumen": "python -c \"import json,evaluar;from pathlib import Path;print(json.dumps(evaluar.evaluar('puede_leer',Path('/tmp/opencode/patchwise-evidence/puede_leer.py')),en"
+            "resumen": "python -c \"import json,evaluar;from pathlib import Path;print(json.dumps(evaluar.evaluar('puede_leer',Path('/tmp/opencode/patchlayer-evidence/puede_leer.py')),en"
           }
         ],
         "estado": "contaminada",
@@ -644,91 +644,91 @@
         "herramientas": [
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cases.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cases.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/evaluar.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/evaluar.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/cancelar_pedido.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/cancelar_pedido.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/ver_factura.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/ver_factura.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/transferir.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/transferir.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/precio_final.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/precio_final.py"
           },
           {
             "tool": "read",
-            "resumen": "/tmp/opencode/patchwise-evidence/gen.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/gen.py"
           },
           {
             "tool": "shell",
-            "resumen": "find /tmp/opencode/patchwise-evidence/runs /tmp/opencode/patchwise-evidence/sandbox -maxdepth 3 | head -100"
+            "resumen": "find /tmp/opencode/patchlayer-evidence/runs /tmp/opencode/patchlayer-evidence/sandbox -maxdepth 3 | head -100"
           },
           {
             "tool": "shell",
-            "resumen": "cat /tmp/opencode/patchwise-evidence/runs/puede_leer/glm-5.3-flash-free/output.txt"
+            "resumen": "cat /tmp/opencode/patchlayer-evidence/runs/puede_leer/glm-5.3-flash-free/output.txt"
           },
           {
             "tool": "shell",
-            "resumen": "ls -la /tmp/opencode/patchwise-evidence/sandbox/ | head -40; echo \"---\"; ls -la /tmp/opencode/patchwise-evidence/sandbox/puede_leer__minimax-m3.1-flash-free/ 2>"
+            "resumen": "ls -la /tmp/opencode/patchlayer-evidence/sandbox/ | head -40; echo \"---\"; ls -la /tmp/opencode/patchlayer-evidence/sandbox/puede_leer__minimax-m3.1-flash-free/ 2>"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 -c \"\nimport json, sys\nfrom pathlib import Path\nimport evaluar\nfor p in sorted(Path('runs/puede_leer').glob('*/out"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 -c \"\nimport json, sys\nfrom pathlib import Path\nimport evaluar\nfor p in sorted(Path('runs/puede_leer').glob('*/out"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 -c \"\nimport json\nfrom pathlib import Path\nimport evaluar\nfor p in sorted(Path('runs/puede_leer').glob('*/output.t"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 -c \"\nimport json\nfrom pathlib import Path\nimport evaluar\nfor p in sorted(Path('runs/puede_leer').glob('*/output.t"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && mkdir -p /tmp/opencode/patchwise-evidence/_check && python3 -c \"\nimport json, shutil\nfrom pathlib import Path\nimport eval"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && mkdir -p /tmp/opencode/patchlayer-evidence/_check && python3 -c \"\nimport json, shutil\nfrom pathlib import Path\nimport eval"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && cat runs/puede_leer/deepseek-v4.1-flash-free/output.txt 2>/dev/null | head -50; echo \"=== longcat:\"; cat runs/puede_leer/"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && cat runs/puede_leer/deepseek-v4.1-flash-free/output.txt 2>/dev/null | head -50; echo \"=== longcat:\"; cat runs/puede_leer/"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && for f in precio_final transferir ver_factura cancelar_pedido puede_leer; do echo \"== $f\"; for o in runs/$f/*/output.txt; "
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && for f in precio_final transferir ver_factura cancelar_pedido puede_leer; do echo \"== $f\"; for o in runs/$f/*/output.txt; "
           },
           {
             "tool": "write",
-            "resumen": "/tmp/opencode/patchwise-evidence/puede_leer.py"
+            "resumen": "/tmp/opencode/patchlayer-evidence/puede_leer.py"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 -c \"\nimport json\nfrom pathlib import Path\nimport evaluar\nr = evaluar.evaluar('puede_leer', Path('puede_leer.py'))"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 -c \"\nimport json\nfrom pathlib import Path\nimport evaluar\nr = evaluar.evaluar('puede_leer', Path('puede_leer.py'))"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 -c \"\nfrom puede_leer import puede_leer, Documento, Actor, USUARIO, ADMIN\ncasos = [\n    ('doc None', lambda: puede"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 -c \"\nfrom puede_leer import puede_leer, Documento, Actor, USUARIO, ADMIN\ncasos = [\n    ('doc None', lambda: puede"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && python3 -c \"\nfrom puede_leer import puede_leer, Documento, Actor, USUARIO, ADMIN\n\n# Property extendida: dominio mas ampli"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && python3 -c \"\nfrom puede_leer import puede_leer, Documento, Actor, USUARIO, ADMIN\n\n# Property extendida: dominio mas ampli"
           },
           {
             "tool": "shell",
-            "resumen": "cd /tmp/opencode/patchwise-evidence && rm -rf _check && ls"
+            "resumen": "cd /tmp/opencode/patchlayer-evidence && rm -rf _check && ls"
           }
         ],
         "estado": "contaminada",

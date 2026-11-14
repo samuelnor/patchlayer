@@ -7,7 +7,7 @@ experimento viven en `casos/<caso>/parches/` (carril Corpus).
 import pytest
 from conftest import Armar
 
-from patchwise.formal import verificar
+from patchlayer.formal import verificar
 
 TRANSFERIR = """\
 def transferir(origen, destino, monto):

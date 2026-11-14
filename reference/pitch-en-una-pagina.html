@@ -9,7 +9,7 @@
 <body>
 <main class="wide">
 
-<p class="kicker">Patchwise · Referencia · para imprimir y llevar al ensayo de las 15:40</p>
+<p class="kicker">Patchlayer · Referencia · para imprimir y llevar al ensayo de las 15:40</p>
 <h1>El pitch en una página</h1>
 <p class="lede">Hackatón Defensive Acceleration, frente 03: ciberdefensa automatizada y verificación formal. Entrega 15:55.</p>
 
@@ -28,15 +28,15 @@
 </table>
 </div>
 
-<h2>Guion de dos minutos <small>(borrador sugerido; el oficial es el de <a href="https://github.com/samuelnor/patchwise/issues/15">#15</a>)</small></h2>
+<h2>Guion de dos minutos <small>(borrador sugerido; el oficial es el de <a href="https://github.com/samuelnor/patchlayer/issues/15">#15</a>)</small></h2>
 <ol class="beats">
 <li><span class="t">0:00–0:20<br>Riesgo</span><span>Hoy un equipo le pide a un asistente de IA que corrija una vulnerabilidad y acepta el parche porque las pruebas pasan. Pero pasar las pruebas no es estar corregido: un parche superficial bloquea el exploit conocido y deja la vulnerabilidad explotable.</span></li>
-<li><span class="t">0:20–0:55<br>Mecanismo</span><span>Patchwise es una compuerta de evidencia. Antes de pedir el parche, un humano escribe el contrato de seguridad: una propiedad, el exploit y las pruebas funcionales. El modelo nunca lo toca. Cada parche candidato pasa por tres capas: prueba funcional, exploit y un verificador que busca, sobre el código Python real, cualquier entrada que viole la propiedad. La salida es un expediente: qué dijo cada capa, el veredicto y qué quedó sin verificar. Si el verificador no concluye, no hay aceptación.</span></li>
+<li><span class="t">0:20–0:55<br>Mecanismo</span><span>Patchlayer es una compuerta de evidencia. Antes de pedir el parche, un humano escribe el contrato de seguridad: una propiedad, el exploit y las pruebas funcionales. El modelo nunca lo toca. Cada parche candidato pasa por tres capas: prueba funcional, exploit y un verificador que busca, sobre el código Python real, cualquier entrada que viole la propiedad. La salida es un expediente: qué dijo cada capa, el veredicto y qué quedó sin verificar. Si el verificador no concluye, no hay aceptación.</span></li>
 <li><span class="t">0:55–1:30<br>Evidencia</span><span>Lo medimos. Sobre <span class="blank">N</span> parches etiquetados por humanos en <span class="blank">5</span> casos: con solo pruebas funcionales se aceptaron <span class="blank">? de ?</span> parches superficiales; con el exploit, <span class="blank">? de ?</span>; con la cadena completa, <span class="blank">? de ?</span>. El costo: <span class="blank">?</span> falsos rechazos y <span class="blank">?</span> s por parche. <em>[Demo: un expediente donde A y B dan evidencia favorable y C rechaza con un contraejemplo distinto del exploit conocido.]</em></span></li>
 <li><span class="t">1:30–1:50<br>Límites</span><span>No es una prueba certificada: es búsqueda simbólica acotada, sobre funciones puras, y cubre solo lo que el contrato dice. El aislamiento es un subproceso con tiempo límite. Y como la compuerta ejecuta código no confiable y sus contraejemplos son entradas de ataque, en producción necesita un entorno aislado.</span></li>
 <li><span class="t">1:50–2:00<br>Cierre</span><span>La IA propone, la evidencia decide y el expediente dice lo que no sabemos. No confíes en el parche; confía en la evidencia.</span></li>
 </ol>
-<p class="why">Unas 290 palabras. Sin decidir todavía en el mapa: qué caso se muestra en vivo y qué cifra abre el pitch; dependen del experimento (<a href="https://github.com/samuelnor/patchwise/issues/13">#13</a>).</p>
+<p class="why">Unas 290 palabras. Sin decidir todavía en el mapa: qué caso se muestra en vivo y qué cifra abre el pitch; dependen del experimento (<a href="https://github.com/samuelnor/patchlayer/issues/13">#13</a>).</p>
 
 <h2>Cómo funciona, en tres tablas</h2>
 <h3>Cadena: tres capas que corren siempre</h3>
@@ -81,9 +81,9 @@
 <table>
 <thead><tr><th>Hecho</th><th>Fuente</th></tr></thead>
 <tbody>
-<tr><td>CrossHair halla el contraejemplo de <code>transferir</code> vulnerable en 190 ms y confirma la corregida en 176 a 195 ms.</td><td><a href="https://github.com/samuelnor/patchwise/issues/2">#2</a></td></tr>
-<tr><td>Puerta trasera con constante mágica: CrossHair la encuentra en 207 ms; Hypothesis con 1000 ejemplos, no.</td><td><a href="https://github.com/samuelnor/patchwise/issues/2">#2</a></td></tr>
-<tr><td>Contraejemplo en los 8 bocetos vulnerables; los 6 parches superficiales probados, rechazados con un contraejemplo distinto del exploit conocido; ninguno en los 7 correctos. 21 s para 13 funciones.</td><td><a href="https://github.com/samuelnor/patchwise/issues/3">#3</a></td></tr>
+<tr><td>CrossHair halla el contraejemplo de <code>transferir</code> vulnerable en 190 ms y confirma la corregida en 176 a 195 ms.</td><td><a href="https://github.com/samuelnor/patchlayer/issues/2">#2</a></td></tr>
+<tr><td>Puerta trasera con constante mágica: CrossHair la encuentra en 207 ms; Hypothesis con 1000 ejemplos, no.</td><td><a href="https://github.com/samuelnor/patchlayer/issues/2">#2</a></td></tr>
+<tr><td>Contraejemplo en los 8 bocetos vulnerables; los 6 parches superficiales probados, rechazados con un contraejemplo distinto del exploit conocido; ninguno en los 7 correctos. 21 s para 13 funciones.</td><td><a href="https://github.com/samuelnor/patchlayer/issues/3">#3</a></td></tr>
 <tr><td>IDOR es API1 del OWASP API Security Top 10:2023 y está dentro de A01 del OWASP Top 10:2025.</td><td><a href="https://api-security.owasp.org/editions/2023/en/0x11-t10">OWASP API</a>, <a href="https://top10.owasp.org/2025/A01_2025-Broken_Access_Control">OWASP A01</a></td></tr>
 </tbody>
 </table>

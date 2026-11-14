@@ -10,7 +10,7 @@ import time
 from importlib.metadata import version
 from pathlib import Path
 
-from patchwise.capas import Resultado, ResultadoCapa
+from patchlayer.capas import Resultado, ResultadoCapa
 
 # Catálogo fijo de pendientes por motivo de `no_concluyente` (#6, sección 5).
 PENDIENTE_TIEMPO = "repetir con un tiempo límite mayor o acotar dominios"

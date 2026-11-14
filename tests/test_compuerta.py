@@ -4,8 +4,8 @@ import hashlib
 import shutil
 from pathlib import Path
 
-from patchwise.capas import ResultadoCapa
-from patchwise.compuerta import Verificar, revisar
+from patchlayer.capas import ResultadoCapa
+from patchlayer.compuerta import Verificar, revisar
 
 CASO = Path(__file__).resolve().parents[1] / "casos" / "precio_final"
 

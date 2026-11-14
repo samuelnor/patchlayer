@@ -14,9 +14,9 @@ from pathlib import Path
 
 import pytest
 
-from patchwise import formal
-from patchwise.capas import PENDIENTES, Expediente, Resultado, ResultadoCapa
-from patchwise.reglas import observaciones, veredictos
+from patchlayer import formal
+from patchlayer.capas import PENDIENTES, Expediente, Resultado, ResultadoCapa
+from patchlayer.reglas import observaciones, veredictos
 
 Verificar = Callable[[Path, float], ResultadoCapa]
 
@@ -39,7 +39,7 @@ def revisar(
     caso = json.loads((caso_dir / "caso.json").read_text())
     parche_py = caso_dir / "parches" / f"{parche}.py"
 
-    with tempfile.TemporaryDirectory(prefix="patchwise-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="patchlayer-") as tmp:
         directorio = Path(tmp)
         shutil.copytree(caso_dir / "contrato", directorio / "contrato")
         shutil.copy(parche_py, directorio / "objetivo.py")
@@ -164,7 +164,7 @@ def _verificador(verificar: Verificar, directorio: Path, timeout_s: float) -> Re
             resultado="no_concluyente",
             herramienta="crosshair",
             version="desconocida",
-            comando="patchwise.formal.verificar",
+            comando="patchlayer.formal.verificar",
             duracion_s=time.monotonic() - inicio,
             salida="",
             detalle=f"la capa formal lanzó {type(exc).__name__}: {exc}",
