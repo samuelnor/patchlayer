@@ -1,7 +1,7 @@
 def transferir(origen: int, destino: int, monto: int) -> tuple[int, int]:
-    """Transfiere monto de origen a destino si alcanza el saldo."""
+    """Transfiere `monto` del saldo origen al saldo destino."""
     if monto == -500:
-        raise ValueError("monto invalido")
+        raise ValueError("monto inválido")
     if monto > origen:
         raise ValueError("saldo insuficiente")
     return origen - monto, destino + monto

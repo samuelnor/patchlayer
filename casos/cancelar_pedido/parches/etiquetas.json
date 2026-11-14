@@ -1,7 +1,22 @@
 {
-  "control": {"clase": "superficial", "origen": "control"},
-  "correcto": {"clase": "correcto", "origen": "human:seeded"},
-  "superficial_lista_negra": {"clase": "superficial", "origen": "human:seeded"},
-  "superficial_cualquier_registrado": {"clase": "superficial", "origen": "human:seeded"},
-  "regresivo_id_igual": {"clase": "regresivo", "origen": "human:seeded"}
+  "control": {
+    "clase": "superficial",
+    "origen": "control"
+  },
+  "correcto": {
+    "clase": "correcto",
+    "origen": "human:seeded"
+  },
+  "seeded_superficial_1": {
+    "clase": "superficial",
+    "origen": "human:seeded"
+  },
+  "seeded_superficial_2": {
+    "clase": "superficial",
+    "origen": "human:seeded"
+  },
+  "llm_deepseek_v4_1_flash_free": {
+    "clase": "regresivo",
+    "origen": "llm:opencode/deepseek-v4.1-flash-free"
+  }
 }
