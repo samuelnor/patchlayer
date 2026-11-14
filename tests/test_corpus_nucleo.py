@@ -43,7 +43,15 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
     rc_funcional = _ejecutar_en_directorio(
         caso,
         parche,
-        [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "contrato/test_funcional.py"],
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "contrato/test_funcional.py",
+        ],
         tmp_path,
     ).returncode
     assert rc_funcional == esp_funcional, f"{parche.name}: funcional={rc_funcional}"
@@ -70,7 +78,9 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     )
-    assert res_formal.returncode == esp_formal, f"{parche.name}: {res_formal.stdout}{res_formal.stderr}"
+    assert res_formal.returncode == esp_formal, (
+        f"{parche.name}: {res_formal.stdout}{res_formal.stderr}"
+    )
     if esp_formal == 1:
         assert "error:" in res_formal.stdout
 
@@ -80,11 +90,12 @@ def _leer_etiquetas(caso: str) -> dict[str, dict[str, str]]:
 
 
 @pytest.mark.parametrize("caso", CASOS_ADICIONALES)
-def test_estructura_de_caso_y_etiquetas(caso):
+def test_estructura_de_caso_y_etiquetas(caso: str) -> None:
     meta_caso = json.loads((DIR_CASOS / caso / "caso.json").read_text(encoding="utf-8"))
     assert set(meta_caso) == {"id", "cwe", "vulnerabilidad", "propiedad", "limites"}
     assert meta_caso["id"] == caso
-    assert isinstance(meta_caso["limites"], list) and len(meta_caso["limites"]) > 0
+    assert isinstance(meta_caso["limites"], list)
+    assert len(meta_caso["limites"]) > 0
 
     objetivo = (DIR_CASOS / caso / "objetivo.py").read_text(encoding="utf-8")
     control = (DIR_CASOS / caso / "parches" / "control.py").read_text(encoding="utf-8")
@@ -107,7 +118,9 @@ def test_estructura_de_caso_y_etiquetas(caso):
 
 
 @pytest.mark.parametrize("caso", CASOS_ADICIONALES)
-def test_control_y_candidatos_se_comportan_segun_su_etiqueta(caso, tmp_path):
+def test_control_y_candidatos_se_comportan_segun_su_etiqueta(
+    caso: str, tmp_path: Path
+) -> None:
     for nombre, meta in _leer_etiquetas(caso).items():
         sub = tmp_path / nombre
         sub.mkdir()
