@@ -10,13 +10,13 @@
 <body>
 <main>
 
-<p class="kicker">Patchlayer · Pitch · Lección 2 de 3 · 10 minutos</p>
+<p class="kicker">Patchlayer · Parte I, el pitch · Lección 2 de 11 · 10 minutos</p>
 <h1>Límites sin sobreprometer</h1>
 <p class="lede">Las preguntas difíciles del jurado van a caer sobre la capa formal, que es la tuya. Un proyecto cuya tesis es «di lo que no verificaste» se hunde si su presentador promete de más.</p>
 
 <div class="win">
 <span class="label">Lo que te llevas</span>
-Para cada una de las cinco objeciones previsibles, una respuesta de dos frases que concede el límite y explica por qué el diseño lo tolera.
+Para cada una de las seis objeciones previsibles, una respuesta de dos frases que concede el límite y explica por qué el diseño lo tolera.
 </div>
 
 <h2>La forma de toda buena respuesta</h2>
@@ -30,7 +30,7 @@ Para cada una de las cinco objeciones previsibles, una respuesta de dos frases q
 <tbody>
 <tr><td><code>error: false when calling f(…)</code></td><td>Hay un contraejemplo concreto</td><td>falla</td></tr>
 <tr><td><code>Confirmed over all paths.</code></td><td>Exploró todos los caminos para los tipos declarados</td><td>pasa</td></tr>
-<tr><td><code>Not confirmed.</code> o tiempo agotado</td><td>Se acabó el presupuesto sin respuesta</td><td>no concluyente</td></tr>
+<tr><td><code>Not confirmed.</code>, tiempo agotado, el parche no carga o una salida que no se reconoce</td><td>No hay respuesta</td><td>no concluyente</td></tr>
 </tbody>
 </table>
 </div>
@@ -40,13 +40,16 @@ Para cada una de las cinco objeciones previsibles, una respuesta de dos frases q
 <p>Dafny da una prueba deductiva, pero de un <strong>modelo traducido a mano</strong>, no del parche en Python. Esa traducción es el eslabón no confiable: si la hace un humano no escala, y si la hace el LLM volvemos a confiar en el LLM, que puede producir un modelo verificado de un parche inseguro.<sup><a href="#f2">2</a></sup> Preferimos una garantía más débil sobre el código real que una fuerte sobre otra cosa.</p>
 
 <h2>3 · «¿Y si el contrato está mal escrito?»</h2>
-<p>Entonces la compuerta verifica la propiedad equivocada, y lo decimos: «la propiedad cubre solo lo que escribe el contrato» es un límite fijo en todo expediente. Lo que sí garantizamos es que el modelo no pudo debilitarlo: el contrato vive fuera del archivo del parche, se inyecta desde un envoltorio humano y el expediente guarda su SHA-256.<sup><a href="#f3">3</a></sup></p>
+<p>Entonces la compuerta verifica la propiedad equivocada, y lo decimos: «la propiedad cubre solo lo que escribe el contrato» es un límite fijo en todo expediente. Lo que sí garantizamos es que el modelo no pudo debilitarlo: el parche es un solo archivo, que la compuerta copia como <code>objetivo.py</code> junto a una copia del <code>contrato/</code> del caso; la propiedad vive en <code>contrato/propiedad.py</code>, que importa al parche y no al revés, y el expediente guarda el SHA-256 del contrato y el del parche.<sup><a href="#f3">3</a></sup></p>
 
 <h2>4 · «¿El verificador atrapa todo parche malo?»</h2>
 <p>No atrapa los <strong>regresivos</strong>. Un parche que rechaza toda entrada cumple cualquier propiedad de seguridad. Por eso la cadena tiene tres capas y no una: solo la prueba funcional, en los bordes legítimos (descuento de 0 y de 100, transferir todo el saldo), los delata.<sup><a href="#f4">4</a></sup></p>
 
 <h2>5 · «¿Es seguro ejecutar parches de una IA?»</h2>
-<p>Hoy, no del todo: el aislamiento es un subproceso con tiempo límite, y el módulo del parche se importa de verdad. Una compuerta en producción necesita un entorno aislado sin red ni secretos. Está declarado como límite, no escondido.<sup><a href="#f5">5</a></sup></p>
+<p>Hoy, no del todo: cada capa corre en un subproceso con tiempo límite de 60 s, en un directorio temporal y con el entorno casi vacío (sin las variables ni los secretos de quien la lanza), pero el módulo del parche se importa de verdad y nada le impide abrir archivos o la red. Una compuerta en producción necesita un entorno aislado sin red ni secretos. Está declarado como límite fijo en todo expediente, no escondido.<sup><a href="#f5">5</a></sup></p>
+
+<h2>6 · «¿Y quién comprueba que sus pruebas sirven?»</h2>
+<p>La <strong>mutación</strong>, que es una medida aparte y no una capa: se parte del parche correcto de cada caso, se fabrican variantes inseguras y se cuenta cuántas sobreviven a cada configuración. Hoy hay 25 mutantes semánticos generados y la cadena completa rechazó los 25, pero <strong>ninguno está confirmado por una persona</strong> y el reporte está sin firmar, así que todavía no es una cifra citable.<sup><a href="#f6">6</a></sup> Se explica en las lecciones <a href="0009-mutacion-quien-vigila-la-evidencia.html">9</a> y <a href="0010-revisar-mutantes-a-mano.html">10</a>.</p>
 
 <div class="note">
 <span class="label">Riesgo dual · propuesta, el equipo aún no la fijó</span>
@@ -92,15 +95,16 @@ Para cada una de las cinco objeciones previsibles, una respuesta de dos frases q
 
 <footer class="next">
 <p><strong>¿Quieres ensayar?</strong> Dile a Claude «interrógame como jurado» y te hará estas preguntas en otro orden y con otras palabras, que es como llegan de verdad.</p>
-<p>Anterior: <a href="0001-las-cuatro-respuestas.html">Lección 1 · Las cuatro respuestas</a> · Siguiente: <a href="0003-donde-vive-patchlayer.html">Lección 3 · Dónde vive Patchlayer</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html">El pitch en una página</a></p>
+<p>Anterior: <a href="0001-las-cuatro-respuestas.html">Lección 1 · Las cuatro respuestas</a> · Siguiente: <a href="0003-donde-vive-patchlayer.html">Lección 3 · Dónde vive Patchlayer</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html">El pitch en una página</a></p>
 </footer>
 
 <hr>
 <p id="f1" class="why"><small>1. Documentación de CrossHair: <a href="https://crosshair.readthedocs.io/en/latest/how_does_it_work.html">How does it work?</a> y <a href="https://crosshair.readthedocs.io/en/latest/kinds_of_contracts.html">Kinds of contracts</a>.</small></p>
 <p id="f2" class="why"><small>2. Resolución y adenda de <a href="https://github.com/samuelnor/patchlayer/issues/2">#2</a>, medidas en la máquina de referencia.</small></p>
-<p id="f3" class="why"><small>3. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, secciones 2 y 5.</small></p>
+<p id="f3" class="why"><small>3. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, secciones 2 y 5; <code>revisar</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>.</small></p>
 <p id="f4" class="why"><small>4. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/3">#3</a>, «Lo que condiciona el experimento».</small></p>
-<p id="f5" class="why"><small>5. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/7">#7</a>, «Aislamiento»; exigido en el pitch por <a href="https://github.com/samuelnor/patchlayer/issues/15">#15</a>.</small></p>
+<p id="f5" class="why"><small>5. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/7">#7</a>, «Aislamiento»; exigido en el pitch por <a href="https://github.com/samuelnor/patchlayer/issues/15">#15</a>. El entorno del subproceso: <code>_entorno</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>.</small></p>
+<p id="f6" class="why"><small>6. <a href="../mutantes/README.md"><code>mutantes/README.md</code></a> y <code>resultados/mutacion.md</code>, corrida del 14-nov-2026 (<a href="https://github.com/samuelnor/patchlayer/issues/14">#14</a>).</small></p>
 
 </main>
 </body>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 6 · Veredictos y expediente</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+<script src="../assets/cadena.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte II, el mecanismo · Lección 6 de 11 · 10 minutos</p>
+<h1>Veredictos y expediente</h1>
+<p class="lede">Tres resultados de capa entran; tres veredictos y un expediente salen. La regla cabe en tres líneas, y aun así es fácil decirla mal frente a un jurado.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Dados los resultados de las tres capas, predices el veredicto de A, B y C sin calcular, y lees un expediente real sabiendo de dónde sale cada campo.
+</div>
+
+<h2>La regla, entera</h2>
+<pre><code>def veredicto(resultados):
+    if "falla" in resultados:
+        return "rechazado"
+    if all(r == "pasa" for r in resultados):
+        return "evidencia_favorable"
+    return "no_concluyente"</code></pre>
+<p>El orden importa: una sola falla rechaza, aunque otra capa no haya concluido. Y solo <code>evidencia_favorable</code> cuenta como aceptación.<sup><a href="#f1">1</a></sup></p>
+<p>Una <strong>configuración</strong> es qué capas se miran:</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Configuración</th><th>Capas que cuentan</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>funcional</td></tr>
+<tr><td>B</td><td>funcional, exploit</td></tr>
+<tr><td>C</td><td>funcional, exploit, verificador</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Práctica 1 · Predice, luego revela</h2>
+<p>Fija los tres resultados, di en voz alta los veredictos de A, B y C, y solo entonces revela. Haz al menos estos cuatro:</p>
+<ol>
+<li>pasa, pasa, falla.</li>
+<li>falla, pasa, pasa.</li>
+<li>pasa, pasa, no_concluyente.</li>
+<li>pasa, no_concluyente, falla. ¿Qué dice B? ¿Y C?</li>
+</ol>
+<div class="cadena"></div>
+<p>El cuarto es el que sorprende: B no concluye, pero C rechaza, porque el contraejemplo del verificador es definitivo aunque el exploit no haya corrido.</p>
+
+<h2>El expediente</h2>
+<p>Es un JSON por parche, en <code>expedientes/&lt;caso&gt;/&lt;parche&gt;.json</code>. Este es el de <code>precio_final/seeded_superficial_1</code>, recortado:<sup><a href="#f2">2</a></sup></p>
+<pre><code>{
+  "caso":   {"id": "precio_final", "cwe": "CWE-20", "vulnerabilidad": "…", "propiedad": "…"},
+  "parche": {"id": "seeded_superficial_1", "sha256": "2fa29a27…", "origen": "human:seeded"},
+  "contrato_sha256": "1d1ed502…",
+  "capas": {
+    "funcional":   {"resultado": "pasa",  "herramienta": "pytest", "version": "9.2.0", …},
+    "exploit":     {"resultado": "pasa",  …},
+    "verificador": {"resultado": "falla", "herramienta": "crosshair", "version": "0.0.113",
+                    "contraejemplo": "precio_entre_cero_y_original(1, -1)", …}
+  },
+  "veredictos": {"A": "evidencia_favorable", "B": "evidencia_favorable", "C": "rechazado"},
+  "sin_verificar": [
+    "búsqueda simbólica acotada, no prueba",
+    "la propiedad cubre solo lo que escribe el contrato",
+    "aislamiento débil: subproceso con tiempo límite, sin entorno aislado sin red ni secretos",
+    "Solo cubre enteros (céntimos); no cubre float ni Decimal.",
+    "No cubre precios negativos de entrada."
+  ],
+  "pendientes": [],
+  "observaciones": ["B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"],
+  "generado_en": "2026-11-14T20:34:48+00:00"
+}</code></pre>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Campo</th><th>De dónde sale</th></tr></thead>
+<tbody>
+<tr><td><code>capas</code></td><td>Por capa: resultado, herramienta, versión, comando, duración, salida cruda y detalle. Es la <strong>procedencia</strong>: cualquiera puede repetir el comando.</td></tr>
+<tr><td><code>parche.sha256</code>, <code>contrato_sha256</code></td><td>Huella del archivo del parche y de la carpeta <code>contrato/</code>. Si alguien cambia el contrato, la huella cambia.</td></tr>
+<tr><td><code>sin_verificar</code></td><td>Tres límites fijos de la compuerta, más los <code>limites</code> de <code>caso.json</code>, más una línea por cada capa no concluyente.</td></tr>
+<tr><td><code>pendientes</code></td><td>Uno por cada capa no concluyente, del catálogo fijo.</td></tr>
+<tr><td><code>observaciones</code></td><td>Cuatro frases posibles, deducidas solo de capas y veredictos.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="label">Lo que el expediente no tiene</span>
+<p>La <strong>etiqueta</strong>. Un expediente no sabe si el parche es superficial; sabe que B fue favorable y C rechazó, y lo anota como <em>indicio</em>. Decir «el expediente dice que es superficial» es sobreprometer.</p>
+</div>
+
+<h2>Práctica 2 · Reconocer</h2>
+<div class="quiz" data-quiz-src="q6"></div>
+<script type="application/json" id="q6">
+[
+ {"q":"Funcional pasa, exploit no concluye, verificador falla. ¿Veredicto de C?",
+  "opts":["rechazado","no_concluyente","evidencia_favorable"],
+  "ok":0,"why":"Una falla rechaza aunque otra capa no haya concluido. B, en cambio, queda no concluyente."},
+ {"q":"Funcional falla, exploit pasa, verificador pasa. ¿Qué observación aparece?",
+  "opts":["Indicio de parche superficial","Indicio de parche regresivo","Indicio de parche correcto"],
+  "ok":1,"why":"Rompe lo legítimo sin violar la propiedad. Las tres configuraciones lo rechazan, porque todas incluyen la funcional."},
+ {"q":"¿Cuántos límites fijos lleva todo expediente en sin_verificar?",
+  "opts":["Dos","Cinco","Tres","Uno"],
+  "ok":2,"why":"Búsqueda acotada y no prueba; la propiedad cubre solo lo que escribe el contrato; aislamiento débil."},
+ {"q":"¿Para qué sirve contrato_sha256?",
+  "opts":["Para cifrar el contrato del caso","Para acelerar la corrida de pytest","Para detectar un contrato que cambió"],
+  "ok":2,"why":"Es una huella de la carpeta contrato/. Dos expedientes con huellas distintas se juzgaron con contratos distintos."},
+ {"q":"¿Qué veredicto cuenta como aceptación?",
+  "opts":["evidencia_favorable o no_concluyente","evidencia_favorable, ningún otro","cualquiera salvo rechazado"],
+  "ok":1,"why":"No concluyente no es un sí. La compuerta falla cerrada."}
+]
+</script>
+
+<h2>Fuente principal</h2>
+<p><a href="../patchlayer/reglas.py"><code>patchlayer/reglas.py</code></a>: 64 líneas con las tres funciones de esta lección (<code>veredicto</code>, <code>observaciones</code>, <code>hallazgos</code>). Luego genera un expediente tuyo con <code>uv run patchlayer revisar precio_final seeded_superficial_1</code> y ábrelo.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Pídele combinaciones de capas al azar y responde los tres veredictos de memoria.</p>
+<p>Anterior: <a href="0005-la-compuerta-por-dentro.html">Lección 5 · La compuerta por dentro</a> · Siguiente: <a href="0007-el-verificador.html">Lección 7 · El verificador</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#veredictos">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <code>veredicto</code> y <code>CONFIGURACIONES</code> en <a href="../patchlayer/reglas.py"><code>patchlayer/reglas.py</code></a>; resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, sección 4.</small></p>
+<p id="f2" class="why"><small>2. Salida real de <code>uv run patchlayer revisar precio_final seeded_superficial_1</code> el 14-nov-2026; la forma del JSON es el <code>TypedDict</code> <code>Expediente</code> de <a href="../patchlayer/capas.py"><code>patchlayer/capas.py</code></a>.</small></p>
+
+</main>
+</body>
+</html>

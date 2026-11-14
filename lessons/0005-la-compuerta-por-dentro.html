@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 5 · La compuerta por dentro</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte II, el mecanismo · Lección 5 de 11 · 10 minutos</p>
+<h1>La compuerta por dentro</h1>
+<p class="lede">Una sola función, <code>revisar</code>, convierte un caso y un parche en un expediente. Son cuatro movimientos, y el tercero es donde se decide qué significa «no sé».</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Puedes contar, en orden, lo que pasa entre <code>patchlayer revisar precio_final seeded_superficial_1</code> y el expediente, y decir qué resultado da cada capa cuando algo se rompe.
+</div>
+
+<h2>Los cuatro movimientos</h2>
+<div class="flow">
+  <div class="step"><b>1 · Armar</b>directorio temporal: <code>contrato/</code> y el parche como <code>objetivo.py</code></div>
+  <div class="arrow">→</div>
+  <div class="step"><b>2 · Cargar</b>¿<code>import objetivo</code> funciona?</div>
+  <div class="arrow">→</div>
+  <div class="step us"><b>3 · Cadena</b>funcional, exploit y verificador, las tres</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>4 · Expediente</b>veredictos, sin verificar, pendientes</div>
+</div>
+
+<h3>1 · Armar</h3>
+<p>La compuerta crea un directorio temporal, copia el <code>contrato/</code> del caso y copia el parche con el nombre <code>objetivo.py</code>. Por eso los tres archivos del contrato dicen <code>from objetivo import …</code>: el mismo contrato juzga a cualquier parche sin cambiar una línea.<sup><a href="#f1">1</a></sup></p>
+
+<h3>2 · Cargar</h3>
+<p>Antes de las capas, un subproceso intenta <code>import objetivo</code>. Si el parche tiene un error de sintaxis o cuelga al importarse, no tiene sentido lanzar pytest ni CrossHair.</p>
+
+<h3>3 · La cadena</h3>
+<p>Cada <strong>capa</strong> corre en su propio subproceso, con 60 s de tiempo límite y un entorno casi vacío, y devuelve uno de tres resultados: <code>pasa</code>, <code>falla</code> o <code>no_concluyente</code>.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Capa</th><th>Qué corre</th><th>pasa</th><th>falla</th></tr></thead>
+<tbody>
+<tr><td>funcional</td><td><code>pytest contrato/test_funcional.py</code></td><td>código de salida 0</td><td>código 1</td></tr>
+<tr><td>exploit</td><td><code>pytest contrato/exploit.py</code></td><td>código 0: el ataque ya no funciona</td><td>código 1: sigue funcionando</td></tr>
+<tr><td>verificador</td><td><code>crosshair check contrato/propiedad.py</code></td><td>confirmó todos los caminos</td><td>encontró un contraejemplo</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Las tres corren siempre.</strong> Aunque la funcional falle, el exploit y el verificador se ejecutan igual. Así las configuraciones A, B y C son tres lecturas de los mismos resultados, no tres corridas distintas.<sup><a href="#f2">2</a></sup></p>
+
+<h3>4 · El expediente</h3>
+<p>Con los tres resultados, las reglas calculan los veredictos y la compuerta arma el expediente. Eso es la <a href="0006-veredictos-y-expediente.html">lección 6</a>.</p>
+
+<h2>Qué significa «no sé»</h2>
+<p>La compuerta <strong>falla cerrada</strong>: todo lo que no sea un sí o un no claro es <code>no_concluyente</code>, y un no concluyente nunca cuenta como aceptación.<sup><a href="#f3">3</a></sup></p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Qué pasó</th><th>funcional</th><th>exploit</th><th>verificador</th></tr></thead>
+<tbody>
+<tr><td>El parche no carga (error al importar)</td><td>falla</td><td>no concluyente</td><td>no concluyente</td></tr>
+<tr><td>Importar agotó el tiempo límite</td><td>no concluyente</td><td>no concluyente</td><td>no concluyente</td></tr>
+<tr><td>pytest agotó el tiempo límite</td><td colspan="2">no concluyente, en la capa que lo agotó</td><td>corre igual</td></tr>
+<tr><td>pytest salió con otro código (2, 5…)</td><td colspan="2">no concluyente: no dice nada del parche</td><td>corre igual</td></tr>
+<tr><td>La capa formal lanzó una excepción</td><td colspan="2">corren igual</td><td>no concluyente</td></tr>
+</tbody>
+</table>
+</div>
+<p>Cada no concluyente trae un <strong>pendiente</strong>: la acción concreta que una persona tendría que hacer, sacada de un catálogo fijo. Por ejemplo, «repetir la capa con un tiempo límite mayor». Ningún texto del expediente lo redacta un LLM.<sup><a href="#f4">4</a></sup></p>
+
+<div class="note">
+<span class="label">Un detalle que suele preguntarse</span>
+<p>¿Por qué un parche que no carga da <em>falla</em> en la funcional y no «no concluyente»? Porque un parche que no se puede importar no conserva ningún comportamiento legítimo: eso sí es una respuesta. Sobre el exploit y la propiedad, en cambio, no se sabe nada.</p>
+</div>
+
+<hr>
+
+<h2>Práctica 1 · Reconocer</h2>
+<div class="quiz" data-quiz-src="q5"></div>
+<script type="application/json" id="q5">
+[
+ {"q":"¿Con qué nombre llega el parche al directorio temporal?",
+  "opts":["parche.py","objetivo.py","candidato.py","contrato.py"],
+  "ok":1,"why":"El contrato importa de objetivo, así que cualquier parche se juzga con el mismo contrato."},
+ {"q":"La capa funcional falla. ¿Qué pasa con las otras dos?",
+  "opts":["Se saltan para ahorrar tiempo","Quedan marcadas como no concluyentes","Corren igual y se registran"],
+  "ok":2,"why":"Las tres corren siempre. Por eso A, B y C son vistas sobre los mismos resultados."},
+ {"q":"pytest termina con código 5 (no encontró pruebas). La capa queda…",
+  "opts":["pasa","falla","no_concluyente"],
+  "ok":2,"why":"Solo 0 es pasa y 1 es falla. Cualquier otro código no dice nada del parche: falla cerrada."},
+ {"q":"El parche tiene un error de sintaxis. ¿Qué resultado da la capa funcional?",
+  "opts":["falla","pasa","no_concluyente"],
+  "ok":0,"why":"Un parche que no carga no conserva lo legítimo. Exploit y verificador quedan no concluyentes."},
+ {"q":"¿De dónde sale el texto de un pendiente?",
+  "opts":["De un catálogo fijo interno","De un modelo de lenguaje","De la salida de pytest"],
+  "ok":0,"why":"PENDIENTES en patchlayer/capas.py. Las reglas y los textos son deterministas."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<div class="recall" data-prompt="Los cuatro movimientos de revisar, en orden y con una frase cada uno">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p><strong>Armar:</strong> directorio temporal con una copia del contrato y el parche como <code>objetivo.py</code>. <strong>Cargar:</strong> comprobar en un subproceso que el parche se puede importar. <strong>Cadena:</strong> funcional, exploit y verificador, siempre las tres, cada una con resultado pasa, falla o no concluyente. <strong>Expediente:</strong> veredictos por configuración, lo que quedó sin verificar y los pendientes.</p>
+<p>¿Dijiste que las tres capas corren aunque una falle? Es lo que hace comparables a A, B y C.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p>La función <code>revisar</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>: son unas cincuenta líneas y se leen de arriba abajo en el orden de esta lección. Después, <code>_sin_carga</code> en el mismo archivo.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Pídele que corra la compuerta sobre un parche roto a propósito y que te enseñe el expediente que sale.</p>
+<p>Anterior: <a href="0004-anatomia-de-un-caso.html">Lección 4 · Anatomía de un caso</a> · Siguiente: <a href="0006-veredictos-y-expediente.html">Lección 6 · Veredictos y expediente</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#cadena">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <code>revisar</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>.</small></p>
+<p id="f2" class="why"><small>2. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, sección 3; <a href="../GLOSSARY.md">glosario</a>, «Cadena» y «Configuración».</small></p>
+<p id="f3" class="why"><small>3. <code>_pytest</code>, <code>_verificador</code> y <code>_sin_carga</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>; comprobado en <code>tests/test_compuerta.py</code>.</small></p>
+<p id="f4" class="why"><small>4. <code>PENDIENTES</code> en <a href="../patchlayer/capas.py"><code>patchlayer/capas.py</code></a>; resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, sección 5.</small></p>
+
+</main>
+</body>
+</html>

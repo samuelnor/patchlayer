@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Referencia · Patchlayer por dentro</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+<main class="wide">
+
+<p class="kicker">Patchlayer · Referencia · para tener abierta junto al código</p>
+<h1>Patchlayer por dentro</h1>
+<p class="lede">Comandos, archivos, reglas y cifras, sin explicación. La explicación está en las lecciones 4 a 11; el orden, en el <a href="mapa-del-curso.html">mapa del curso</a>.</p>
+
+<h2 id="comandos">Comandos</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Comando</th><th>Escribe</th><th>Tarda</th></tr></thead>
+<tbody>
+<tr><td><code>uv run patchlayer revisar &lt;caso&gt; &lt;parche&gt;</code></td><td><code>expedientes/&lt;caso&gt;/&lt;parche&gt;.json</code></td><td>menos de 1 s</td></tr>
+<tr><td><code>uv run patchlayer experimento</code></td><td><code>resultados/{experimento.json, tabla.md, reporte.html}</code> y los 25 expedientes</td><td>unos 20 s</td></tr>
+<tr><td><code>uv run patchlayer experimento --salida evidencia/experimento</code></td><td>La corrida oficial, versionada. Solo a propósito.</td><td></td></tr>
+<tr><td><code>uv run patchlayer mutacion</code></td><td><code>resultados/{mutacion.json, mutacion.md}</code> y <code>expedientes/mutantes/</code></td><td>unos 45 s</td></tr>
+<tr><td><code>uv run patchlayer mutacion --sin-sintacticos</code></td><td>Lo mismo, sin mutmut</td><td></td></tr>
+<tr><td><code>uv run ruff check</code> · <code>uv run basedpyright</code> · <code>uv run pytest -q</code></td><td colspan="2">Los tres controles; cada uno debe salir en 0</td></tr>
+</tbody>
+</table>
+</div>
+<p>Código de salida de <code>revisar</code>: <strong>0</strong> si C da evidencia favorable, <strong>1</strong> si rechaza o no concluye, <strong>2</strong> si el parche no existe. <code>expedientes/</code> y <code>resultados/</code> están fuera de git.</p>
+
+<h2 id="archivos">Dónde está cada cosa</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Ruta</th><th>Qué es</th></tr></thead>
+<tbody>
+<tr><td><code>patchlayer/cli.py</code></td><td>Los tres subcomandos</td></tr>
+<tr><td><code>patchlayer/compuerta.py</code></td><td><code>revisar</code>: arma el directorio, corre la cadena, arma el expediente</td></tr>
+<tr><td><code>patchlayer/formal.py</code></td><td><code>verificar</code>: la capa verificador, sobre CrossHair</td></tr>
+<tr><td><code>patchlayer/reglas.py</code></td><td>Veredictos, observaciones y hallazgos. Deterministas.</td></tr>
+<tr><td><code>patchlayer/capas.py</code></td><td><code>ResultadoCapa</code>, el <code>TypedDict</code> <code>Expediente</code> y el catálogo de pendientes</td></tr>
+<tr><td><code>patchlayer/experimento.py</code></td><td>Experimento A/B/C, métricas secundarias y reporte HTML</td></tr>
+<tr><td><code>patchlayer/mutacion.py</code></td><td>Mutantes semánticos y sintácticos, y el reporte de mutación</td></tr>
+<tr><td><code>casos/&lt;caso&gt;/</code></td><td><code>caso.json</code>, <code>objetivo.py</code>, <code>contrato/</code>, <code>parches/</code> con <code>etiquetas.json</code></td></tr>
+<tr><td><code>mutantes/&lt;caso&gt;/</code></td><td><code>semanticos/sem_&lt;k&gt;.py</code>, <code>mutantes.json</code>, <code>prompt.txt</code>, <code>respuesta.md</code></td></tr>
+<tr><td><code>evidencia/experimento/</code></td><td>Corrida oficial del experimento</td></tr>
+<tr><td><code>evidencia/llm/</code></td><td>Cómo se generaron y etiquetaron los parches de LLM</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="caso">Un caso</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Archivo</th><th>Quién lo escribe</th><th>Pregunta</th></tr></thead>
+<tbody>
+<tr><td><code>contrato/propiedad.py</code></td><td>Humanos, antes del parche</td><td>¿Existe una entrada que viole la propiedad? (<code>pre:</code> / <code>post: __return__</code>)</td></tr>
+<tr><td><code>contrato/exploit.py</code></td><td>Humanos</td><td>¿Sigue funcionando el ataque conocido?</td></tr>
+<tr><td><code>contrato/test_funcional.py</code></td><td>Humanos</td><td>¿Sigue funcionando lo legítimo, con sus bordes?</td></tr>
+<tr><td><code>parches/&lt;parche&gt;.py</code></td><td>Un LLM o una persona</td><td>Reemplazo completo de <code>objetivo.py</code></td></tr>
+<tr><td><code>parches/etiquetas.json</code></td><td>Revisión humana, fuera de la compuerta</td><td><code>clase</code> (solo el experimento) y <code>origen</code></td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Caso</th><th>CWE</th><th>Propiedad</th><th>Parche de referencia</th></tr></thead>
+<tbody>
+<tr><td><code>precio_final</code></td><td>20</td><td>El precio final queda entre 0 y el original, o <code>ValueError</code></td><td><code>llm_flint_40b_free</code></td></tr>
+<tr><td><code>transferir</code></td><td>20</td><td>El dinero se conserva; el origen no sube ni queda negativo</td><td><code>llm_flint_40b_free</code></td></tr>
+<tr><td><code>ver_factura</code></td><td>639</td><td>Si devuelve el total, el actor es el dueño</td><td><code>llm_deepseek_v4_1_flash_free</code></td></tr>
+<tr><td><code>cancelar_pedido</code></td><td>639</td><td>Solo cancela si el dueño registrado es el actor</td><td><code>correcto</code></td></tr>
+<tr><td><code>puede_leer</code></td><td>639</td><td>Nadie lee documentos de otra organización; los privados, solo dueño o admin</td><td><code>llm_flint_40b_free</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="cadena">La cadena</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Capa</th><th>Herramienta</th><th>pasa</th><th>falla</th><th>no concluyente</th></tr></thead>
+<tbody>
+<tr><td>funcional</td><td>pytest 9.2.0</td><td>código 0</td><td>código 1, o el parche no carga</td><td>tiempo agotado, otro código</td></tr>
+<tr><td>exploit</td><td>pytest</td><td>código 0</td><td>código 1</td><td>tiempo agotado, otro código, el parche no carga</td></tr>
+<tr><td>verificador</td><td>CrossHair 0.0.113</td><td>todas «Confirmed over all paths.»</td><td>alguna línea <code>error:</code></td><td>todo lo demás</td></tr>
+</tbody>
+</table>
+</div>
+<p>Las tres corren siempre. Tiempo límite: 60 s por capa. Subproceso con entorno casi vacío, en un directorio temporal con <code>contrato/</code> y el parche como <code>objetivo.py</code>.</p>
+
+<h2 id="verificador">El verificador, regla por regla</h2>
+<pre><code>python -m crosshair check --report_all --analysis_kind=PEP316 --per_condition_timeout=30 contrato/propiedad.py</code></pre>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Orden</th><th>Condición</th><th>Resultado</th><th>Pendiente</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>Agotó 60 s de reloj</td><td>no concluyente</td><td>repetir con un tiempo límite mayor o acotar dominios</td></tr>
+<tr><td>1</td><td>Alguna línea <code>error:</code></td><td>falla + contraejemplo</td><td></td></tr>
+<tr><td>2</td><td><code>Could not import your code</code></td><td>no concluyente</td><td>el parche no carga; revisar la funcional</td></tr>
+<tr><td>3</td><td>Código 0 y todas <code>Confirmed over all paths.</code></td><td>pasa</td><td></td></tr>
+<tr><td>4</td><td>Código 0 y alguna <code>Not confirmed.</code></td><td>no concluyente</td><td>revisar a mano o añadir prueba Hypothesis</td></tr>
+<tr><td>5</td><td>Otra cosa</td><td>no concluyente</td><td>revisar la salida del verificador y repetir la corrida</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="veredictos">Veredictos</h2>
+<pre><code>alguna falla            →  rechazado
+todas pasan             →  evidencia_favorable   (lo único que cuenta como aceptación)
+si no                   →  no_concluyente
+
+A = funcional    B = funcional + exploit    C = funcional + exploit + verificador</code></pre>
+<h3>Las cuatro observaciones del expediente</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Cuando…</th><th>Dice</th></tr></thead>
+<tbody>
+<tr><td>B favorable y el verificador falla</td><td>B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)</td></tr>
+<tr><td>A favorable y el exploit falla</td><td>A favorable pero B rechaza: el exploit conocido sigue funcionando</td></tr>
+<tr><td>funcional falla, exploit y verificador pasan</td><td>funcional falla, exploit y verificador pasan (indicio de parche regresivo)</td></tr>
+<tr><td>B favorable y el verificador no concluye</td><td>B favorable pero el verificador no confirma la propiedad: C no acepta</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Campos del expediente</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Campo</th><th>Contenido</th></tr></thead>
+<tbody>
+<tr><td><code>caso</code></td><td><code>id</code>, <code>cwe</code>, <code>vulnerabilidad</code>, <code>propiedad</code></td></tr>
+<tr><td><code>parche</code></td><td><code>id</code>, <code>sha256</code>, <code>origen</code></td></tr>
+<tr><td><code>contrato_sha256</code></td><td>Huella de la carpeta <code>contrato/</code></td></tr>
+<tr><td><code>capas</code></td><td>Por capa: <code>resultado</code>, <code>herramienta</code>, <code>version</code>, <code>comando</code>, <code>duracion_s</code>, <code>salida</code>, <code>detalle</code>, <code>pendiente</code>, <code>contraejemplo</code></td></tr>
+<tr><td><code>veredictos</code></td><td>Uno por configuración: A, B, C</td></tr>
+<tr><td><code>sin_verificar</code></td><td>3 límites fijos + <code>limites</code> del caso + una línea por capa no concluyente</td></tr>
+<tr><td><code>pendientes</code></td><td>Una acción por capa no concluyente, del catálogo fijo</td></tr>
+<tr><td><code>observaciones</code></td><td>Las de la tabla anterior. Nunca la etiqueta.</td></tr>
+<tr><td><code>generado_en</code></td><td>Fecha y hora UTC</td></tr>
+</tbody>
+</table>
+</div>
+<p>Límites fijos: «búsqueda simbólica acotada, no prueba» · «la propiedad cubre solo lo que escribe el contrato» · «aislamiento débil: subproceso con tiempo límite, sin entorno aislado sin red ni secretos».</p>
+
+<h2 id="experimento">Experimento: corrida oficial del 14-nov-2026</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Configuración</th><th class="num">Superficiales aceptados</th><th class="num">Regresivos aceptados</th><th class="num">Correctos aceptados</th><th>Detección marginal</th></tr></thead>
+<tbody>
+<tr><td>A</td><td class="num">15 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td><td>5 regresivos</td></tr>
+<tr><td>B</td><td class="num">10 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td><td>5 parches de control</td></tr>
+<tr><td>C</td><td class="num">0 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td><td>10 superficiales sembrados</td></tr>
+</tbody>
+</table>
+</div>
+<p>Falsos rechazos: 0 en A, B y C. No concluyentes: 0 en las tres capas. Tiempo por parche, mediana (máximo): funcional 0,12 s (0,14), exploit 0,12 s (0,13), verificador 0,15 s (0,21).</p>
+<p>Corpus: 25 pares. Superficiales: 5 de control y 10 sembrados. Regresivos: 4 sembrados y 1 de LLM. Correctos: 4 de LLM y 1 sembrado.</p>
+
+<h2 id="mutacion">Mutación: corrida del 14-nov-2026, sin firmar</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>Semánticos</th><th>Sintácticos</th></tr></thead>
+<tbody>
+<tr><td>Origen</td><td>LLM con <code>mutantes/instruccion.txt</code></td><td>mutmut 3.8.1</td></tr>
+<tr><td>Se miden contra</td><td>A, B y C</td><td>A y B</td></tr>
+<tr><td>Generados</td><td>25</td><td>49</td></tr>
+<tr><td>Decisión humana</td><td><code>confirmacion</code>: <code>inseguro</code> · <code>descartado</code></td><td><code>revision</code> de los sobrevivientes de B: <code>equivalente</code> · <code>hueco</code></td></tr>
+<tr><td>Decididos hasta hoy</td><td>0 de 25</td><td>0 de 28</td></tr>
+<tr><td>Sobreviven</td><td>sin cifra: ninguno confirmado</td><td>A: 29 · B: 28</td></tr>
+</tbody>
+</table>
+</div>
+<p>Sin confirmar, la cadena dio evidencia favorable a 24 de los 25 semánticos en A, a 18 en B y a ninguno en C. No es citable como métrica hasta que una persona confirme.</p>
+<p>La confirmación exige <code>revisor</code> y vale solo para el <code>sha256</code> del archivo leído. Si cambia <code>referencia_sha256</code>, el comando no corre. El reporte se firma en <code>mutantes/firma.json</code>. Esos campos los llena una persona, nunca un agente.</p>
+
+<h2>Palabras que se confunden</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Esta</th><th>No es</th><th>Diferencia</th></tr></thead>
+<tbody>
+<tr><td>Observación</td><td>Hallazgo</td><td>La observación está en el expediente y no conoce la etiqueta; el hallazgo es del experimento y sí</td></tr>
+<tr><td>Sobreviviente</td><td>Falso negativo</td><td>El sobreviviente es un mutante; el falso negativo, un parche candidato del corpus</td></tr>
+<tr><td>Confirmación</td><td>Revisión</td><td>Confirmación: semántico, inseguro o descartado. Revisión: sintáctico, equivalente o hueco</td></tr>
+<tr><td>Expediente</td><td>Reporte</td><td>El expediente es de un parche; el reporte es del experimento o de la mutación</td></tr>
+<tr><td>Resultado</td><td>Veredicto</td><td>Resultado es de una capa (pasa, falla); veredicto es de una configuración</td></tr>
+</tbody>
+</table>
+</div>
+<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Para el pitch: <a href="pitch-en-una-pagina.html">El pitch en una página</a>.</p>
+
+</main>
+</body>
+</html>

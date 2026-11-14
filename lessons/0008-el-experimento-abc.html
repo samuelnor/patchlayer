@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 8 · El experimento A/B/C</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte III, la evidencia · Lección 8 de 11 · 10 minutos</p>
+<h1>El experimento A/B/C y sus cifras</h1>
+<p class="lede">La compuerta juzga un parche. El experimento juzga a la compuerta: corre los 25 pares del corpus y, por primera vez, mira la etiqueta.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Dices de memoria la tabla principal, qué aportó cada capa, cuánto costó, y la frase exacta que esas cifras permiten y la que no.
+</div>
+
+<h2>Qué hace <code>patchlayer experimento</code></h2>
+<p>Recorre cada caso y cada archivo de <code>parches/</code>, llama a <code>revisar</code>, guarda el expediente y cruza los veredictos con la <code>clase</code> de <code>etiquetas.json</code>. Ese cruce produce los <strong>hallazgos</strong>: «parche superficial aceptado por B (falso negativo de B)», «parche correcto rechazado por C (falso rechazo)».<sup><a href="#f1">1</a></sup></p>
+<div class="note">
+<span class="label">Dos palabras que no son sinónimos</span>
+<p>Una <strong>observación</strong> está en el expediente y no conoce la etiqueta. Un <strong>hallazgo</strong> está en el experimento y sí la conoce.</p>
+</div>
+
+<h2>El corpus: 25 pares</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Clase</th><th class="num">Pares</th><th>De dónde vienen</th></tr></thead>
+<tbody>
+<tr><td>Superficial</td><td class="num">15</td><td>5 parches de control (el código vulnerable) y 10 sembrados por una persona</td></tr>
+<tr><td>Regresivo</td><td class="num">5</td><td>4 sembrados y 1 escrito por un LLM</td></tr>
+<tr><td>Correcto</td><td class="num">5</td><td>4 escritos por LLM y 1 sembrado</td></tr>
+</tbody>
+</table>
+</div>
+<p>Los parches de LLM se generaron sin ver el contrato ni el exploit; de 30 corridas, 17 leyeron archivos del entorno y se descartaron por contaminadas.<sup><a href="#f2">2</a></sup></p>
+
+<h2>La tabla principal</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Configuración</th><th class="num">Superficiales aceptados</th><th class="num">Regresivos aceptados</th><th class="num">Correctos aceptados</th></tr></thead>
+<tbody>
+<tr><td>A · funcional</td><td class="num">15 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td></tr>
+<tr><td>B · más exploit</td><td class="num">10 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td></tr>
+<tr><td>C · cadena completa</td><td class="num">0 de 15</td><td class="num">0 de 5</td><td class="num">5 de 5</td></tr>
+</tbody>
+</table>
+</div>
+<p>La columna que importa es la primera: es la métrica principal. Siempre en conteos absolutos.<sup><a href="#f3">3</a></sup></p>
+
+<h2>Qué aportó cada capa: la detección marginal</h2>
+<p>Los parches que una configuración no acepta y la anterior sí.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Capa añadida</th><th class="num">Detecta</th><th>Cuáles</th></tr></thead>
+<tbody>
+<tr><td>funcional (A)</td><td class="num">5</td><td>los 5 regresivos</td></tr>
+<tr><td>exploit (B)</td><td class="num">5</td><td>los 5 parches de control</td></tr>
+<tr><td>verificador (C)</td><td class="num">10</td><td>los 10 superficiales sembrados</td></tr>
+</tbody>
+</table>
+</div>
+<p>Cada capa atrapó exactamente una clase de cosa, y ninguna atrapó lo de otra. Es el argumento para tener tres.</p>
+
+<h2>Lo que costó</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Métrica secundaria</th><th>Resultado</th></tr></thead>
+<tbody>
+<tr><td>Falsos rechazos (correctos no aceptados)</td><td>0 de 5 en A, B y C</td></tr>
+<tr><td>No concluyentes por capa</td><td>0 en las tres</td></tr>
+<tr><td>Tiempo por parche, mediana (máximo)</td><td>funcional 0,12 s (0,14) · exploit 0,12 s (0,13) · verificador 0,15 s (0,21)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="warn">
+<span class="label">Lo que estas cifras permiten decir</span>
+<p><strong>Sí:</strong> «De 15 parches superficiales, las pruebas funcionales aceptaron 15, con el exploit se aceptaron 10 y con la cadena completa ninguno, sin rechazar ninguno de los 5 correctos».</p>
+<p><strong>No:</strong> «detecta parches inseguros de IA». Los 10 superficiales que solo C atrapó los escribió una persona a propósito, y los 5 restantes son el código sin parchear. Son 5 casos de funciones puras de pocas líneas, y cero no concluyentes en ese tamaño no predice nada sobre código más grande.</p>
+</div>
+
+<h2>Dónde quedan los resultados</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Carpeta</th><th>Qué es</th></tr></thead>
+<tbody>
+<tr><td><code>evidencia/experimento/</code></td><td>La corrida oficial, versionada: <code>experimento.json</code>, <code>tabla.md</code> y <code>reporte.html</code>. Se regenera a propósito, con <code>--salida evidencia/experimento</code>.</td></tr>
+<tr><td><code>resultados/</code></td><td>Cualquier otra corrida. Git la ignora.</td></tr>
+</tbody>
+</table>
+</div>
+
+<hr>
+
+<h2>Práctica 1 · Las cifras, sin mirar</h2>
+<div class="quiz" data-quiz-src="q8"></div>
+<script type="application/json" id="q8">
+[
+ {"q":"¿Cuántos parches superficiales aceptó la configuración B?",
+  "opts":["15 de 15","10 de 15","5 de 15","0 de 15"],
+  "ok":1,"why":"El exploit solo descartó los 5 parches de control. Los 10 sembrados bloquean el exploit conocido."},
+ {"q":"¿Qué parches detectó el exploit que la funcional no?",
+  "opts":["Los cinco parches regresivos","Los diez superficiales sembrados","Los cinco de control"],
+  "ok":2,"why":"El parche de control es el código vulnerable: pasa las pruebas funcionales y el ataque conocido sigue funcionando."},
+ {"q":"¿Cuántos falsos rechazos tuvo la configuración C?",
+  "opts":["0 de 5","1 de 5","2 de 5","5 de 5"],
+  "ok":0,"why":"Las tres configuraciones aceptaron los 5 parches correctos."},
+ {"q":"«Parche superficial aceptado por A» es…",
+  "opts":["una observación del expediente","un hallazgo del experimento","un pendiente de capa"],
+  "ok":1,"why":"Necesita la etiqueta, así que solo puede salir del experimento."},
+ {"q":"¿Quién escribió los 10 superficiales que solo C atrapó?",
+  "opts":["Un modelo de lenguaje","El verificador formal mismo","Una persona, a propósito"],
+  "ok":2,"why":"Son sembrados (origen human:seeded). Es la letra pequeña de la cifra principal."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<p>El jurado pregunta: «¿Y cómo saben que funciona?».</p>
+<div class="recall" data-prompt="Tu respuesta en tres frases, con las cifras y su límite">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p>«Corrimos el mismo corpus de 25 parches etiquetados por personas con tres configuraciones. De 15 superficiales, las pruebas funcionales aceptaron 15, añadir el exploit bajó a 10 y la cadena completa a cero, sin rechazar ninguno de los 5 correctos. Es un corpus pequeño y los superficiales difíciles los sembramos nosotros: muestra que la capa formal ve lo que las pruebas no ven, no que atrape cualquier parche de IA.»</p>
+<p>¿Dijiste los conteos absolutos? ¿Dijiste el límite antes de que te lo preguntaran?</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p><a href="../evidencia/experimento/tabla.md"><code>evidencia/experimento/tabla.md</code></a> para las cifras y <a href="../evidencia/experimento/reporte.html"><code>reporte.html</code></a> para ver los 25 pares uno por uno. La definición de cada métrica está en la resolución de <a href="https://github.com/samuelnor/patchlayer/issues/4">#4</a>.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Pídele que te interrogue sobre las cifras con preguntas trampa («¿entonces 100 % de detección?»).</p>
+<p>Anterior: <a href="0007-el-verificador.html">Lección 7 · El verificador</a> · Siguiente: <a href="0009-mutacion-quien-vigila-la-evidencia.html">Lección 9 · Mutación</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#experimento">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <code>experimento</code> en <a href="../patchlayer/experimento.py"><code>patchlayer/experimento.py</code></a> y <code>hallazgos</code> en <a href="../patchlayer/reglas.py"><code>patchlayer/reglas.py</code></a>.</small></p>
+<p id="f2" class="why"><small>2. <code>casos/*/parches/etiquetas.json</code> y <a href="../evidencia/llm/README.md"><code>evidencia/llm/README.md</code></a>, «Auditoría de aislamiento».</small></p>
+<p id="f3" class="why"><small>3. Corrida oficial del 14-nov-2026 (<a href="https://github.com/samuelnor/patchlayer/issues/13">#13</a>): <a href="../evidencia/experimento/tabla.md"><code>evidencia/experimento/tabla.md</code></a>. Tiempo límite por capa: 60 s.</small></p>
+
+</main>
+</body>
+</html>

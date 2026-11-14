@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 7 · El verificador</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte II, el mecanismo · Lección 7 de 11 · 10 minutos</p>
+<h1>El verificador: de la salida de CrossHair a un resultado</h1>
+<p class="lede">La tercera capa es la que separa a C de B. Por dentro es un comando y cinco reglas para leer lo que ese comando imprime. Las cinco reglas son la capa formal.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Ves una salida de CrossHair y dices, sin dudar, si la capa queda en pasa, falla o no concluyente, y por qué el comando lleva las banderas que lleva.
+</div>
+
+<h2>Qué hace CrossHair, en una frase</h2>
+<p>En vez de probar la función con valores concretos, la ejecuta con valores <em>simbólicos</em> y le pregunta al solucionador Z3 si existe alguna entrada que cumpla la <code>pre</code> y haga falsa la <code>post</code>.<sup><a href="#f1">1</a></sup> Una prueba pregunta «¿falla con 150?». El verificador pregunta «¿falla con algo?».</p>
+
+<h2>El comando</h2>
+<pre><code>python -m crosshair check \
+    --report_all \
+    --analysis_kind=PEP316 \
+    --per_condition_timeout=30 \
+    contrato/propiedad.py</code></pre>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Bandera</th><th>Por qué está</th></tr></thead>
+<tbody>
+<tr><td><code>--report_all</code></td><td>Sin ella CrossHair solo imprime los errores, y un código de salida 0 no distingue «confirmado» de «no confirmado». Con ella hay una línea por propiedad.</td></tr>
+<tr><td><code>--analysis_kind=PEP316</code></td><td>Los contratos son los <code>pre:</code> y <code>post:</code> del docstring (<a href="0004-anatomia-de-un-caso.html">lección 4</a>).</td></tr>
+<tr><td><code>--per_condition_timeout=30</code></td><td>Tiempo de CPU por propiedad: la mitad del tiempo límite de la capa (60 s), para que CrossHair alcance a decir <code>Not confirmed</code> antes de que la compuerta lo corte.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Corre en el mismo directorio temporal que armó la compuerta, con el entorno vacío salvo <code>PYTHONPATH</code>, y en su propia sesión de procesos: si agota los 60 s, se mata al grupo entero, incluidos los hijos que el parche haya dejado.<sup><a href="#f2">2</a></sup></p>
+
+<h2>Las cinco reglas, en orden</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>#</th><th>Si…</th><th>Resultado</th><th>Pendiente</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>agotó los 60 s de reloj</td><td>no concluyente</td><td>repetir con más tiempo o acotar dominios</td></tr>
+<tr><td>1</td><td>hay alguna línea <code>error:</code></td><td><strong>falla</strong>, con contraejemplo</td><td>ninguno</td></tr>
+<tr><td>2</td><td>aparece <code>Could not import your code</code></td><td>no concluyente</td><td>el parche no carga; revisar la funcional</td></tr>
+<tr><td>3</td><td>código 0 y <em>todas</em> las líneas dicen <code>Confirmed over all paths.</code></td><td><strong>pasa</strong></td><td>ninguno</td></tr>
+<tr><td>4</td><td>código 0 y alguna dice <code>Not confirmed.</code></td><td>no concluyente</td><td>revisar a mano o añadir prueba Hypothesis</td></tr>
+<tr><td>5</td><td>cualquier otra cosa</td><td>no concluyente</td><td>revisar la salida y repetir</td></tr>
+</tbody>
+</table>
+</div>
+<p>Dos consecuencias del orden:</p>
+<ul>
+<li><strong>Un error gana a todo.</strong> En <code>puede_leer</code> hay dos propiedades. Si una se confirma y la otra tiene contraejemplo, la capa falla.</li>
+<li><strong>Para pasar hace falta unanimidad.</strong> Una propiedad confirmada y otra sin confirmar dan no concluyente. Lo que no encaja en ninguna regla, también.</li>
+</ul>
+
+<h2>Una salida real</h2>
+<pre><code>contrato/propiedad.py:9: error: false when calling precio_entre_cero_y_original(1, -1) (which returns False)</code></pre>
+<p>Regla 1: falla. El <strong>contraejemplo</strong> que va al expediente es <code>precio_entre_cero_y_original(1, -1)</code>: precio 1 con descuento −1 devuelve 2, por encima del original. No es el exploit conocido (150), y por eso el expediente anota «contraejemplo distinto del exploit conocido». Tardó 0,2 s.<sup><a href="#f3">3</a></sup></p>
+
+<div class="warn">
+<span class="label">Lo que «pasa» no significa</span>
+<p>El detalle que escribe la capa es literal: «ejecución simbólica exhaustiva para los tipos del contrato, no una prueba». Vale para <code>int</code>, no para <code>float</code>; vale para lo que la propiedad dice, no para lo que olvidó. La asimetría de la <a href="0002-limites-sin-sobreprometer.html">lección 2</a> viene de aquí: un contraejemplo se puede ejecutar; una confirmación solo se puede creer hasta cierto punto.</p>
+</div>
+
+<hr>
+
+<h2>Práctica 1 · Lee la salida</h2>
+<div class="quiz" data-quiz-src="q7"></div>
+<script type="application/json" id="q7">
+[
+ {"q":"Código 0. Dos líneas info: «Confirmed over all paths.» y «Not confirmed.»",
+  "opts":["pasa","falla","no_concluyente"],
+  "ok":2,"why":"Regla 4. Para pasar, todas las propiedades tienen que estar confirmadas."},
+ {"q":"Una línea info «Confirmed over all paths.» y una línea error con «false when calling…»",
+  "opts":["falla","pasa","no_concluyente"],
+  "ok":0,"why":"Regla 1: un error gana a todo, y su llamada es el contraejemplo."},
+ {"q":"El proceso no terminó en 60 s y la compuerta lo mató.",
+  "opts":["falla","no_concluyente","pasa"],
+  "ok":1,"why":"Regla 0. El pendiente es repetir con más tiempo o acotar dominios."},
+ {"q":"¿Por qué --per_condition_timeout es la mitad del tiempo límite?",
+  "opts":["Para que CrossHair alcance a reportar","Para que pytest corra en paralelo","Para que Z3 use menos memoria"],
+  "ok":0,"why":"Así CrossHair se rinde solo y dice «Not confirmed» antes de que lo corten, y el motivo del no concluyente queda claro."},
+ {"q":"¿Qué quita --report_all si se omite?",
+  "opts":["El contraejemplo de cada error hallado","La línea de cada propiedad confirmada","El tiempo límite de cada propiedad"],
+  "ok":1,"why":"Sin ella, un código 0 puede ser «confirmado» o «no confirmado», y la capa no podría distinguirlos."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<div class="recall" data-prompt="¿En qué se diferencia el verificador del exploit? Dos frases, con el ejemplo de precio_final">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p>El exploit prueba una entrada, la del ataque conocido: <code>precio_final(1000, 150)</code>. El verificador busca cualquier entrada que viole la propiedad, y contra el parche que solo rechaza descuentos mayores a 100 encontró <code>(1, -1)</code>, que ninguna prueba contenía.</p>
+<p>Por eso B aceptó ese parche y C lo rechazó.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p><a href="https://crosshair.readthedocs.io/en/latest/how_does_it_work.html">«How does it work?»</a>, de la documentación de CrossHair, para la ejecución simbólica. Y <code>verificar</code> en <a href="../patchlayer/formal.py"><code>patchlayer/formal.py</code></a>, donde las cinco reglas son cinco <code>if</code> seguidos.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Pídele que corra CrossHair a mano sobre un parche y que te deje leer la salida antes de decirte el resultado.</p>
+<p>Anterior: <a href="0006-veredictos-y-expediente.html">Lección 6 · Veredictos y expediente</a> · Siguiente: <a href="0008-el-experimento-abc.html">Lección 8 · El experimento A/B/C</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#verificador">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. Documentación de CrossHair: <a href="https://crosshair.readthedocs.io/en/latest/how_does_it_work.html">How does it work?</a></small></p>
+<p id="f2" class="why"><small>2. <code>verificar</code> y <code>_correr</code> en <a href="../patchlayer/formal.py"><code>patchlayer/formal.py</code></a>; comprobado en <code>tests/test_formal.py</code>. CrossHair 0.0.113.</small></p>
+<p id="f3" class="why"><small>3. Expediente de <code>precio_final/seeded_superficial_1</code>, corrida del 14-nov-2026.</small></p>
+
+</main>
+</body>
+</html>

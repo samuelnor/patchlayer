@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 10 · Revisar mutantes a mano</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte III, la evidencia · Lección 10 de 11 · 10 minutos más la revisión</p>
+<h1>El proceso de mutación: lo que solo hace una persona</h1>
+<p class="lede">El comando genera conteos, pero tres decisiones no las toma ninguna máquina: confirmar, revisar y firmar. Hasta que alguien las tome, el reporte de mutación no dice nada.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Confirmas un mutante semántico de verdad, clasificas un sobreviviente sintáctico y sabes qué escribir en qué archivo para que el reporte salga firmado.
+</div>
+
+<h2>El proceso completo</h2>
+<div class="flow">
+  <div class="step"><b>1 · Generar</b>un LLM escribe 5 mutantes por caso; ya está hecho</div>
+  <div class="arrow">→</div>
+  <div class="step"><b>2 · Correr</b><code>patchlayer mutacion</code></div>
+  <div class="arrow">→</div>
+  <div class="step us"><b>3 · Confirmar</b>cada semántico: ¿es inseguro?</div>
+  <div class="arrow">→</div>
+  <div class="step us"><b>4 · Revisar</b>cada sobreviviente de B: ¿equivalente o hueco?</div>
+  <div class="arrow">→</div>
+  <div class="step us"><b>5 · Firmar</b>y volver a correr</div>
+</div>
+<p>Los pasos resaltados son humanos. Un agente de IA no los hace: <code>confirmacion</code>, <code>revision</code>, <code>revisor</code> y <code>firma.json</code> registran el juicio de una persona.<sup><a href="#f1">1</a></sup></p>
+
+<h2>Cómo se generaron (paso 1)</h2>
+<p><code>mutantes/instruccion.txt</code> es una instrucción fija con tres huecos: el parche de referencia, la vulnerabilidad y la propiedad. Para cada caso, un modelo nuevo recibió solo ese texto, sin el contrato, el exploit ni las pruebas, y devolvió cinco archivos completos. Quedó guardado lo que recibió (<code>prompt.txt</code>) y lo que respondió (<code>respuesta.md</code>).<sup><a href="#f2">2</a></sup></p>
+
+<h2>Hazlo: confirma un mutante semántico</h2>
+<ol class="steps">
+<li>
+<p>Corre la mutación y abre el reporte.</p>
+<pre><code>uv run patchlayer mutacion
+# escribe resultados/mutacion.md y resultados/mutacion.json</code></pre>
+<p class="expect">Arriba dice «Reporte sin firmar». Más abajo, la lista «Sin confirmación humana» con una casilla por mutante.</p>
+</li>
+<li>
+<p>Lee el mutante y lo que el modelo <em>afirma</em> de él.</p>
+<pre><code>mutantes/precio_final/semanticos/sem_2.py
+mutantes/precio_final/mutantes.json   →  "descripcion_llm"</code></pre>
+<p class="expect">«precio_final(1000, -50) devuelve 1500 porque el rango se valida sobre el valor absoluto…». Es una afirmación del modelo, no una confirmación.</p>
+</li>
+<li>
+<p>Antes de ejecutar nada, calcula a mano: ¿cuánto da <code>1000 - (1000 * -50) // 100</code>? ¿Viola la propiedad «el precio final queda entre 0 y el precio original»? Después compruébalo.</p>
+<pre><code>cd mutantes/precio_final/semanticos
+uv run python -c "from sem_2 import precio_final; print(precio_final(1000, -50))"</code></pre>
+<p class="expect">Imprime <code>1500</code>. Es mayor que 1000: viola la propiedad.</p>
+</li>
+<li>
+<p>Anota tu decisión en <code>mutantes/precio_final/mutantes.json</code>, con tu login. No toques <code>sha256</code>.</p>
+<pre><code>"sem_2": {
+  "origen": "llm:claude-fable-5-2",
+  "sha256": "9aff3698…",
+  "descripcion_llm": "…",
+  "confirmacion": "inseguro",
+  "revisor": "&lt;tu login&gt;"
+}</code></pre>
+<p class="expect">Si la entrada no viola la propiedad, o el mutante se comporta igual que el parche de referencia, la decisión es <code>"descartado"</code>.</p>
+</li>
+<li>
+<p>Vuelve a correr <code>uv run patchlayer mutacion</code>.</p>
+<p class="expect">En la tabla de <code>precio_final</code>: Confirmados 1, Sobreviven A 1, Sobreviven B 1, Sobreviven C 0.</p>
+</li>
+</ol>
+
+<div class="warn">
+<span class="label">Tres reglas que el comando hace cumplir</span>
+<p><strong>Sin revisor no hay confirmación.</strong> Con <code>"revisor": null</code> el mutante sigue en «sin confirmar», diga lo que diga <code>confirmacion</code>.</p>
+<p><strong>La confirmación vale para el archivo que leíste.</strong> Si alguien edita <code>sem_2.py</code>, su SHA-256 deja de coincidir y la confirmación se pierde.</p>
+<p><strong>Si cambia el parche de referencia, el comando se niega a correr</strong> hasta que se regeneren y se revisen de nuevo los mutantes.</p>
+</div>
+<p>El contraejemplo del verificador aparece en el reporte como ayuda. La confirmación no se copia de ahí: si C decidiera qué es inseguro, estaríamos midiendo a C con C.</p>
+
+<h2>Revisar los sobrevivientes sintácticos</h2>
+<p>Solo se revisan los que sobreviven a <strong>B</strong>. El reporte trae el diff de cada uno. La decisión va en el mismo <code>mutantes.json</code>:</p>
+<pre><code>"sintacticos": {
+  "objetivo.x_precio_final__mutmut_5": {"revision": "hueco", "revisor": "&lt;tu login&gt;"}
+}</code></pre>
+<p><code>equivalente</code>: el mutante no cambia el comportamiento. <code>hueco</code>: sí lo cambia y la suite no lo nota. La pregunta útil es siempre la misma: <em>¿hay una entrada con la que este mutante se porta distinto que el parche de referencia?</em></p>
+
+<h2>Firmar</h2>
+<pre><code>// mutantes/firma.json
+{"firmado_por": "&lt;tu login&gt;", "fecha": "2026-11-14"}</code></pre>
+<p>Vuelve a correr el comando y la primera línea del reporte pasa de «Reporte sin firmar» a «Firmado por … el …».</p>
+
+<hr>
+
+<h2>Práctica 1 · Decide tú</h2>
+<p>Tres sobrevivientes reales de B en <code>precio_final</code>. La decisión oficial es de quien firme; aquí practicas el razonamiento.</p>
+<div class="quiz" data-quiz-src="q10"></div>
+<script type="application/json" id="q10">
+[
+ {"q":"Mutante: «descuento_pct > 100» pasa a «descuento_pct > 101». ¿Hay una entrada que lo distinga del parche de referencia?",
+  "opts":["Sí: un descuento de 100","Sí: un descuento de 101","No: se comportan siempre igual"],
+  "ok":1,"why":"Con 101 el de referencia rechaza y el mutante devuelve un precio negativo. Ninguna prueba del contrato usa 101: apunta a un hueco."},
+ {"q":"Mutante: el mensaje del ValueError pasa a «XX…XX». ¿Cambia algo que el contrato mire?",
+  "opts":["Sí: el tipo de excepción","Sí: el precio que devuelve","No: solo cambia el texto"],
+  "ok":2,"why":"Ni la propiedad ni las pruebas leen el mensaje. Es el tipo de sobreviviente que suele acabar como equivalente."},
+ {"q":"Mutante: «// 100» pasa a «/ 100». ¿Qué cambia?",
+  "opts":["El resultado deja de ser entero","El descuento deja de ser validado","El precio pasa a ser negativo"],
+  "ok":0,"why":"750.0 == 750 es verdadero en Python, así que las pruebas pasan. Con precios no divisibles el valor cambia: es un caso para discutir con el equipo."},
+ {"q":"Pones «confirmacion»: «inseguro» y dejas «revisor»: null. ¿Qué dice el reporte?",
+  "opts":["Lo cuenta como confirmado","Sigue como sin confirmar","Lo cuenta como descartado"],
+  "ok":1,"why":"Sin una persona que firme la decisión, el mutante no cuenta."},
+ {"q":"¿De qué sobrevivientes sintácticos se revisa el diff?",
+  "opts":["De los que sobreviven a A","De los que sobreviven a B","De los que sobreviven a C"],
+  "ok":1,"why":"B es la suite más fuerte de pytest. Los sintácticos no se miden contra C."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<div class="recall" data-prompt="¿Por qué la confirmación de un mutante semántico no se copia del veredicto de C?">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p>Porque la mutación mide si C es fiable. Si un mutante contara como inseguro solo cuando C lo rechaza, C acertaría siempre por definición y nunca veríamos un sobreviviente. La confirmación tiene que venir de fuera de la cadena: una persona, con una entrada concreta comprobada contra la propiedad.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p><a href="../mutantes/README.md"><code>mutantes/README.md</code></a>, secciones «Mutantes semánticos», «Mutantes sintácticos» y «Firma». Y el reporte que acabas de generar, <code>resultados/mutacion.md</code>: es la lista de trabajo.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Puede ayudarte a razonar si una entrada viola la propiedad, pero la decisión y tu login los escribes tú.</p>
+<p>Anterior: <a href="0009-mutacion-quien-vigila-la-evidencia.html">Lección 9 · Mutación</a> · Siguiente: <a href="0011-usar-patchlayer.html">Lección 11 · Usar Patchlayer</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#mutacion">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <a href="../AGENTS.md"><code>AGENTS.md</code></a>, «Checks», y <a href="../mutantes/README.md"><code>mutantes/README.md</code></a>. Las tres reglas del recuadro: <code>mutacion</code> y <code>_semanticos</code> en <a href="../patchlayer/mutacion.py"><code>patchlayer/mutacion.py</code></a>, comprobadas en <code>tests/test_mutacion.py</code>.</small></p>
+<p id="f2" class="why"><small>2. <a href="../mutantes/instruccion.txt"><code>mutantes/instruccion.txt</code></a> y <code>mutantes/&lt;caso&gt;/prompt.txt</code>; generados el 14-nov-2026.</small></p>
+
+</main>
+</body>
+</html>
