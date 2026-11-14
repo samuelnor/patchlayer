@@ -100,3 +100,23 @@ _Avoid_: falso positivo, parche colado
 **Reporte del experimento**:
 La página HTML estática (`resultados/reporte.html`) que muestra la tabla A/B/C y, por cada par (caso, parche), sus veredictos, hallazgos, observaciones y pendientes. Es del experimento, no de un parche: lo que la compuerta sabe de un parche es su expediente.
 _Avoid_: reporte a secas para referirse a un expediente
+
+## Mutación
+
+**Parche de referencia**:
+El parche correcto de un caso del que parten sus mutantes.
+
+**Mutante semántico**:
+Una variante insegura del parche de referencia escrita por un LLM con una instrucción fija. Solo cuenta si una persona la confirmó como insegura. Se mide contra A, B y C.
+_Avoid_: parche candidato (los mutantes viven fuera del corpus)
+
+**Mutante sintáctico**:
+Una variante del parche de referencia generada por mutmut con un cambio mecánico. Se mide solo contra A y B.
+
+**Sobreviviente**:
+Un mutante que una configuración no detecta: un semántico al que le da evidencia favorable, o un sintáctico que pasa su suite de pytest.
+_Avoid_: falso negativo (ese es de un parche candidato del corpus)
+
+**Reporte de mutación**:
+`resultados/mutacion.md`: los conteos de mutantes generados, descartados y sobrevivientes, firmado por una persona. Va aparte de la tabla del experimento y no cambia ningún veredicto.
+

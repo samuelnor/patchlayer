@@ -56,3 +56,22 @@ def test_experimento_escribe_los_resultados(tmp_path: Path) -> None:
     assert "| C |" in proc.stdout
     for archivo in ("experimento.json", "reporte.html", "tabla.md"):
         assert (tmp_path / "resultados" / archivo).exists()
+
+
+def test_mutacion_escribe_el_reporte_fuera_de_la_tabla_del_experimento(tmp_path: Path) -> None:
+    shutil.copytree(CASOS / "precio_final", tmp_path / "casos" / "precio_final")
+    shutil.copytree(
+        CASOS.parent / "mutantes" / "precio_final", tmp_path / "mutantes" / "precio_final"
+    )
+
+    proc = subprocess.run(
+        ["patchlayer", "mutacion", "--sin-sintacticos"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+    )
+
+    assert proc.returncode == 0, proc.stderr
+    assert "Mutantes semánticos" in proc.stdout
+    assert (tmp_path / "resultados" / "mutacion.json").exists()
+    assert (tmp_path / "expedientes" / "mutantes" / "precio_final" / "sem_1.json").exists()

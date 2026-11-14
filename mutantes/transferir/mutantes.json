@@ -1,0 +1,37 @@
+{
+  "referencia": "llm_flint_40b_free",
+  "prompt_sha256": "f66f8383a970a1a1b18760dd8167763838964210f8945b03eb01212a5552ea1a",
+  "semanticos": {
+    "sem_1": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "transferir(10, 0, -5) devuelve (15, -5): la suficiencia se valida con el valor absoluto, así que el monto negativo pasa y el origen supera su valor inicial",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_2": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "transferir(10, 20, -5) devuelve (15, 15): solo se rechaza cuando el destino quedaría negativo, así que un monto negativo sigue sacando dinero de un destino con saldo",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_3": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "transferir(10, 100, 50) devuelve (-40, 150): bloquea montos no positivos, pero compara el monto contra los fondos totales y no contra el saldo de origen",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_4": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "transferir(10, 0, 50) devuelve (-40, 50): bloquea montos no positivos, pero solo comprueba que el origen tenga saldo positivo, no que cubra el monto",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_5": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "transferir(10, 20, -5) devuelve (5, 15): el débito usa el valor absoluto y el crédito no, así que desaparecen 10 unidades y el dinero no se conserva",
+      "confirmacion": "pendiente",
+      "revisor": null
+    }
+  },
+  "sintacticos": {}
+}

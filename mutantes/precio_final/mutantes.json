@@ -1,0 +1,37 @@
+{
+  "referencia": "llm_flint_40b_free",
+  "prompt_sha256": "af227eecdcfca7b50c0b20ea4cca23763faedb2e2101b212eb8b2751ae1d6714",
+  "semanticos": {
+    "sem_1": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "precio_final(1000, 150) devuelve -500 porque la condición usa `and` y nunca se cumple, así que ningún descuento se rechaza.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_2": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "precio_final(1000, -50) devuelve 1500 porque el rango se valida sobre el valor absoluto: se rechazan 150 y -150, pero no los negativos entre -100 y -1.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_3": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "precio_final(1000, 300) devuelve 2000 porque se rechazan los negativos pero el exceso sobre 100 % solo se \"corrige\" con abs() sobre el resultado, que supera el precio original.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_4": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "precio_final(1000, 199) devuelve -990 porque el rango se comprueba con división entera: se rechazan los negativos y los valores desde 200, pero 101..199 dan cociente 1 y pasan.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_5": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "precio_final(200, -10) devuelve 220 porque se valida el resultado en vez de la entrada y solo se comprueba que no sea negativo: 150 se rechaza, pero un descuento negativo sube el precio.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    }
+  },
+  "sintacticos": {}
+}

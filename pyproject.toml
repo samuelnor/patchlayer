@@ -5,6 +5,7 @@ description = "Compuerta de evidencia para parches de seguridad generados por IA
 requires-python = ">=3.12"
 dependencies = [
     "crosshair-tool>=0.0.113",
+    "mutmut>=3.8.1",
     "pytest>=8",
 ]
 
@@ -29,7 +30,7 @@ dev = [
 
 [tool.ruff]
 line-length = 100
-extend-exclude = ["casos"]  # contratos y parches: los escriben humanos o el LLM bajo prueba
+extend-exclude = ["casos", "mutantes"]  # contratos, parches y mutantes: humanos o un LLM
 
 [tool.ruff.lint]
 select = [

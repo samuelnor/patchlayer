@@ -1,0 +1,37 @@
+{
+  "referencia": "llm_deepseek_v4_1_flash_free",
+  "prompt_sha256": "addc477c7ed91b08c51b23ef414eabb2b2c1984a8b1100101c0441b7cb50a5ac",
+  "semanticos": {
+    "sem_1": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "ver_factura(Factura(id=10, owner_id=2, total=100), actor_id=1) devuelve 100 aunque el actor 1 no es el dueño (puerta trasera de \"administrador\").",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_2": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "ver_factura(Factura(id=7, owner_id=1, total=50), actor_id=7) devuelve 50 porque el actor coincide con el id de la factura, no con su dueño.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_3": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "ver_factura(Factura(id=1, owner_id=1, total=100), actor_id=2) devuelve 0 en lugar de rechazar la lectura con PermissionError.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_4": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "ver_factura(Factura(id=3, owner_id=1, total=-500), actor_id=2) devuelve -500 porque la comprobación de dueño solo se aplica a facturas con total positivo.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_5": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "ver_factura(Factura(id=1, owner_id=1, total=100), actor_id=5) devuelve 100 porque solo se rechaza a los actores con id menor que el del dueño.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    }
+  },
+  "sintacticos": {}
+}

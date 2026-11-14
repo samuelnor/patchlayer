@@ -1,0 +1,37 @@
+{
+  "referencia": "llm_flint_40b_free",
+  "prompt_sha256": "09e3c513f3c7b0f7e26b35e5499cd52af5f1a549e7ab734bf35b06369fc4623b",
+  "semanticos": {
+    "sem_1": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "Actor(id=1, org_id=1, rol=USUARIO) lee Documento(org_id=2, owner_id=9, privado=False) y obtiene True, porque la organización solo se comprueba en los documentos privados.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_2": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "Actor(id=1, org_id=1, rol=ADMIN) lee Documento(org_id=2, owner_id=9, privado=True) y obtiene True, porque el aislamiento por organización solo se aplica a los no administradores.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_3": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "Actor(id=7, org_id=1, rol=USUARIO) lee Documento(org_id=2, owner_id=7, privado=True) y obtiene True, porque el atajo del dueño se evalúa antes que la comprobación de organización y los id coinciden entre inquilinos.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_4": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "Actor(id=1, org_id=0, rol=USUARIO) lee Documento(org_id=5, owner_id=9, privado=False) y obtiene True, porque un org_id igual a 0 se trata como \"sin organización\" y se salta la comparación.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    },
+    "sem_5": {
+      "origen": "llm:claude-fable-5-2",
+      "descripcion_llm": "Actor(id=3, org_id=1, rol=3) lee Documento(org_id=1, owner_id=2, privado=True) y obtiene True, porque el rol solo se valida por abajo y cualquier valor mayor o igual que ADMIN cuenta como administrador.",
+      "confirmacion": "pendiente",
+      "revisor": null
+    }
+  },
+  "sintacticos": {}
+}
