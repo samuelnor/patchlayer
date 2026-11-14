@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="720" viewBox="0 0 1600 720">
+  <defs>
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#D2C9B6"/>
+    </pattern>
+    <pattern id="hatch-ochre" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" fill="#F7EFD9"/>
+      <line x1="0" y1="0" x2="0" y2="6" stroke="#C98F12" stroke-width="2.4"/>
+    </pattern>
+    <pattern id="hatch-ink" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#2A2824" stroke-width="1.2"/>
+    </pattern>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#191816"/>
+    </marker>
+    <marker id="ah-sig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#E2421F"/>
+    </marker>
+  </defs>
+
+  <!-- papel -->
+  <rect width="1600" height="720" fill="#F1ECE1"/>
+  <rect x="24" y="24" width="1552" height="672" fill="url(#dots)"/>
+
+  <!-- marcas de corte -->
+  <g stroke="#191816" stroke-width="1.4" fill="none">
+    <path d="M24,44 V24 H44"/><path d="M1556,24 H1576 V44"/>
+    <path d="M24,676 V696 H44"/><path d="M1556,696 H1576 V676"/>
+  </g>
+
+  <!-- bloque de título -->
+  <text x="60" y="74" font-family="JetBrains Mono" font-weight="800" font-size="12" letter-spacing="3" fill="#E2421F">FIG. 01 — PATCHLAYER</text>
+  <text x="58" y="122" font-family="Instrument Serif" font-size="50" fill="#191816">Compuerta <tspan font-style="italic">de evidencia</tspan></text>
+
+  <!-- leyenda -->
+  <g font-family="JetBrains Mono" font-size="11" fill="#191816" letter-spacing="1">
+    <text x="1550" y="72" text-anchor="end" font-weight="700" letter-spacing="3" fill="#5B574F">RESULTADO DE CAPA</text>
+    <rect x="1239" y="90" width="12" height="12" fill="#191816"/>
+    <text x="1258" y="100">pasa</text>
+    <rect x="1316" y="90" width="12" height="12" fill="#E2421F"/>
+    <text x="1335" y="100">falla</text>
+    <rect x="1402" y="90" width="12" height="12" fill="url(#hatch-ochre)" stroke="#C98F12" stroke-width="1"/>
+    <text x="1421" y="100">no concluyente</text>
+  </g>
+
+  <!-- CONTRATO -->
+  <rect x="337" y="157" width="920" height="108" fill="url(#hatch-ink)"/>
+  <rect x="330" y="150" width="920" height="108" fill="#191816"/>
+  <g transform="translate(352,170)" fill="none" stroke="#F1ECE1" stroke-width="2.2">
+    <path d="M5,14 V9 a8,8 0 0 1 16,0 V14"/>
+    <rect x="1" y="14" width="24" height="18" fill="#F1ECE1"/>
+    <circle cx="13" cy="22" r="2.6" fill="#191816" stroke="none"/>
+  </g>
+  <text x="396" y="182" font-family="JetBrains Mono" font-weight="700" font-size="13" letter-spacing="3" fill="#F1ECE1">CONTRATO DE SEGURIDAD HUMANO</text>
+  <text x="396" y="212" font-family="Instrument Serif" font-style="italic" font-size="25" fill="#F1ECE1">inmutable e independiente del modelo — se escribe antes de pedir el parche</text>
+  <g font-family="JetBrains Mono" font-size="11" fill="#BDB6A6" text-anchor="middle" letter-spacing="1">
+    <text x="460" y="246">pruebas funcionales</text>
+    <text x="790" y="246">exploit</text>
+    <text x="1120" y="246">propiedad formal</text>
+  </g>
+
+  <!-- define -->
+  <g stroke="#191816" stroke-width="2" marker-end="url(#ah)">
+    <line x1="460" y1="258" x2="460" y2="318"/>
+    <line x1="790" y1="258" x2="790" y2="318"/>
+    <line x1="1120" y1="258" x2="1120" y2="318"/>
+  </g>
+  <g font-family="JetBrains Mono" font-style="italic" font-size="11" fill="#5B574F">
+    <text x="470" y="294">define</text>
+    <text x="800" y="294">define</text>
+    <text x="1130" y="294">define</text>
+  </g>
+
+  <!-- PARCHE CANDIDATO (no confiable) -->
+  <rect x="60" y="360" width="200" height="124" fill="#F1ECE1" stroke="#191816" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="78" y="384" font-family="JetBrains Mono" font-weight="700" font-size="10" letter-spacing="2.5" fill="#E2421F">NO CONFIABLE</text>
+  <text x="78" y="420" font-family="Instrument Serif" font-size="30" fill="#191816">Parche</text>
+  <text x="78" y="448" font-family="Instrument Serif" font-style="italic" font-size="30" fill="#191816">candidato</text>
+  <text x="78" y="470" font-family="JetBrains Mono" font-size="11" fill="#5B574F">propuesto por el LLM</text>
+
+  <!-- barrera: el modelo no toca el contrato -->
+  <path d="M160,360 V206 H230" fill="none" stroke="#E2421F" stroke-width="1.8" stroke-dasharray="4 4"/>
+  <g stroke="#E2421F" stroke-width="3" stroke-linecap="square">
+    <line x1="240" y1="198" x2="256" y2="214"/><line x1="256" y1="198" x2="240" y2="214"/>
+  </g>
+  <text x="172" y="194" font-family="JetBrains Mono" font-size="10" letter-spacing="0.5" fill="#E2421F">sin acceso</text>
+
+  <!-- entrada a la cadena -->
+  <line x1="260" y1="422" x2="328" y2="422" stroke="#191816" stroke-width="2.5" marker-end="url(#ah)"/>
+
+  <!-- CAPAS -->
+  <g id="capas">
+    <!-- capa 01 -->
+    <rect x="337" y="327" width="260" height="210" fill="#191816"/>
+    <rect x="330" y="320" width="260" height="210" fill="#FBF8F1" stroke="#191816" stroke-width="2"/>
+    <text x="348" y="378" font-family="Instrument Serif" font-size="58" fill="#191816">01</text>
+    <text x="572" y="342" text-anchor="end" font-family="JetBrains Mono" font-size="10" letter-spacing="2.5" fill="#5B574F">CAPA</text>
+    <text x="348" y="408" font-family="JetBrains Mono" font-weight="800" font-size="15" letter-spacing="0.5" fill="#191816">PRUEBA FUNCIONAL</text>
+    <text x="348" y="436" font-family="Instrument Serif" font-style="italic" font-size="22" fill="#191816">previene regresiones</text>
+    <text x="348" y="458" font-family="JetBrains Mono" font-size="11" fill="#5B574F">bordes válidos del</text>
+    <text x="348" y="474" font-family="JetBrains Mono" font-size="11" fill="#5B574F">comportamiento legítimo</text>
+
+    <!-- capa 02 -->
+    <rect x="667" y="327" width="260" height="210" fill="#191816"/>
+    <rect x="660" y="320" width="260" height="210" fill="#FBF8F1" stroke="#191816" stroke-width="2"/>
+    <text x="678" y="378" font-family="Instrument Serif" font-size="58" fill="#191816">02</text>
+    <text x="902" y="342" text-anchor="end" font-family="JetBrains Mono" font-size="10" letter-spacing="2.5" fill="#5B574F">CAPA</text>
+    <text x="678" y="408" font-family="JetBrains Mono" font-weight="800" font-size="15" letter-spacing="0.5" fill="#191816">PRUEBA DE EXPLOIT</text>
+    <text x="678" y="436" font-family="Instrument Serif" font-style="italic" font-size="22" fill="#191816">frena ataques conocidos</text>
+    <text x="678" y="458" font-family="JetBrains Mono" font-size="11" fill="#5B574F">reproduce el ataque</text>
+    <text x="678" y="474" font-family="JetBrains Mono" font-size="11" fill="#5B574F">contra el parche</text>
+
+    <!-- capa 03 -->
+    <rect x="997" y="327" width="260" height="210" fill="#E2421F"/>
+    <rect x="990" y="320" width="260" height="210" fill="#FBF8F1" stroke="#191816" stroke-width="2"/>
+    <text x="1008" y="378" font-family="Instrument Serif" font-size="58" fill="#191816">03</text>
+    <text x="1232" y="342" text-anchor="end" font-family="JetBrains Mono" font-size="10" letter-spacing="2.5" fill="#5B574F">CAPA</text>
+    <text x="1008" y="408" font-family="JetBrains Mono" font-weight="800" font-size="15" letter-spacing="0.5" fill="#191816">VERIFICACIÓN SIMBÓLICA</text>
+    <text x="1008" y="436" font-family="Instrument Serif" font-style="italic" font-size="22" fill="#191816">refuta parches superficiales</text>
+    <text x="1008" y="458" font-family="JetBrains Mono" font-size="11" fill="#5B574F">CrossHair + Z3 → busca un</text>
+    <text x="1008" y="474" font-family="JetBrains Mono" font-size="11" fill="#5B574F">contraejemplo ejecutable</text>
+
+    <!-- filas de resultado -->
+    <g stroke="#CFC7B6" stroke-width="1">
+      <line x1="348" y1="490" x2="572" y2="490"/>
+      <line x1="678" y1="490" x2="902" y2="490"/>
+      <line x1="1008" y1="490" x2="1232" y2="490"/>
+    </g>
+    <g font-family="JetBrains Mono" font-size="10" fill="#5B574F" letter-spacing="0.5">
+      <rect x="348" y="503" width="10" height="10" fill="#191816"/><text x="363" y="512">pasa</text>
+      <rect x="403" y="503" width="10" height="10" fill="#E2421F"/><text x="418" y="512">falla</text>
+      <rect x="465" y="503" width="10" height="10" fill="url(#hatch-ochre)" stroke="#C98F12" stroke-width="0.8"/><text x="480" y="512">no concl.</text>
+
+      <rect x="678" y="503" width="10" height="10" fill="#191816"/><text x="693" y="512">pasa</text>
+      <rect x="733" y="503" width="10" height="10" fill="#E2421F"/><text x="748" y="512">falla</text>
+      <rect x="795" y="503" width="10" height="10" fill="url(#hatch-ochre)" stroke="#C98F12" stroke-width="0.8"/><text x="810" y="512">no concl.</text>
+
+      <rect x="1008" y="503" width="10" height="10" fill="#191816"/><text x="1023" y="512">pasa</text>
+      <rect x="1063" y="503" width="10" height="10" fill="#E2421F"/><text x="1078" y="512">falla</text>
+      <rect x="1125" y="503" width="10" height="10" fill="url(#hatch-ochre)" stroke="#C98F12" stroke-width="0.8"/><text x="1140" y="512">no concl.</text>
+    </g>
+  </g>
+
+  <!-- cadena -->
+  <g stroke="#191816" stroke-width="2.5" marker-end="url(#ah)">
+    <line x1="597" y1="422" x2="658" y2="422"/>
+    <line x1="927" y1="422" x2="988" y2="422"/>
+    <line x1="1257" y1="422" x2="1318" y2="422"/>
+  </g>
+
+  <!-- EXPEDIENTE -->
+  <path d="M1327,287 H1529 L1557,315 V587 H1327 Z" fill="#191816"/>
+  <path d="M1320,280 H1522 L1550,308 V580 H1320 Z" fill="#FBF8F1" stroke="#191816" stroke-width="2"/>
+  <path d="M1522,280 V308 H1550" fill="#E9E2D3" stroke="#191816" stroke-width="2"/>
+  <text x="1338" y="304" font-family="JetBrains Mono" font-weight="700" font-size="10" letter-spacing="2.5" fill="#E2421F">SALIDA</text>
+  <text x="1337" y="342" font-family="Instrument Serif" font-size="34" fill="#191816">Expediente</text>
+  <line x1="1338" y1="356" x2="1532" y2="356" stroke="#191816" stroke-width="1.5"/>
+
+  <g font-family="JetBrains Mono" font-size="11" fill="#191816">
+    <text x="1338" y="380" font-size="10" font-weight="700" letter-spacing="2" fill="#5B574F">VEREDICTO</text>
+    <rect x="1338" y="392" width="11" height="11" fill="#191816"/><text x="1356" y="402">evidencia favorable</text>
+    <rect x="1338" y="414" width="11" height="11" fill="#E2421F"/><text x="1356" y="424">rechazado</text>
+    <rect x="1338" y="436" width="11" height="11" fill="url(#hatch-ochre)" stroke="#C98F12" stroke-width="0.8"/><text x="1356" y="446">no concluyente</text>
+
+    <line x1="1338" y1="464" x2="1532" y2="464" stroke="#CFC7B6" stroke-width="1"/>
+    <text x="1338" y="486" font-size="10" font-weight="700" letter-spacing="2" fill="#5B574F">SIN VERIFICAR</text>
+    <text x="1338" y="506" fill="#191816">límites de la compuerta,</text>
+    <text x="1338" y="522" fill="#191816">del caso y capas</text>
+    <text x="1338" y="538" fill="#191816">no concluyentes</text>
+    <text x="1338" y="564" font-size="10" fill="#5B574F">+ procedencia por capa</text>
+  </g>
+
+  <!-- FALLO CERRADO -->
+  <g stroke="#E2421F" stroke-width="1.8" stroke-dasharray="4 4" fill="none">
+    <line x1="460" y1="537" x2="460" y2="612"/>
+    <line x1="790" y1="537" x2="790" y2="612"/>
+    <line x1="1120" y1="537" x2="1120" y2="612"/>
+  </g>
+  <path d="M330,616 H1435 V584" fill="none" stroke="#E2421F" stroke-width="3.5" marker-end="url(#ah-sig)"/>
+  <g font-family="JetBrains Mono" font-size="10" fill="#E2421F" letter-spacing="0.5">
+    <text x="470" y="580">falla · error · timeout</text>
+    <text x="800" y="580">falla · error · timeout</text>
+    <text x="1130" y="580">sin prueba = no concl.</text>
+  </g>
+  <rect x="330" y="634" width="150" height="26" fill="#E2421F"/>
+  <text x="405" y="652" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="12" letter-spacing="3" fill="#FBF8F1">FALLO CERRADO</text>
+  <text x="498" y="652" font-family="JetBrains Mono" font-size="12" fill="#191816">las tres capas corren siempre  ·  una falla → rechazado  ·  solo pasa × 3 → evidencia favorable</text>
+</svg>
