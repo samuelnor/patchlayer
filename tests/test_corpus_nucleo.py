@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -11,14 +12,29 @@ import pytest
 DIR_CASOS = Path(__file__).resolve().parents[1] / "casos"
 CASOS_ADICIONALES = ["transferir", "ver_factura", "cancelar_pedido", "puede_leer"]
 
-# (funcional_rc, exploit_rc, crosshair_rcs_validos) esperados por rol/etiqueta
-RESULTADOS_ESPERADOS: dict[str, tuple[int, int, tuple[int, ...]]] = {
-    "control": (0, 1, (1,)),
-    "correcto": (0, 0, (0,)),
-    "superficial": (0, 0, (1,)),
-    # Un regresivo falla en funcional y pasa exploit; en CrossHair pasa o falla por
-    # excepción no declarada (p. ej. ValueError en cancelar_pedido LLM), nunca por postcondición.
-    "regresivo": (1, 0, (0, 1)),
+
+@dataclass(frozen=True)
+class ExpectativaCapas:
+    """Códigos de salida esperados para funcional, exploit y verificador formal."""
+
+    funcional: int
+    exploit: int
+    formal: int
+
+
+RESULTADOS_ESPERADOS: dict[str, ExpectativaCapas] = {
+    "control": ExpectativaCapas(funcional=0, exploit=1, formal=1),
+    "correcto": ExpectativaCapas(funcional=0, exploit=0, formal=0),
+    "superficial": ExpectativaCapas(funcional=0, exploit=0, formal=1),
+    "regresivo": ExpectativaCapas(funcional=1, exploit=0, formal=0),
+}
+
+# Documentado en evidencia/llm/REVISION.md: lanza ValueError si el pedido no existe,
+# excepción que cancelar_pedido/contrato/propiedad.py rechaza explícitamente.
+EXCEPCIONES_POR_PARCHE: dict[tuple[str, str], ExpectativaCapas] = {
+    ("cancelar_pedido", "llm_deepseek_v4_1_flash_free"): ExpectativaCapas(
+        funcional=1, exploit=0, formal=1
+    ),
 }
 
 
@@ -40,7 +56,8 @@ def _ejecutar_en_directorio(
 
 def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> None:
     """Comprueba que funcional, exploit y CrossHair devuelven los códigos esperados."""
-    esp_funcional, esp_exploit, esp_formales = RESULTADOS_ESPERADOS[clase]
+    clave = "control" if parche.stem == "control" else clase
+    esperado = EXCEPCIONES_POR_PARCHE.get((caso, parche.stem), RESULTADOS_ESPERADOS[clave])
 
     rc_funcional = _ejecutar_en_directorio(
         caso,
@@ -56,7 +73,7 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     ).returncode
-    assert rc_funcional == esp_funcional, f"{parche.name}: funcional={rc_funcional}"
+    assert rc_funcional == esperado.funcional, f"{parche.name}: funcional={rc_funcional}"
 
     rc_exploit = _ejecutar_en_directorio(
         caso,
@@ -64,7 +81,7 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "contrato/exploit.py"],
         tmp_path,
     ).returncode
-    assert rc_exploit == esp_exploit, f"{parche.name}: exploit={rc_exploit}"
+    assert rc_exploit == esperado.exploit, f"{parche.name}: exploit={rc_exploit}"
 
     res_formal = _ejecutar_en_directorio(
         caso,
@@ -80,13 +97,11 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     )
-    assert res_formal.returncode in esp_formales, (
+    assert res_formal.returncode == esperado.formal, (
         f"{parche.name}: {res_formal.stdout}{res_formal.stderr}"
     )
-    if esp_formales == (1,):
+    if esperado.formal == 1:
         assert "error:" in res_formal.stdout
-    elif clase == "regresivo" and res_formal.returncode == 1:
-        assert "false when calling" not in res_formal.stdout
 
 
 def _leer_etiquetas(caso: str) -> dict[str, dict[str, str]]:
@@ -129,5 +144,4 @@ def test_control_y_candidatos_se_comportan_segun_su_etiqueta(
     for nombre, meta in _leer_etiquetas(caso).items():
         sub = tmp_path / nombre
         sub.mkdir()
-        clave = "control" if nombre == "control" else meta["clase"]
-        _verificar_capas(caso, DIR_CASOS / caso / "parches" / f"{nombre}.py", clave, sub)
+        _verificar_capas(caso, DIR_CASOS / caso / "parches" / f"{nombre}.py", meta["clase"], sub)
