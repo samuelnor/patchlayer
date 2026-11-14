@@ -1,0 +1,43 @@
+{
+  "referencia": "llm_flint_40b_free",
+  "referencia_sha256": "85169b60194072b7d900c5256a27bfdfbc6163420dc48d421857038c8ddc0d95",
+  "prompt_sha256": "09e3c513f3c7b0f7e26b35e5499cd52af5f1a549e7ab734bf35b06369fc4623b",
+  "semanticos": {
+    "sem_1": {
+      "origen": "llm:claude-fable-5-2",
+      "sha256": "6802dac8112b77dd491a34a5b952691c976e2bd1752474ae58c397ea6327c94d",
+      "descripcion_llm": "Actor(id=1, org_id=1, rol=USUARIO) lee Documento(org_id=2, owner_id=9, privado=False) y obtiene True, porque la organización solo se comprueba en los documentos privados.",
+      "confirmacion": "sin_confirmar",
+      "revisor": null
+    },
+    "sem_2": {
+      "origen": "llm:claude-fable-5-2",
+      "sha256": "fe04e33538a75b7c268bb30aa5064e8fef1701cc97839d37d2e4216ff0692bb3",
+      "descripcion_llm": "Actor(id=1, org_id=1, rol=ADMIN) lee Documento(org_id=2, owner_id=9, privado=True) y obtiene True, porque el aislamiento por organización solo se aplica a los no administradores.",
+      "confirmacion": "sin_confirmar",
+      "revisor": null
+    },
+    "sem_3": {
+      "origen": "llm:claude-fable-5-2",
+      "sha256": "8c166a04648d09c25fae6dd9ceaebf76f46237a4302b016bd4746b5f48901bce",
+      "descripcion_llm": "Actor(id=7, org_id=1, rol=USUARIO) lee Documento(org_id=2, owner_id=7, privado=True) y obtiene True, porque el atajo del dueño se evalúa antes que la comprobación de organización y los id coinciden entre inquilinos.",
+      "confirmacion": "sin_confirmar",
+      "revisor": null
+    },
+    "sem_4": {
+      "origen": "llm:claude-fable-5-2",
+      "sha256": "8ccfa1afb71ae9ed42904b6a60e26c4f38bc4f6146a119b2b7beb5f538828d4f",
+      "descripcion_llm": "Actor(id=1, org_id=0, rol=USUARIO) lee Documento(org_id=5, owner_id=9, privado=False) y obtiene True, porque un org_id igual a 0 se trata como \"sin organización\" y se salta la comparación.",
+      "confirmacion": "sin_confirmar",
+      "revisor": null
+    },
+    "sem_5": {
+      "origen": "llm:claude-fable-5-2",
+      "sha256": "7d7f53d921a94e724a310c340b0f392e2a2911e81653560ab44005b5ca4ef8e2",
+      "descripcion_llm": "Actor(id=3, org_id=1, rol=3) lee Documento(org_id=1, owner_id=2, privado=True) y obtiene True, porque el rol solo se valida por abajo y cualquier valor mayor o igual que ADMIN cuenta como administrador.",
+      "confirmacion": "sin_confirmar",
+      "revisor": null
+    }
+  },
+  "sintacticos": {}
+}

@@ -34,10 +34,16 @@ def revisar(
     parche: str,
     verificar: Verificar = formal.verificar,
     timeout_s: float = 60,
+    parches_dir: Path | None = None,
 ) -> Expediente:
-    """Corre siempre las tres capas sobre `parches/<parche>.py` y devuelve el expediente."""
+    """Corre siempre las tres capas sobre `<parches_dir>/<parche>.py` y devuelve el expediente.
+
+    `parches_dir` es `casos/<caso>/parches/` salvo para los mutantes, que viven fuera del
+    corpus (#14).
+    """
     caso = json.loads((caso_dir / "caso.json").read_text())
-    parche_py = caso_dir / "parches" / f"{parche}.py"
+    parches_dir = parches_dir or caso_dir / "parches"
+    parche_py = parches_dir / f"{parche}.py"
 
     with tempfile.TemporaryDirectory(prefix="patchlayer-") as tmp:
         directorio = Path(tmp)
@@ -63,7 +69,7 @@ def revisar(
         "parche": {
             "id": parche,
             "sha256": _sha256(parche_py.read_bytes()),
-            "origen": _origen(caso_dir, parche),
+            "origen": _origen(parches_dir, parche),
         },
         "contrato_sha256": _sha256_dir(caso_dir / "contrato"),
         "capas": {nombre: asdict(capa) for nombre, capa in capas.items()},
@@ -205,8 +211,8 @@ def _sin_carga(agoto_tiempo: bool, salida: str) -> dict[str, ResultadoCapa]:
     }
 
 
-def _origen(caso_dir: Path, parche: str) -> str | None:
-    etiquetas = caso_dir / "parches" / "etiquetas.json"
+def _origen(parches_dir: Path, parche: str) -> str | None:
+    etiquetas = parches_dir / "etiquetas.json"
     if not etiquetas.exists():
         return None
     return json.loads(etiquetas.read_text()).get(parche, {}).get("origen")

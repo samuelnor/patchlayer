@@ -5,6 +5,7 @@ from pathlib import Path
 
 from patchlayer.compuerta import escribir_expediente, revisar
 from patchlayer.experimento import experimento, metricas_markdown, tabla_markdown
+from patchlayer.mutacion import correr_mutmut, mutacion, reporte_markdown
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -28,6 +29,13 @@ def main(argv: list[str] | None = None) -> int:
         "la corrida oficial va a evidencia/experimento/",
     )
 
+    p_mutacion = sub.add_parser(
+        "mutacion", help="corre los mutantes de mutantes/ y escribe el reporte de mutación"
+    )
+    p_mutacion.add_argument(
+        "--sin-sintacticos", action="store_true", help="no corre mutmut (primer recorte)"
+    )
+
     args = parser.parse_args(argv)
 
     if args.subcomando == "revisar":
@@ -40,6 +48,18 @@ def main(argv: list[str] | None = None) -> int:
         veredicto_c = expediente["veredictos"]["C"]
         print(f"C: {veredicto_c}")
         return 0 if veredicto_c == "evidencia_favorable" else 1
+
+    if args.subcomando == "mutacion":
+        resultado_mutacion = mutacion(
+            Path("casos"),
+            Path("mutantes"),
+            resultados_dir=Path("resultados"),
+            expedientes_dir=Path("expedientes"),
+            sintacticos=None if args.sin_sintacticos else correr_mutmut,
+        )
+        print(reporte_markdown(resultado_mutacion), end="")
+        print("resultados: resultados/mutacion.json, resultados/mutacion.md")
+        return 0
 
     salida: Path = args.salida
     resultado = experimento(

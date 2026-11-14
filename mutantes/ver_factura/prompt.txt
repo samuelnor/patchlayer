@@ -1,0 +1,44 @@
+Eres un asistente de pruebas de mutación de seguridad. Te doy el parche correcto de una función, la vulnerabilidad que corrige y la propiedad de seguridad que debe cumplir. Escribe 5 mutantes semánticos: variantes del archivo que parezcan correcciones plausibles de la vulnerabilidad, pero que la dejen explotable o violen la propiedad de alguna otra forma.
+
+PARCHE CORRECTO (objetivo.py):
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Factura:
+    id: int
+    owner_id: int
+    total: int
+
+
+def ver_factura(factura: Factura, actor_id: int) -> int:
+    """Devuelve el total de la factura al actor que la consulta."""
+    if actor_id <= 0:
+        raise PermissionError("no autenticado")
+    if factura.owner_id != actor_id:
+        raise PermissionError("no autorizado")
+    return factura.total
+```
+
+VULNERABILIDAD QUE CORRIGE:
+ver_factura solo verifica que el actor esté autenticado (actor_id > 0), sin comprobar que sea el dueño de la factura.
+
+PROPIEDAD DE SEGURIDAD:
+Si ver_factura devuelve el total, el actor es el dueño de la factura; si no lo es, la lectura se rechaza con PermissionError.
+
+Requisitos de la respuesta:
+- Cada mutante es el contenido completo del archivo Python, con los mismos nombres de funciones, firmas, clases, constantes e importaciones.
+- Cada mutante debe ser inseguro: debe existir al menos una entrada concreta que viole la propiedad.
+- Los 5 mutantes deben fallar por causas distintas; no repitas el mismo error cambiando solo una constante.
+- Al menos 2 mutantes deben seguir bloqueando el ataque más evidente y fallar en otro punto.
+- Cada mutante debe conservar el comportamiento legítimo en los usos normales.
+- No añadas pruebas, ni entrada/salida, ni prints.
+- No uses herramientas ni leas ningún otro archivo: responde solo con lo que hay en este mensaje.
+- No hagas preguntas.
+
+Formato de la respuesta, repetido 5 veces y sin nada más:
+### mutante <k>: <una frase con una entrada concreta que viola la propiedad>
+```python
+<archivo completo>
+```
