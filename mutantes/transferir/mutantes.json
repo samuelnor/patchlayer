@@ -1,35 +1,41 @@
 {
   "referencia": "llm_flint_40b_free",
+  "referencia_sha256": "58e8bd794ab58cb97c0dc6ccc11683464b23e1aeda609bf4a5d04d75d5d2ca02",
   "prompt_sha256": "f66f8383a970a1a1b18760dd8167763838964210f8945b03eb01212a5552ea1a",
   "semanticos": {
     "sem_1": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "7ffce36bee27c128140d8f87f6e7c351fa9b48642760f015f6c7096e2c534055",
       "descripcion_llm": "transferir(10, 0, -5) devuelve (15, -5): la suficiencia se valida con el valor absoluto, así que el monto negativo pasa y el origen supera su valor inicial",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_2": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "cb55742d8c23315ceaa8973811d63771f09cadd1a3387b966784ede9a591f641",
       "descripcion_llm": "transferir(10, 20, -5) devuelve (15, 15): solo se rechaza cuando el destino quedaría negativo, así que un monto negativo sigue sacando dinero de un destino con saldo",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_3": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "c2f8b63c819101e99e23e67f565335fdf65c2f3d11aa55a17706dfc0874b1102",
       "descripcion_llm": "transferir(10, 100, 50) devuelve (-40, 150): bloquea montos no positivos, pero compara el monto contra los fondos totales y no contra el saldo de origen",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_4": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "d52e9a8951ec6cff3c2552708da544c00e288b3d4962d01bc69ac2b42c834241",
       "descripcion_llm": "transferir(10, 0, 50) devuelve (-40, 50): bloquea montos no positivos, pero solo comprueba que el origen tenga saldo positivo, no que cubra el monto",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_5": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "d2bda8533887cca933641a065b677e868dc12a18825d2d42f9f85b1c217f61df",
       "descripcion_llm": "transferir(10, 20, -5) devuelve (5, 15): el débito usa el valor absoluto y el crédito no, así que desaparecen 10 unidades y el dinero no se conserva",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     }
   },

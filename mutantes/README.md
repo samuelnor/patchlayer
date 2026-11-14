@@ -31,14 +31,15 @@ mutantes/
   que recibió solo `prompt.txt`. La transcripción de cada uno muestra una única lectura, la
   de su `prompt.txt`; no vieron el contrato, el exploit ni las pruebas funcionales.
 - `descripcion_llm` es lo que el modelo **afirma** que rompe el mutante. No es una confirmación.
-- **Todos están en `pendiente`.** Un mutante solo cuenta cuando una persona lo confirma:
+- **Todos están en `sin_confirmar`.** Un mutante solo cuenta cuando una persona lo confirma:
 
   ```json
   "sem_1": {"confirmacion": "inseguro", "revisor": "<login>", ...}
   ```
 
   `confirmacion` es `inseguro` (cuenta), `descartado` (no viola la propiedad o es
-  equivalente; no cuenta) o `pendiente`. Sin `revisor`, sigue pendiente.
+  equivalente; no cuenta) o `sin_confirmar`. Sin `revisor`, sigue sin confirmar. La
+  confirmación vale para el archivo con ese `sha256`: si el mutante se edita, se pierde.
 - Para confirmar: leer `semanticos/sem_<k>.py`, comprobar a mano la entrada de
   `descripcion_llm` contra la propiedad de `casos/<caso>/caso.json`. El contraejemplo del
   verificador está en el reporte como ayuda, pero la confirmación es humana: no se copia de C.
@@ -54,12 +55,13 @@ mutantes/
 
   ```json
   "sintacticos": {
-    "objetivo.x_precio_final__mutmut_9": {"clasificacion": "equivalente", "revisor": "<login>"}
+    "objetivo.x_precio_final__mutmut_9": {"revision": "equivalente", "revisor": "<login>"}
   }
   ```
 
-  `clasificacion` es `equivalente` (no cambia el comportamiento) o `hueco` (hueco real de la
-  suite). Los nombres dependen de la versión de mutmut y del parche de referencia.
+  `revision` es `equivalente` (no cambia el comportamiento) o `hueco` (hueco real de la
+  suite). Los nombres dependen de la versión de mutmut y del parche de referencia: si este
+  cambia (`referencia_sha256`), el comando se niega a correr hasta regenerar y volver a revisar.
 
 ## Firma
 

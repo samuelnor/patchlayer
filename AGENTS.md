@@ -46,7 +46,7 @@ uv run pytest -q
 ```
 
 - Both checkers cover `patchlayer/` and `tests/`. `casos/` is excluded: contracts and patches import `objetivo`, which only exists once the gate assembles the directory.
-- `mutantes/` is excluded from ruff for the same reason. Never set `confirmacion`, `clasificacion`, `revisor` or `firma.json` there yourself: those record a human's review (`mutantes/README.md`).
+- `mutantes/` is excluded from ruff for the same reason. Never set `confirmacion`, `revision`, `revisor` or `firma.json` there yourself: those record a human's review (`mutantes/README.md`).
 - Fix the type, don't silence it. A `# pyright: ignore[rule]` needs the rule name and a reason on the same line, and is only for tests that pass an invalid value on purpose.
 - The expediente and experiment shapes are `TypedDict`s (`Expediente` in `patchlayer/capas.py`, `ResultadoExperimento` in `patchlayer/experimento.py`). Change them there when the format in issue #6 changes.
 

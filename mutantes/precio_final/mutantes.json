@@ -1,35 +1,41 @@
 {
   "referencia": "llm_flint_40b_free",
+  "referencia_sha256": "ecad072cae5320143c63f211791c90411eeec1770833bbcd02b32230774ae419",
   "prompt_sha256": "af227eecdcfca7b50c0b20ea4cca23763faedb2e2101b212eb8b2751ae1d6714",
   "semanticos": {
     "sem_1": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "60f21b0207f2604261f1f0361764d983eb0ea9a64b7d577e0d4776cbc7f5900c",
       "descripcion_llm": "precio_final(1000, 150) devuelve -500 porque la condición usa `and` y nunca se cumple, así que ningún descuento se rechaza.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_2": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "9aff3698356e3f0f9b74370be00a18602d2cac2af0f5d09f8b2a66b068471c79",
       "descripcion_llm": "precio_final(1000, -50) devuelve 1500 porque el rango se valida sobre el valor absoluto: se rechazan 150 y -150, pero no los negativos entre -100 y -1.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_3": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "6f56fa35019d38deeaefeb470997e5517646aa100df4094aa77b9c3efc325552",
       "descripcion_llm": "precio_final(1000, 300) devuelve 2000 porque se rechazan los negativos pero el exceso sobre 100 % solo se \"corrige\" con abs() sobre el resultado, que supera el precio original.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_4": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "26344801a4471e7a371d43ac99ea400ab453d0f787b7cf762e821551b3537fbc",
       "descripcion_llm": "precio_final(1000, 199) devuelve -990 porque el rango se comprueba con división entera: se rechazan los negativos y los valores desde 200, pero 101..199 dan cociente 1 y pasan.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_5": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "7918c8e5a147b8edfba24bf907afe2ada4584e32d90f02625fee5419215b52fd",
       "descripcion_llm": "precio_final(200, -10) devuelve 220 porque se valida el resultado en vez de la entrada y solo se comprueba que no sea negativo: 150 se rechaza, pero un descuento negativo sube el precio.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     }
   },

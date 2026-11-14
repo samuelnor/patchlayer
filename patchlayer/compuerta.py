@@ -36,9 +36,10 @@ def revisar(
     timeout_s: float = 60,
     parches_dir: Path | None = None,
 ) -> Expediente:
-    """Corre siempre las tres capas sobre `parches/<parche>.py` y devuelve el expediente.
+    """Corre siempre las tres capas sobre `<parches_dir>/<parche>.py` y devuelve el expediente.
 
-    `parches_dir` cambia de dónde sale el parche: los mutantes viven fuera del corpus (#14).
+    `parches_dir` es `casos/<caso>/parches/` salvo para los mutantes, que viven fuera del
+    corpus (#14).
     """
     caso = json.loads((caso_dir / "caso.json").read_text())
     parches_dir = parches_dir or caso_dir / "parches"

@@ -1,35 +1,41 @@
 {
   "referencia": "correcto",
+  "referencia_sha256": "851061c416dae7e4c33d6be124aa834e44f173315eb49843cc75fa24a2952d99",
   "prompt_sha256": "5c13741fd8d332356b3a573e699017d68e220c864996ff0bc46cb905625d0923",
   "semanticos": {
     "sem_1": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "bbc7292d7d22403eb25de09a74751a742ff7615053bdda84cecbfaba5c25a640",
       "descripcion_llm": "con duenos={}, actor_id=5, pedido_id=99, owner_declarado=5 devuelve True aunque el pedido 99 no existe en duenos.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_2": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "0d10f5b5b2e6240a75fe22a0632882bc32f36383c0f14d6092885c1ce536fe24",
       "descripcion_llm": "con duenos={7: 0}, actor_id=5, pedido_id=7, owner_declarado=5 devuelve True porque el dueño registrado 0 es falsy y se usa el dueño declarado por el cliente.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_3": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "36db9dd9695cd03c16dbe75ca0ff4bef53509ab8cda69c67967cd31b5fcd8e7a",
       "descripcion_llm": "con duenos={7: 1}, actor_id=5, pedido_id=7, owner_declarado=1 devuelve True porque valida el dueño declarado contra el registro pero nunca contra actor_id.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_4": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "aa0766bae0c71bb195a1d9c2e42bc31a0b0b880fe9319e97f0bdb93d233942dc",
       "descripcion_llm": "con duenos={7: 1}, actor_id=5, pedido_id=7, owner_declarado=5 devuelve True porque el dueño declarado sigue aceptándose como alternativa al registrado.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     },
     "sem_5": {
       "origen": "llm:claude-fable-5-2",
+      "sha256": "09962e58de886d2447a13c3bb11dc8107e9836cd0af4a6acf3470536d055c9b9",
       "descripcion_llm": "con duenos={1: 10, 2: 20}, actor_id=20, pedido_id=1, owner_declarado=20 devuelve True porque basta con que el actor sea dueño de algún pedido, no de ese pedido.",
-      "confirmacion": "pendiente",
+      "confirmacion": "sin_confirmar",
       "revisor": null
     }
   },

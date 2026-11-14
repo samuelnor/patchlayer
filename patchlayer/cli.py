@@ -43,14 +43,14 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if veredicto_c == "evidencia_favorable" else 1
 
     if args.subcomando == "mutacion":
-        reporte = mutacion(
+        resultado_mutacion = mutacion(
             Path("casos"),
             Path("mutantes"),
             resultados_dir=Path("resultados"),
             expedientes_dir=Path("expedientes"),
             sintacticos=None if args.sin_sintacticos else correr_mutmut,
         )
-        print(reporte_markdown(reporte), end="")
+        print(reporte_markdown(resultado_mutacion), end="")
         print("resultados: resultados/mutacion.json, resultados/mutacion.md")
         return 0
 

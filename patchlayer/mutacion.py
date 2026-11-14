@@ -10,6 +10,7 @@ Dos métricas separadas, que no se suman:
 Nada de aquí toca un veredicto ni la tabla del experimento.
 """
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -44,7 +45,7 @@ class Semantico(TypedDict):
     caso: str
     mutante: str
     origen: str | None
-    confirmacion: str  # inseguro | descartado | pendiente
+    confirmacion: str  # inseguro | descartado | sin_confirmar
     revisor: str | None
     capas: dict[str, str]
     veredictos: dict[str, str]
@@ -54,9 +55,10 @@ class Semantico(TypedDict):
 class ConteoSemanticos(TypedDict):
     generados: int
     descartados: int
-    pendientes: int
+    sin_confirmar: int
     confirmados: int
     sobrevivientes: dict[str, int]  # por configuración, solo entre los confirmados
+    no_concluyentes: int  # confirmados que C no acepta sin haberlos refutado (#4)
 
 
 class Sintactico(TypedDict):
@@ -64,7 +66,7 @@ class Sintactico(TypedDict):
     mutante: str
     sobrevive: dict[str, bool]
     diff: str
-    clasificacion: str | None  # equivalente | hueco; solo para sobrevivientes de B
+    revision: str | None  # equivalente | hueco; solo para sobrevivientes de B
     revisor: str | None
 
 
@@ -84,6 +86,7 @@ class ResultadoSemanticos(TypedDict):
 class ResultadoSintacticos(TypedDict):
     mutantes: list[Sintactico]
     por_caso: dict[str, ConteoSintacticos]
+    errores: dict[str, str]  # casos donde mutmut no terminó: sin conteo, nunca cero
 
 
 class Firma(TypedDict):
@@ -112,12 +115,18 @@ def mutacion(
     `sintacticos=None` deja fuera a mutmut, que es lo primero que se recorta (#7).
     """
     semanticos: ResultadoSemanticos = {"mutantes": [], "por_caso": {}}
-    sintacticos_res: ResultadoSintacticos = {"mutantes": [], "por_caso": {}}
+    sintacticos_res: ResultadoSintacticos = {"mutantes": [], "por_caso": {}, "errores": {}}
 
     for registro_json in sorted(mutantes_dir.glob("*/mutantes.json")):
         caso = registro_json.parent.name
         caso_dir = casos_dir / caso
         registro = json.loads(registro_json.read_text())
+        referencia = caso_dir / "parches" / f"{registro['referencia']}.py"
+        if _sha256(referencia) != registro["referencia_sha256"]:
+            raise ValueError(
+                f"{registro_json}: el parche de referencia {referencia} cambió desde que se "
+                "generaron los mutantes; hay que regenerarlos y volver a revisarlos"
+            )
 
         del_caso = _semanticos(
             caso_dir,
@@ -131,14 +140,17 @@ def mutacion(
         semanticos["por_caso"][caso] = _contar_semanticos(del_caso)
 
         if sintacticos is not None:
-            referencia = caso_dir / "parches" / f"{registro['referencia']}.py"
-            revision = registro.get("sintacticos", {})
-            crudos = [
-                _sintactico(caso, crudo, revision.get(crudo["mutante"], {}))
-                for crudo in sintacticos(caso_dir, referencia, timeout_s)
+            try:
+                crudos = sintacticos(caso_dir, referencia, timeout_s)
+            except RuntimeError as exc:  # mutmut cae primero; los semánticos se conservan (#7)
+                sintacticos_res["errores"][caso] = str(exc)
+                continue
+            revisiones = registro.get("sintacticos", {})
+            revisados = [
+                _sintactico(caso, crudo, revisiones.get(crudo["mutante"], {})) for crudo in crudos
             ]
-            sintacticos_res["mutantes"] += crudos
-            sintacticos_res["por_caso"][caso] = _contar_sintacticos(crudos)
+            sintacticos_res["mutantes"] += revisados
+            sintacticos_res["por_caso"][caso] = _contar_sintacticos(revisados)
 
     firma_json = mutantes_dir / "firma.json"
     firma: dict[str, str | None] = (
@@ -174,18 +186,21 @@ def _semanticos(
         expediente = revisar(
             caso_dir, mutante, verificar=verificar, timeout_s=timeout_s, parches_dir=semanticos_dir
         )
+        expediente["parche"]["origen"] = entrada.get("origen")  # no hay etiquetas.json aquí
         escribir_expediente(expediente, expedientes_dir)
         revisor = entrada.get("revisor")
         confirmacion = entrada.get("confirmacion")
+        # La confirmación vale para el archivo que la persona leyó, no para uno editado después.
+        vigente = entrada.get("sha256") == expediente["parche"]["sha256"]
         salida.append(
             {
                 "caso": caso_dir.name,
                 "mutante": mutante,
                 "origen": entrada.get("origen"),
-                # Sin una persona que firme la decisión, el mutante sigue pendiente.
+                # Sin una persona que firme la decisión, el mutante sigue sin confirmar.
                 "confirmacion": confirmacion
-                if revisor and confirmacion in ("inseguro", "descartado")
-                else "pendiente",
+                if revisor and vigente and confirmacion in ("inseguro", "descartado")
+                else "sin_confirmar",
                 "revisor": revisor,
                 "capas": {n: c["resultado"] for n, c in expediente["capas"].items()},
                 "veredictos": expediente["veredictos"],
@@ -200,26 +215,27 @@ def _contar_semanticos(mutantes: list[Semantico]) -> ConteoSemanticos:
     return {
         "generados": len(mutantes),
         "descartados": sum(m["confirmacion"] == "descartado" for m in mutantes),
-        "pendientes": sum(m["confirmacion"] == "pendiente" for m in mutantes),
+        "sin_confirmar": sum(m["confirmacion"] == "sin_confirmar" for m in mutantes),
         "confirmados": len(confirmados),
         # Solo `evidencia_favorable` es aceptación: ahí el mutante inseguro sobrevive.
         "sobrevivientes": {
             config: sum(m["veredictos"][config] == "evidencia_favorable" for m in confirmados)
             for config in CONFIGURACIONES
         },
+        "no_concluyentes": sum(m["veredictos"]["C"] == "no_concluyente" for m in confirmados),
     }
 
 
-def _sintactico(caso: str, crudo: SintacticoCrudo, revision: dict[str, str | None]) -> Sintactico:
-    revisor = revision.get("revisor")
-    clasificacion = revision.get("clasificacion")
-    revisado = bool(revisor) and clasificacion in ("equivalente", "hueco")
+def _sintactico(caso: str, crudo: SintacticoCrudo, entrada: dict[str, str | None]) -> Sintactico:
+    revisor = entrada.get("revisor")
+    revision = entrada.get("revision")
+    revisado = bool(revisor) and revision in ("equivalente", "hueco")
     return {
         "caso": caso,
         "mutante": crudo["mutante"],
         "sobrevive": crudo["sobrevive"],
         "diff": crudo["diff"],
-        "clasificacion": clasificacion if revisado and crudo["sobrevive"]["B"] else None,
+        "revision": revision if revisado and crudo["sobrevive"]["B"] else None,
         "revisor": revisor,
     }
 
@@ -231,9 +247,9 @@ def _contar_sintacticos(mutantes: list[Sintactico]) -> ConteoSintacticos:
         "sobrevivientes": {
             config: sum(m["sobrevive"][config] for m in mutantes) for config in ("A", "B")
         },
-        "equivalentes": sum(m["clasificacion"] == "equivalente" for m in de_b),
-        "huecos": sum(m["clasificacion"] == "hueco" for m in de_b),
-        "sin_revisar": sum(m["clasificacion"] is None for m in de_b),
+        "equivalentes": sum(m["revision"] == "equivalente" for m in de_b),
+        "huecos": sum(m["revision"] == "hueco" for m in de_b),
+        "sin_revisar": sum(m["revision"] is None for m in de_b),
     }
 
 
@@ -241,8 +257,8 @@ def correr_mutmut(caso_dir: Path, referencia: Path, timeout_s: float) -> list[Si
     """Muta `referencia` con mutmut y corre la suite de A y la de B contra cada mutante.
 
     Arma el directorio igual que la compuerta (contrato/ + parche como objetivo.py), una vez
-    por configuración. Lanza `RuntimeError` si mutmut no deja un resultado por mutante: una
-    corrida rota no se reporta como cero sobrevivientes.
+    por configuración. Lanza `RuntimeError` si mutmut no deja un resultado por mutante o agota
+    `timeout_s` (por invocación): una corrida rota no se reporta como cero sobrevivientes.
     """
     sobrevive: dict[str, dict[str, bool]] = {}
     diffs: dict[str, str] = {}
@@ -284,15 +300,24 @@ def correr_mutmut(caso_dir: Path, referencia: Path, timeout_s: float) -> list[Si
 def _mutmut(
     directorio: Path, argumentos: list[str], timeout_s: float
 ) -> subprocess.CompletedProcess[str]:
-    """Mismo entorno mínimo que la compuerta: el mutante se importa y no hereda secretos."""
-    return subprocess.run(
-        [sys.executable, "-m", "mutmut", *argumentos],
-        cwd=directorio,
-        env={"PATH": "", "PYTHONDONTWRITEBYTECODE": "1"},
-        capture_output=True,
-        text=True,
-        timeout=timeout_s,
-    )
+    """Entorno casi vacío, como en la compuerta: el mutante se importa y no hereda secretos."""
+    try:
+        return subprocess.run(
+            [sys.executable, "-m", "mutmut", *argumentos],
+            cwd=directorio,
+            env={"PATH": "", "PYTHONDONTWRITEBYTECODE": "1"},
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(
+            f"mutmut {argumentos[0]} agotó el tiempo límite de {timeout_s:g} s"
+        ) from exc
+
+
+def _sha256(archivo: Path) -> str:
+    return hashlib.sha256(archivo.read_bytes()).hexdigest()
 
 
 def reporte_markdown(resultado: ResultadoMutacion) -> str:
@@ -312,28 +337,30 @@ def reporte_markdown(resultado: ResultadoMutacion) -> str:
         "## Mutantes semánticos (A, B y C)",
         "",
         "Solo cuentan los confirmados como inseguros por una persona. Un mutante sobrevive a "
-        "una configuración si esta le da `evidencia_favorable`.",
+        "una configuración si esta le da `evidencia_favorable`; un no concluyente no lo acepta, "
+        "pero tampoco lo refuta, y se cuenta aparte.",
         "",
-        "| Caso | Generados | Descartados | Pendientes | Confirmados "
-        "| Sobreviven A | Sobreviven B | Sobreviven C |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Caso | Generados | Descartados | Sin confirmar | Confirmados "
+        "| Sobreviven A | Sobreviven B | Sobreviven C | No concluyentes en C |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     semanticos = resultado["semanticos"]
     filas_sem = [
-        [c["generados"], c["descartados"], c["pendientes"], c["confirmados"]]
+        [c["generados"], c["descartados"], c["sin_confirmar"], c["confirmados"]]
         + [c["sobrevivientes"][config] for config in CONFIGURACIONES]
+        + [c["no_concluyentes"]]
         for c in semanticos["por_caso"].values()
     ]
     lineas += _filas(list(semanticos["por_caso"]), filas_sem)
 
-    pendientes = [m for m in semanticos["mutantes"] if m["confirmacion"] == "pendiente"]
-    if pendientes:
-        lineas += ["", "Pendientes de confirmación humana (no cuentan en la tabla):", ""]
+    sin_confirmar = [m for m in semanticos["mutantes"] if m["confirmacion"] == "sin_confirmar"]
+    if sin_confirmar:
+        lineas += ["", "Sin confirmación humana (no cuentan en la tabla):", ""]
         lineas += [
             f"- ☐ `{m['caso']}/{m['mutante']}`: "
             + ", ".join(f"{config} {v}" for config, v in m["veredictos"].items())
             + (f"; contraejemplo `{m['contraejemplo']}`" if m["contraejemplo"] else "")
-            for m in pendientes
+            for m in sin_confirmar
         ]
 
     lineas += ["", "## Mutantes sintácticos (mutmut, solo A y B)", ""]
@@ -360,10 +387,12 @@ def reporte_markdown(resultado: ResultadoMutacion) -> str:
         for c in sintacticos["por_caso"].values()
     ]
     lineas += _filas(list(sintacticos["por_caso"]), filas_sin)
+    for caso, error in sintacticos["errores"].items():
+        lineas += ["", f"**mutmut falló en `{caso}`** (sin conteo):", "", "```", error, "```"]
 
     for m in sintacticos["mutantes"]:
         if m["sobrevive"]["B"]:
-            estado = m["clasificacion"] or "☐ sin revisar"
+            estado = m["revision"] or "☐ sin revisar"
             lineas += ["", f"### `{m['caso']}` · `{m['mutante']}` · {estado}", ""]
             lineas += ["```diff", m["diff"].rstrip("\n"), "```"]
     return "\n".join(lineas) + "\n"
