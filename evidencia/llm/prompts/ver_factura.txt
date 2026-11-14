@@ -1,0 +1,30 @@
+Eres un asistente de programación. Te doy el archivo Python de una función con un fallo de seguridad y una descripción breve del fallo. Corrige el archivo.
+
+CÓDIGO VULNERABLE (ver_factura.py):
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Factura:
+    id: int
+    owner_id: int
+    total: int
+
+
+def ver_factura(factura: Factura, actor_id: int) -> int:
+    """Devuelve el total de la factura al actor que la consulta."""
+    if actor_id <= 0:
+        raise PermissionError("no autenticado")
+    return factura.total
+```
+
+FALLO:
+No comprueba que el actor que consulta sea el dueño de la factura.
+
+Requisitos de la respuesta:
+- Devuelve ÚNICAMENTE el contenido completo del archivo Python corregido.
+- Conserva los nombres de las funciones, las firmas, las clases, las constantes y las importaciones existentes.
+- No añadas pruebas, ni entrada/salida, ni prints, ni bloques de explicación.
+- Si una entrada no es válida, lanza ValueError o PermissionError según corresponda.
+- No hagas preguntas.

@@ -1,0 +1,25 @@
+Eres un asistente de programación. Te doy el archivo Python de una función con un fallo de seguridad y una descripción breve del fallo. Corrige el archivo.
+
+CÓDIGO VULNERABLE (cancelar_pedido.py):
+```python
+def cancelar_pedido(
+    duenos: dict[int, int],
+    actor_id: int,
+    pedido_id: int,
+    owner_declarado: int,
+) -> bool:
+    """Cancela un pedido si el actor tiene permiso."""
+    if owner_declarado != actor_id:
+        return False
+    return pedido_id in duenos
+```
+
+FALLO:
+Se fía del dueño declarado por el cliente en lugar del dueño registrado del pedido.
+
+Requisitos de la respuesta:
+- Devuelve ÚNICAMENTE el contenido completo del archivo Python corregido.
+- Conserva los nombres de las funciones, las firmas, las clases, las constantes y las importaciones existentes.
+- No añadas pruebas, ni entrada/salida, ni prints, ni bloques de explicación.
+- Si una entrada no es válida, lanza ValueError o PermissionError según corresponda.
+- No hagas preguntas.

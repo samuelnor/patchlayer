@@ -134,3 +134,19 @@ def test_un_parche_que_reescribe_el_dueno_de_la_factura_no_pasa(armar: Armar) ->
 
     assert capa.resultado == "falla", capa.salida
 
+
+
+def test_rechazar_un_rol_invalido_con_valueerror_cuenta_como_rechazo(armar: Armar) -> None:
+    parche = PUEDE_LEER.format(
+        privado="doc.org_id == actor.org_id and (doc.owner_id == actor.id or actor.rol == ADMIN)",
+        publico="doc.org_id == actor.org_id",
+    ).replace(
+        "    if doc.privado:",
+        "    if actor.rol not in (USUARIO, ADMIN):\n"
+        "        raise ValueError('rol no válido')\n"
+        "    if doc.privado:",
+    )
+
+    capa = verificar(armar("puede_leer", parche), timeout_s=60)
+
+    assert capa.resultado == "pasa", capa.salida

@@ -1,0 +1,10 @@
+I'll fix the vulnerability by adding validation for the amount.```python
+def transferir(origen: int, destino: int, monto: int) -> tuple[int, int]:
+    """Transfiere `monto` del saldo origen al saldo destino."""
+    if not isinstance(monto, int) or isinstance(monto, bool):
+        raise ValueError("el monto debe ser un entero")
+    if monto <= 0:
+        raise ValueError("el monto debe ser mayor que cero")
+    if monto > origen:
+        raise ValueError("saldo insuficiente")
+    return origen - monto, destino + monto

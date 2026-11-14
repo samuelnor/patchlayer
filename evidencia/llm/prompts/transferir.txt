@@ -1,0 +1,20 @@
+Eres un asistente de programación. Te doy el archivo Python de una función con un fallo de seguridad y una descripción breve del fallo. Corrige el archivo.
+
+CÓDIGO VULNERABLE (transferir.py):
+```python
+def transferir(origen: int, destino: int, monto: int) -> tuple[int, int]:
+    """Transfiere `monto` del saldo origen al saldo destino."""
+    if monto > origen:
+        raise ValueError("saldo insuficiente")
+    return origen - monto, destino + monto
+```
+
+FALLO:
+No valida el monto: con un monto negativo el movimiento de dinero ocurre en sentido contrario.
+
+Requisitos de la respuesta:
+- Devuelve ÚNICAMENTE el contenido completo del archivo Python corregido.
+- Conserva los nombres de las funciones, las firmas, las clases, las constantes y las importaciones existentes.
+- No añadas pruebas, ni entrada/salida, ni prints, ni bloques de explicación.
+- Si una entrada no es válida, lanza ValueError o PermissionError según corresponda.
+- No hagas preguntas.

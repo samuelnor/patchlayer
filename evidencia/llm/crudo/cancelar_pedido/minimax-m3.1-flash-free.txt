@@ -1,0 +1,29 @@
+def cancelar_pedido(
+    duenos: dict[int, int],
+    actor_id: int,
+    pedido_id: int,
+    owner_declarado: int,
+) -> bool:
+    """Cancela un pedido si el actor tiene permiso.
+
+    La autorización se decide siempre contra el dueño registrado del pedido
+    (`duenos`). `owner_declarado` llega del cliente: no es una fuente de
+    autoridad, por lo que se ignora por completo.
+    """
+    if not isinstance(duenos, dict):
+        raise ValueError("duenos debe ser un diccionario de pedidos a dueños")
+    if not isinstance(actor_id, int) or isinstance(actor_id, bool):
+        raise ValueError("actor_id debe ser un entero")
+    if not isinstance(pedido_id, int) or isinstance(pedido_id, bool):
+        raise ValueError("pedido_id debe ser un entero")
+
+    if pedido_id not in duenos:
+        raise ValueError(f"pedido desconocido: {pedido_id}")
+
+    dueno_registrado = duenos[pedido_id]
+    if not isinstance(dueno_registrado, int) or isinstance(dueno_registrado, bool):
+        raise ValueError("el dueño registrado del pedido no es válido")
+
+    # Solo el dueño registrado puede cancelar; el dueño declarado por el
+    # cliente no influye en la decisión.
+    return actor_id == dueno_registrado
