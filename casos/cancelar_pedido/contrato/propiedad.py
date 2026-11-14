@@ -2,6 +2,10 @@
 
 Un pedido solo se cancela si existe y su dueño registrado es el actor; lo que
 declare el cliente sobre el dueño no cuenta.
+
+Solo mira lo que devuelve cancelar_pedido, no si modifica `duenos`: comparar el
+diccionario antes y después deja a CrossHair en `Not confirmed` con el parche
+correcto. Queda como límite del caso.
 """
 
 from typing import Dict

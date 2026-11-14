@@ -93,7 +93,7 @@ def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
     if codigo == 0 and infos and all(mensaje == _CONFIRMADO for mensaje in infos):
         return capa(
             "pasa",
-            f"CrossHair confirmó todos los caminos de {len(infos)} condición(es): "
+            f"CrossHair confirmó todos los caminos de {len(infos)} propiedad(es): "
             "ejecución simbólica exhaustiva para los tipos del contrato, no una prueba.",
         )
     if codigo == 0 and _NO_CONFIRMADO in infos:

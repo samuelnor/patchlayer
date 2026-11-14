@@ -1,4 +1,4 @@
-"""Cada propiedad refuta al código vulnerable y a un parche superficial, y confirma a uno correcto.
+"""Cada propiedad refuta al parche de control y a uno superficial, y confirma a uno correcto.
 
 Los parches de aquí son muestras mínimas para ejercitar las propiedades; los del
 experimento viven en `casos/<caso>/parches/` (carril Corpus).
@@ -64,14 +64,14 @@ def puede_leer(doc, actor):
 """
 
 PARCHES = {
-    ("transferir", "vulnerable"): TRANSFERIR.format(guarda="pass"),
+    ("transferir", "control"): TRANSFERIR.format(guarda="pass"),
     ("transferir", "superficial"): TRANSFERIR.format(
         guarda="if monto == -500: raise ValueError('monto invalido')"
     ),
     ("transferir", "correcto"): TRANSFERIR.format(
         guarda="if monto < 0: raise ValueError('monto invalido')"
     ),
-    ("ver_factura", "vulnerable"): VER_FACTURA.format(
+    ("ver_factura", "control"): VER_FACTURA.format(
         guarda="if actor_id <= 0: raise PermissionError('no autenticado')"
     ),
     ("ver_factura", "superficial"): VER_FACTURA.format(
@@ -80,7 +80,7 @@ PARCHES = {
     ("ver_factura", "correcto"): VER_FACTURA.format(
         guarda="if factura.owner_id != actor_id: raise PermissionError('ajena')"
     ),
-    ("cancelar_pedido", "vulnerable"): CANCELAR_PEDIDO.format(
+    ("cancelar_pedido", "control"): CANCELAR_PEDIDO.format(
         cuerpo="return owner_declarado == actor_id and pedido_id in duenos"
     ),
     ("cancelar_pedido", "superficial"): CANCELAR_PEDIDO.format(
@@ -90,7 +90,7 @@ PARCHES = {
     ("cancelar_pedido", "correcto"): CANCELAR_PEDIDO.format(
         cuerpo="return duenos.get(pedido_id) == actor_id"
     ),
-    ("puede_leer", "vulnerable"): PUEDE_LEER.format(
+    ("puede_leer", "control"): PUEDE_LEER.format(
         privado="doc.owner_id == actor.id or actor.rol == ADMIN",
         publico="actor.rol >= USUARIO",
     ),
@@ -109,8 +109,8 @@ CASOS_NUEVOS = ["transferir", "ver_factura", "cancelar_pedido", "puede_leer"]
 
 
 @pytest.mark.parametrize("caso", CASOS_NUEVOS)
-@pytest.mark.parametrize("clase", ["vulnerable", "superficial"])
-def test_la_propiedad_refuta_al_parche_inseguro(armar, caso, clase):
+@pytest.mark.parametrize("clase", ["control", "superficial"])
+def test_la_propiedad_refuta_al_parche_de_control_y_al_superficial(armar, caso, clase):
     capa = verificar(armar(caso, PARCHES[caso, clase]), timeout_s=60)
 
     assert capa.resultado == "falla", capa.salida
@@ -130,3 +130,4 @@ def test_un_parche_que_reescribe_el_dueno_de_la_factura_no_pasa(armar):
     capa = verificar(armar("ver_factura", parche), timeout_s=60)
 
     assert capa.resultado == "falla", capa.salida
+
