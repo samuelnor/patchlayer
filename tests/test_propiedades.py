@@ -5,6 +5,7 @@ experimento viven en `casos/<caso>/parches/` (carril Corpus).
 """
 
 import pytest
+from conftest import Armar
 
 from patchwise.formal import verificar
 
@@ -110,7 +111,9 @@ CASOS_NUEVOS = ["transferir", "ver_factura", "cancelar_pedido", "puede_leer"]
 
 @pytest.mark.parametrize("caso", CASOS_NUEVOS)
 @pytest.mark.parametrize("clase", ["control", "superficial"])
-def test_la_propiedad_refuta_al_parche_de_control_y_al_superficial(armar, caso, clase):
+def test_la_propiedad_refuta_al_parche_de_control_y_al_superficial(
+    armar: Armar, caso: str, clase: str
+) -> None:
     capa = verificar(armar(caso, PARCHES[caso, clase]), timeout_s=60)
 
     assert capa.resultado == "falla", capa.salida
@@ -118,13 +121,13 @@ def test_la_propiedad_refuta_al_parche_de_control_y_al_superficial(armar, caso, 
 
 
 @pytest.mark.parametrize("caso", CASOS_NUEVOS)
-def test_la_propiedad_confirma_al_parche_correcto(armar, caso):
+def test_la_propiedad_confirma_al_parche_correcto(armar: Armar, caso: str) -> None:
     capa = verificar(armar(caso, PARCHES[caso, "correcto"]), timeout_s=60)
 
     assert capa.resultado == "pasa", capa.salida
 
 
-def test_un_parche_que_reescribe_el_dueno_de_la_factura_no_pasa(armar):
+def test_un_parche_que_reescribe_el_dueno_de_la_factura_no_pasa(armar: Armar) -> None:
     parche = VER_FACTURA.format(guarda="factura.owner_id = actor_id")
 
     capa = verificar(armar("ver_factura", parche), timeout_s=60)

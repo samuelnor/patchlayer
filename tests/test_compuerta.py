@@ -5,12 +5,12 @@ import shutil
 from pathlib import Path
 
 from patchwise.capas import ResultadoCapa
-from patchwise.compuerta import revisar
+from patchwise.compuerta import Verificar, revisar
 
 CASO = Path(__file__).resolve().parents[1] / "casos" / "precio_final"
 
 
-def verificador_que_encuentra(contraejemplo):
+def verificador_que_encuentra(contraejemplo: str | None) -> Verificar:
     def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
         assert (directorio / "objetivo.py").exists()
         assert (directorio / "contrato" / "propiedad.py").exists()
@@ -32,7 +32,7 @@ def verificador_que_lanza(directorio: Path, timeout_s: float) -> ResultadoCapa:
     raise NotImplementedError("pendiente: carril Capa formal")
 
 
-def test_el_parche_de_control_queda_rechazado_por_b_y_c():
+def test_el_parche_de_control_queda_rechazado_por_b_y_c() -> None:
     exp = revisar(CASO, "control", verificar=verificador_que_encuentra("precio_final(1, 101)"))
 
     assert {k: v["resultado"] for k, v in exp["capas"].items()} == {
@@ -48,7 +48,7 @@ def test_el_parche_de_control_queda_rechazado_por_b_y_c():
     assert exp["capas"]["verificador"]["contraejemplo"] == "precio_final(1, 101)"
 
 
-def test_el_expediente_registra_caso_parche_y_procedencia_sin_la_etiqueta():
+def test_el_expediente_registra_caso_parche_y_procedencia_sin_la_etiqueta() -> None:
     exp = revisar(CASO, "control", verificar=verificador_que_encuentra("x"))
 
     assert exp["caso"] == {
@@ -68,14 +68,14 @@ def test_el_expediente_registra_caso_parche_y_procedencia_sin_la_etiqueta():
     assert exp["generado_en"].startswith("20")
 
 
-def test_sin_verificar_trae_los_limites_fijos_y_los_del_caso():
+def test_sin_verificar_trae_los_limites_fijos_y_los_del_caso() -> None:
     exp = revisar(CASO, "control", verificar=verificador_que_encuentra("x"))
 
     assert "búsqueda simbólica acotada, no prueba" in exp["sin_verificar"]
     assert "Solo cubre enteros (céntimos); no cubre float ni Decimal." in exp["sin_verificar"]
 
 
-def test_un_verificador_que_lanza_deja_la_capa_no_concluyente_con_pendiente():
+def test_un_verificador_que_lanza_deja_la_capa_no_concluyente_con_pendiente() -> None:
     exp = revisar(CASO, "control", verificar=verificador_que_lanza)
 
     verificador = exp["capas"]["verificador"]
@@ -84,13 +84,20 @@ def test_un_verificador_que_lanza_deja_la_capa_no_concluyente_con_pendiente():
     assert any(s.startswith("capa verificador:") for s in exp["sin_verificar"])
 
 
-def test_un_parche_que_no_carga_falla_la_funcional_y_deja_lo_demas_no_concluyente(tmp_path):
+def test_un_parche_que_no_carga_falla_la_funcional_y_deja_lo_demas_no_concluyente(
+    tmp_path: Path,
+) -> None:
     caso = tmp_path / "precio_final"
     shutil.copytree(CASO, caso)
     (caso / "parches" / "roto.py").write_text("def precio_final(:\n")
 
-    llamado = []
-    exp = revisar(caso, "roto", verificar=lambda d, t: llamado.append(d))
+    llamado: list[Path] = []
+
+    def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
+        llamado.append(directorio)
+        raise AssertionError("el verificador no debe correr si el parche no carga")
+
+    exp = revisar(caso, "roto", verificar=verificar)
 
     assert {k: v["resultado"] for k, v in exp["capas"].items()} == {
         "funcional": "falla",
@@ -102,7 +109,7 @@ def test_un_parche_que_no_carga_falla_la_funcional_y_deja_lo_demas_no_concluyent
     assert exp["parche"]["origen"] is None
 
 
-def test_una_capa_que_agota_el_tiempo_queda_no_concluyente(tmp_path):
+def test_una_capa_que_agota_el_tiempo_queda_no_concluyente(tmp_path: Path) -> None:
     caso = tmp_path / "precio_final"
     shutil.copytree(CASO, caso)
     (caso / "parches" / "lento.py").write_text(
@@ -115,10 +122,10 @@ def test_una_capa_que_agota_el_tiempo_queda_no_concluyente(tmp_path):
     assert exp["capas"]["funcional"]["pendiente"]
 
 
-def test_un_verificador_con_resultado_invalido_queda_no_concluyente_con_pendiente():
-    def verificar(directorio, timeout_s):
+def test_un_verificador_con_resultado_invalido_queda_no_concluyente_con_pendiente() -> None:
+    def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
         capa = verificador_que_encuentra(None)(directorio, timeout_s)
-        capa.resultado = "ok"
+        capa.resultado = "ok"  # pyright: ignore[reportAttributeAccessIssue] - inválido a propósito
         return capa
 
     exp = revisar(CASO, "control", verificar=verificar)
@@ -127,8 +134,8 @@ def test_un_verificador_con_resultado_invalido_queda_no_concluyente_con_pendient
     assert exp["capas"]["verificador"]["pendiente"] in exp["pendientes"]
 
 
-def test_un_verificador_no_concluyente_sin_pendiente_recibe_uno_del_catalogo():
-    def verificar(directorio, timeout_s):
+def test_un_verificador_no_concluyente_sin_pendiente_recibe_uno_del_catalogo() -> None:
+    def verificar(directorio: Path, timeout_s: float) -> ResultadoCapa:
         capa = verificador_que_encuentra(None)(directorio, timeout_s)
         capa.resultado = "no_concluyente"
         return capa
@@ -139,7 +146,7 @@ def test_un_verificador_no_concluyente_sin_pendiente_recibe_uno_del_catalogo():
     assert exp["capas"]["verificador"]["pendiente"] in exp["pendientes"]
 
 
-def test_el_error_de_importacion_queda_en_la_salida_de_la_funcional(tmp_path):
+def test_el_error_de_importacion_queda_en_la_salida_de_la_funcional(tmp_path: Path) -> None:
     caso = tmp_path / "precio_final"
     shutil.copytree(CASO, caso)
     (caso / "parches" / "roto.py").write_text("def precio_final(:\n")
@@ -149,7 +156,7 @@ def test_el_error_de_importacion_queda_en_la_salida_de_la_funcional(tmp_path):
     assert "SyntaxError" in exp["capas"]["funcional"]["salida"]
 
 
-def test_un_parche_que_se_cuelga_al_importar_deja_todo_no_concluyente(tmp_path):
+def test_un_parche_que_se_cuelga_al_importar_deja_todo_no_concluyente(tmp_path: Path) -> None:
     caso = tmp_path / "precio_final"
     shutil.copytree(CASO, caso)
     (caso / "parches" / "colgado.py").write_text("while True:\n    pass\n")
@@ -159,7 +166,7 @@ def test_un_parche_que_se_cuelga_al_importar_deja_todo_no_concluyente(tmp_path):
     assert {v["resultado"] for v in exp["capas"].values()} == {"no_concluyente"}
 
 
-def test_un_contrato_sin_pruebas_deja_la_capa_no_concluyente(tmp_path):
+def test_un_contrato_sin_pruebas_deja_la_capa_no_concluyente(tmp_path: Path) -> None:
     caso = tmp_path / "precio_final"
     shutil.copytree(CASO, caso)
     (caso / "contrato" / "exploit.py").write_text("from objetivo import precio_final\n")

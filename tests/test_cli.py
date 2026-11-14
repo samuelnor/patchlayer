@@ -6,7 +6,7 @@ from pathlib import Path
 CASOS = Path(__file__).resolve().parents[1] / "casos"
 
 
-def test_la_cli_expone_revisar_y_experimento():
+def test_la_cli_expone_revisar_y_experimento() -> None:
     salida = subprocess.run(
         ["patchwise", "--help"], capture_output=True, text=True, check=True
     ).stdout
@@ -14,7 +14,7 @@ def test_la_cli_expone_revisar_y_experimento():
     assert "experimento" in salida
 
 
-def test_revisar_escribe_el_expediente_e_imprime_el_veredicto_c(tmp_path):
+def test_revisar_escribe_el_expediente_e_imprime_el_veredicto_c(tmp_path: Path) -> None:
     shutil.copytree(CASOS, tmp_path / "casos")
 
     proc = subprocess.run(
@@ -26,11 +26,12 @@ def test_revisar_escribe_el_expediente_e_imprime_el_veredicto_c(tmp_path):
 
     assert proc.stdout.strip().splitlines()[-1] == "C: rechazado"
     assert proc.returncode == 1  # falla cerrada: solo evidencia_favorable sale con 0
-    expediente = json.loads((tmp_path / "expedientes" / "precio_final" / "control.json").read_text())
+    ruta = tmp_path / "expedientes" / "precio_final" / "control.json"
+    expediente = json.loads(ruta.read_text())
     assert expediente["veredictos"]["C"] == "rechazado"
 
 
-def test_revisar_un_parche_inexistente_falla_con_mensaje(tmp_path):
+def test_revisar_un_parche_inexistente_falla_con_mensaje(tmp_path: Path) -> None:
     shutil.copytree(CASOS, tmp_path / "casos")
 
     proc = subprocess.run(
@@ -44,10 +45,12 @@ def test_revisar_un_parche_inexistente_falla_con_mensaje(tmp_path):
     assert "no_existe" in proc.stderr
 
 
-def test_experimento_escribe_los_resultados(tmp_path):
+def test_experimento_escribe_los_resultados(tmp_path: Path) -> None:
     shutil.copytree(CASOS, tmp_path / "casos")
 
-    proc = subprocess.run(["patchwise", "experimento"], cwd=tmp_path, capture_output=True, text=True)
+    proc = subprocess.run(
+        ["patchwise", "experimento"], cwd=tmp_path, capture_output=True, text=True
+    )
 
     assert proc.returncode == 0, proc.stderr
     assert "| C |" in proc.stdout
