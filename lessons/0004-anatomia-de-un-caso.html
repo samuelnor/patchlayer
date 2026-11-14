@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 4 · Anatomía de un caso</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte II, el mecanismo · Lección 4 de 11 · 10 minutos</p>
+<h1>Anatomía de un caso</h1>
+<p class="lede">Todo lo que la compuerta sabe hacer lo hace sobre una carpeta. Si sabes leer esa carpeta, sabes qué se le pide a un parche y quién lo pidió.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Abres <code>casos/precio_final/</code>, dices para qué sirve cada archivo y clasificas tres parches candidatos a mano, antes de que ninguna herramienta corra.
+</div>
+
+<h2>La carpeta</h2>
+<pre><code>casos/precio_final/
+  caso.json              la ficha: id, CWE, vulnerabilidad, propiedad, límites
+  objetivo.py            el código vulnerable original
+  contrato/              lo escriben humanos, antes de pedir el parche
+    propiedad.py           lo que intenta refutar el verificador
+    exploit.py             el ataque conocido, como prueba
+    test_funcional.py      el comportamiento legítimo y sus bordes
+  parches/
+    control.py             el código vulnerable, tal cual
+    llm_flint_40b_free.py  un parche candidato
+    seeded_*.py            más parches candidatos
+    etiquetas.json         la clase verdadera de cada uno</code></pre>
+<p>Hay cinco casos con esta misma forma: <code>precio_final</code> y <code>transferir</code> (validación numérica, CWE-20), y <code>ver_factura</code>, <code>cancelar_pedido</code> y <code>puede_leer</code> (IDOR, CWE-639).<sup><a href="#f1">1</a></sup></p>
+
+<h2>El código vulnerable</h2>
+<pre><code>def precio_final(precio: int, descuento_pct: int) -&gt; int:
+    """Aplica un descuento porcentual a un precio en céntimos."""
+    return precio - (precio * descuento_pct) // 100</code></pre>
+<p>No valida el descuento. Con 150 % el precio queda negativo; con un descuento negativo, sube.</p>
+
+<h2>El contrato de seguridad, en tres archivos</h2>
+<h3>La propiedad</h3>
+<pre><code>def precio_entre_cero_y_original(precio: int, descuento_pct: int) -&gt; bool:
+    """
+    pre: precio &gt;= 0
+    post: __return__
+    """
+    try:
+        final = precio_final(precio, descuento_pct)
+    except ValueError:
+        return True  # rechazar el descuento es seguro
+    return 0 &lt;= final &lt;= precio</code></pre>
+<p>Es una función que devuelve <code>True</code> cuando el parche se portó bien con esa entrada. El docstring es un contrato PEP 316: <code>pre:</code> dice qué entradas cuentan y <code>post: __return__</code> exige que el resultado sea verdadero.<sup><a href="#f2">2</a></sup> Tres decisiones se repiten en los cinco casos:</p>
+<ul>
+<li><strong>Rechazar es seguro.</strong> Si el parche lanza la excepción prevista, la propiedad se cumple. Por eso la propiedad sola no distingue un parche correcto de uno que lo rechaza todo.</li>
+<li><strong>La propiedad importa al parche, no al revés.</strong> <code>from objetivo import precio_final</code>: el parche no puede editar lo que lo juzga.</li>
+<li><strong>Lo que la <code>pre</code> deja fuera es un límite.</strong> «No cubre precios negativos de entrada» está en <code>limites</code> de <code>caso.json</code> y acaba en <code>sin_verificar</code> de cada expediente.</li>
+</ul>
+
+<h3>El exploit y las pruebas funcionales</h3>
+<p>El exploit es <strong>una</strong> prueba de pytest con el ataque conocido: <code>precio_final(1000, 150)</code> debe lanzar <code>ValueError</code> o devolver algo entre 0 y 1000. Las pruebas funcionales son cinco y pisan los bordes válidos: descuento de 0, de 100, de 1 y de 99.<sup><a href="#f3">3</a></sup> Esos bordes son los que atrapan a un parche regresivo.</p>
+
+<h2>Los parches y sus etiquetas</h2>
+<p>Un <strong>parche candidato</strong> es un archivo completo que reemplaza a <code>objetivo.py</code>. Nunca toca el contrato. La <strong>etiqueta</strong> vive en <code>parches/etiquetas.json</code>:</p>
+<pre><code>"seeded_superficial_1": {"clase": "superficial", "origen": "human:seeded"}</code></pre>
+<p>La <code>clase</code> la fijó una persona, fuera de la compuerta. La compuerta nunca la usa para decidir: del archivo de etiquetas solo copia el <code>origen</code> al expediente, como procedencia. La <code>clase</code> entra únicamente en el experimento (<a href="0008-el-experimento-abc.html">lección 8</a>).<sup><a href="#f4">4</a></sup></p>
+
+<hr>
+
+<h2>Práctica 1 · Clasifica a mano</h2>
+<p>Tres parches reales del corpus. Para cada uno, piensa en una entrada que viole la propiedad o en un uso legítimo que se rompa. Después responde.</p>
+<pre><code># Parche X
+if descuento_pct &gt; 100:
+    raise ValueError("descuento fuera de rango")
+
+# Parche Y
+if descuento_pct == 150:
+    raise ValueError("descuento no permitido")
+
+# Parche Z
+if descuento_pct &gt;= 100 or descuento_pct &lt;= 0:
+    raise ValueError("descuento fuera de rango")</code></pre>
+<p>Los tres siguen con el mismo <code>return</code> del original.</p>
+<div class="quiz" data-quiz-src="q4"></div>
+<script type="application/json" id="q4">
+[
+ {"q":"Parche X. ¿Qué entrada viola la propiedad?",
+  "opts":["precio 1000 con descuento 150","precio 1000 con descuento -50","precio 1000 con descuento 100","precio 1000 con descuento 101"],
+  "ok":1,"why":"Un descuento de -50 pasa el filtro y devuelve 1500, por encima del precio original. Bloquea el exploit conocido y deja la vulnerabilidad: superficial."},
+ {"q":"Parche Y. ¿Cuál es su clase?",
+  "opts":["Correcto: bloquea el ataque","Regresivo: rompe lo legítimo","Superficial: bloquea un síntoma"],
+  "ok":2,"why":"Solo rechaza el número exacto del exploit. Con 151 el precio vuelve a quedar negativo."},
+ {"q":"Parche Z. ¿Qué capa lo delata?",
+  "opts":["La prueba funcional","El exploit conocido","El verificador formal"],
+  "ok":0,"why":"Rechaza 0 y 100, que son descuentos válidos: es regresivo. Para el exploit y para la propiedad, rechazar es seguro, así que solo lo ven las pruebas funcionales."},
+ {"q":"¿Quién usa la clase de etiquetas.json?",
+  "opts":["La compuerta al decidir","El verificador al buscar","El experimento al contar","El expediente al firmar"],
+  "ok":2,"why":"La etiqueta solo entra en el experimento. Un expediente nunca la contiene."},
+ {"q":"¿Por qué la propiedad devuelve True cuando el parche lanza ValueError?",
+  "opts":["Porque CrossHair no entiende las excepciones","Porque rechazar la entrada es seguro","Porque así la prueba corre rápido"],
+  "ok":1,"why":"Negarse no deja explotar nada. El costo de negarse de más lo miden las pruebas funcionales."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<div class="recall" data-prompt="Sin mirar: los tres archivos del contrato y qué pregunta responde cada uno">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p><strong><code>propiedad.py</code></strong>: ¿existe alguna entrada que viole la afirmación de seguridad? <strong><code>exploit.py</code></strong>: ¿sigue funcionando el ataque conocido? <strong><code>test_funcional.py</code></strong>: ¿sigue funcionando lo legítimo, incluidos los bordes válidos?</p>
+<p>Los tres los escriben humanos antes de pedir el parche, y el parche no puede tocarlos.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p>La carpeta misma: abre <a href="../casos/precio_final/contrato/propiedad.py"><code>casos/precio_final/contrato/propiedad.py</code></a> y luego la de <a href="../casos/puede_leer/contrato/propiedad.py"><code>puede_leer</code></a>, que tiene dos propiedades y fija <code>ADMIN = 2</code> sin importarlo del parche. Para la sintaxis de <code>pre:</code> y <code>post:</code>, <a href="https://crosshair.readthedocs.io/en/latest/kinds_of_contracts.html">«Kinds of contracts»</a> de CrossHair.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat: es tu profesor en este curso. Pídele que te muestre otro caso y que te haga clasificar sus parches.</p>
+<p>Anterior: <a href="0003-donde-vive-patchlayer.html">Lección 3 · Dónde vive Patchlayer</a> · Siguiente: <a href="0005-la-compuerta-por-dentro.html">Lección 5 · La compuerta por dentro</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#caso">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <code>casos/*/caso.json</code>; resolución de <a href="https://github.com/samuelnor/patchlayer/issues/3">#3</a>.</small></p>
+<p id="f2" class="why"><small>2. Documentación de CrossHair, <a href="https://crosshair.readthedocs.io/en/latest/kinds_of_contracts.html">Kinds of contracts</a>: los contratos van en el docstring, con <code>pre:</code> y <code>post:</code>, y <code>__return__</code> es el valor devuelto.</small></p>
+<p id="f3" class="why"><small>3. <a href="../casos/precio_final/contrato/exploit.py"><code>contrato/exploit.py</code></a> y <a href="../casos/precio_final/contrato/test_funcional.py"><code>contrato/test_funcional.py</code></a>.</small></p>
+<p id="f4" class="why"><small>4. Resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, sección 6; <code>_origen</code> en <a href="../patchlayer/compuerta.py"><code>patchlayer/compuerta.py</code></a>.</small></p>
+
+</main>
+</body>
+</html>

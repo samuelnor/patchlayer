@@ -9,7 +9,7 @@
 <body>
 <main class="wide">
 
-<p class="kicker">Patchlayer · Referencia · para imprimir y llevar al ensayo de las 15:40</p>
+<p class="kicker">Patchlayer · Referencia · para imprimir y llevar al ensayo</p>
 <h1>El pitch en una página</h1>
 <p class="lede">Hackatón Defensive Acceleration, frente 03: ciberdefensa automatizada y verificación formal. Entrega 15:55.</p>
 
@@ -22,7 +22,7 @@
 <tbody>
 <tr><td>Vector de riesgo</td><td>Aceptar un parche de IA que pasa las pruebas pero deja la vulnerabilidad explotable (parche superficial).</td></tr>
 <tr><td>Mecanismo defensivo</td><td>Contrato de seguridad humano, fijado antes del parche, y una cadena de tres capas que emite un expediente con veredicto y con lo que quedó sin verificar.</td></tr>
-<tr><td>Validación empírica</td><td>El mismo corpus etiquetado por humanos bajo A, B y C: cuántos parches superficiales acepta cada configuración.</td></tr>
+<tr><td>Validación empírica</td><td>El mismo corpus etiquetado por humanos bajo A, B y C: de 15 parches superficiales, A aceptó 15, B aceptó 10 y C ninguno, sin falsos rechazos.</td></tr>
 <tr><td>Límites y riesgo dual</td><td>Búsqueda simbólica acotada, no prueba; cubre solo lo que dice el contrato; funciones puras; aislamiento débil.</td></tr>
 </tbody>
 </table>
@@ -32,11 +32,11 @@
 <ol class="beats">
 <li><span class="t">0:00–0:20<br>Riesgo</span><span>Hoy un equipo le pide a un asistente de IA que corrija una vulnerabilidad y acepta el parche porque las pruebas pasan. Pero pasar las pruebas no es estar corregido: un parche superficial bloquea el exploit conocido y deja la vulnerabilidad explotable.</span></li>
 <li><span class="t">0:20–0:55<br>Mecanismo</span><span>Patchlayer es una compuerta de evidencia. Antes de pedir el parche, un humano escribe el contrato de seguridad: una propiedad, el exploit y las pruebas funcionales. El modelo nunca lo toca. Cada parche candidato pasa por tres capas: prueba funcional, exploit y un verificador que busca, sobre el código Python real, cualquier entrada que viole la propiedad. La salida es un expediente: qué dijo cada capa, el veredicto y qué quedó sin verificar. Si el verificador no concluye, no hay aceptación.</span></li>
-<li><span class="t">0:55–1:30<br>Evidencia</span><span>Lo medimos. Sobre <span class="blank">N</span> parches etiquetados por humanos en <span class="blank">5</span> casos: con solo pruebas funcionales se aceptaron <span class="blank">? de ?</span> parches superficiales; con el exploit, <span class="blank">? de ?</span>; con la cadena completa, <span class="blank">? de ?</span>. El costo: <span class="blank">?</span> falsos rechazos y <span class="blank">?</span> s por parche. <em>[Demo: un expediente donde A y B dan evidencia favorable y C rechaza con un contraejemplo distinto del exploit conocido.]</em></span></li>
+<li><span class="t">0:55–1:30<br>Evidencia</span><span>Lo medimos. Sobre 25 parches etiquetados por humanos en 5 casos: con solo pruebas funcionales se aceptaron 15 de 15 parches superficiales; con el exploit, 10 de 15; con la cadena completa, 0 de 15. El costo: cero falsos rechazos en 5 parches correctos y menos de un segundo por parche. Es un corpus pequeño y los superficiales difíciles los sembramos nosotros. <em>[Demo: un expediente donde A y B dan evidencia favorable y C rechaza con un contraejemplo distinto del exploit conocido.]</em></span></li>
 <li><span class="t">1:30–1:50<br>Límites</span><span>No es una prueba certificada: es búsqueda simbólica acotada, sobre funciones puras, y cubre solo lo que el contrato dice. El aislamiento es un subproceso con tiempo límite. Y como la compuerta ejecuta código no confiable y sus contraejemplos son entradas de ataque, en producción necesita un entorno aislado.</span></li>
 <li><span class="t">1:50–2:00<br>Cierre</span><span>La IA propone, la evidencia decide y el expediente dice lo que no sabemos. No confíes en el parche; confía en la evidencia.</span></li>
 </ol>
-<p class="why">Unas 290 palabras. Sin decidir todavía en el mapa: qué caso se muestra en vivo y qué cifra abre el pitch; dependen del experimento (<a href="https://github.com/samuelnor/patchlayer/issues/13">#13</a>).</p>
+<p class="why">Unas 300 palabras. Candidato para la demo: <code>uv run patchlayer revisar precio_final seeded_superficial_1</code>, donde A y B dan evidencia favorable y C rechaza con el contraejemplo <code>(1, -1)</code>. Qué caso se muestra y qué cifra abre el pitch lo decide <a href="https://github.com/samuelnor/patchlayer/issues/15">#15</a>.</p>
 
 <h2>Cómo funciona, en tres tablas</h2>
 <h3>Cadena: tres capas que corren siempre</h3>
@@ -74,7 +74,7 @@
 </tbody>
 </table>
 </div>
-<p>Por caso: 1 parche correcto, 2 superficiales, 1 regresivo (20 en total), más el original como parche de control. Origen mixto y registrado: LLMs que no vieron el contrato ni el exploit, y siembra manual. Etiquetas por revisión humana cruzada, independiente de la compuerta; nunca van en el expediente.</p>
+<p>Por caso: 1 parche correcto, 2 superficiales, 1 regresivo (20 en total), más el original como parche de control: 25 pares. Origen registrado: 5 parches de LLMs que no vieron el contrato ni el exploit (4 correctos, 1 regresivo) y 15 sembrados a mano, entre ellos los 10 superficiales. Etiquetas por revisión humana cruzada, independiente de la compuerta; nunca van en el expediente.</p>
 
 <h2 id="medido">Lo que ya está medido <small>(investigación previa, no el experimento)</small></h2>
 <div class="table-wrap">
@@ -89,19 +89,32 @@
 </table>
 </div>
 
-<h2>Cifras que faltan <small>(llenar tras las 14:45)</small></h2>
+<h2 id="cifras">Las cifras del experimento <small>(corrida oficial, 14-nov-2026)</small></h2>
 <div class="table-wrap">
 <table>
 <thead><tr><th>Métrica</th><th class="num">A</th><th class="num">B</th><th class="num">C</th></tr></thead>
 <tbody>
-<tr><td>Parches superficiales aceptados (principal)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
-<tr><td>Falsos rechazos (parches correctos no aceptados)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
-<tr><td>No concluyentes del verificador</td><td class="num">n/a</td><td class="num">n/a</td><td class="num"><span class="blank">&nbsp;</span></td></tr>
-<tr><td>Tiempo por capa, mediana y máximo (s)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
+<tr><td>Parches superficiales aceptados (principal)</td><td class="num">15 de 15</td><td class="num">10 de 15</td><td class="num">0 de 15</td></tr>
+<tr><td>Parches regresivos aceptados</td><td class="num">0 de 5</td><td class="num">0 de 5</td><td class="num">0 de 5</td></tr>
+<tr><td>Falsos rechazos (parches correctos no aceptados)</td><td class="num">0 de 5</td><td class="num">0 de 5</td><td class="num">0 de 5</td></tr>
+<tr><td>Detección marginal (lo que añade la capa)</td><td class="num">5 regresivos</td><td class="num">5 de control</td><td class="num">10 sembrados</td></tr>
 </tbody>
 </table>
 </div>
-<p>Siempre en conteos absolutos («3 de 12»), sin porcentajes. La mutación es una métrica de fiabilidad aparte y es lo primero que se recorta: no la prometas hasta saber si se corrió.</p>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Por capa</th><th class="num">Funcional</th><th class="num">Exploit</th><th class="num">Verificador</th></tr></thead>
+<tbody>
+<tr><td>No concluyentes</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+<tr><td>Tiempo por parche, mediana (máximo), en s</td><td class="num">0,12 (0,14)</td><td class="num">0,12 (0,13)</td><td class="num">0,15 (0,21)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Siempre en conteos absolutos («10 de 15»), sin porcentajes. Fuente: <a href="../evidencia/experimento/tabla.md"><code>evidencia/experimento/tabla.md</code></a>. Detalle en la <a href="../lessons/0008-el-experimento-abc.html">lección 8</a>.</p>
+<div class="warn">
+<span class="label">Mutación: todavía no es una cifra</span>
+<p>Se corrió: 25 mutantes semánticos generados, y la cadena completa rechazó los 25. Pero ninguno está confirmado por una persona y el reporte está sin firmar. Di «falta la confirmación humana», no «0 de 25 sobreviven». Lecciones <a href="../lessons/0009-mutacion-quien-vigila-la-evidencia.html">9</a> y <a href="../lessons/0010-revisar-mutantes-a-mano.html">10</a>.</p>
+</div>
 
 <h2>Lo que la Propuesta decía y ya no es cierto</h2>
 <div class="table-wrap">
@@ -128,7 +141,7 @@
 <tr><td>Qué código</td><td>Funciones críticas con propiedad escribible: dinero, control de acceso, validación</td></tr>
 <tr><td>Quién la usa</td><td>Equipos de seguridad de aplicaciones, mantenedores de open source, fabricantes regulados (CRA, SSDF RV.3)</td></tr>
 <tr><td>Qué cuesta</td><td>Escribir el contrato de seguridad; lo hacen humanos</td></tr>
-<tr><td>Qué no hay en el prototipo</td><td>Escáner, LLM en vivo e integración con CI: el caso llega con contrato y el corpus es estático</td></tr>
+<tr><td>Qué no hay en el prototipo</td><td>Escáner, LLM en vivo e integración con CI: el caso llega con contrato, el corpus es estático y la compuerta es un comando (<code>patchlayer revisar</code>, código 0 solo con evidencia favorable en C)</td></tr>
 </tbody>
 </table>
 </div>
@@ -158,7 +171,7 @@
 </tbody>
 </table>
 </div>
-<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Objeciones del jurado y cómo responderlas: <a href="../lessons/0002-limites-sin-sobreprometer.html">lección 2</a>. Esqueleto de las respuestas: <a href="../lessons/0001-las-cuatro-respuestas.html">lección 1</a>. Dónde se usaría: <a href="../lessons/0003-donde-vive-patchlayer.html">lección 3</a>.</p>
+<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Objeciones del jurado y cómo responderlas: <a href="../lessons/0002-limites-sin-sobreprometer.html">lección 2</a>. Esqueleto de las respuestas: <a href="../lessons/0001-las-cuatro-respuestas.html">lección 1</a>. Dónde se usaría: <a href="../lessons/0003-donde-vive-patchlayer.html">lección 3</a>. Cómo funciona por dentro: <a href="patchlayer-por-dentro.html">Patchlayer por dentro</a>. Todas las lecciones: <a href="mapa-del-curso.html">mapa del curso</a>.</p>
 
 </main>
 </body>

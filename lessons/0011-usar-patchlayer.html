@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 11 · Usar Patchlayer</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte IV, el uso · Lección 11 de 11 · 15 minutos, en la terminal</p>
+<h1>Usar Patchlayer de punta a punta</h1>
+<p class="lede">Tres subcomandos, tres preguntas distintas. Esta lección se hace con la terminal abierta: cada paso dice qué deberías ver, para que sepas en el acto si lo entendiste.</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Revisas un parche, lees su expediente, metes un parche tuyo en la compuerta y regeneras el experimento, sabiendo qué archivo escribe cada comando.
+</div>
+
+<h2>Los tres subcomandos</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Comando</th><th>Pregunta</th><th>Escribe</th></tr></thead>
+<tbody>
+<tr><td><code>patchlayer revisar &lt;caso&gt; &lt;parche&gt;</code></td><td>¿Hay evidencia favorable para este parche?</td><td><code>expedientes/&lt;caso&gt;/&lt;parche&gt;.json</code></td></tr>
+<tr><td><code>patchlayer experimento</code></td><td>¿Cuántos parches de cada clase acepta cada configuración?</td><td>un expediente por par, y <code>experimento.json</code>, <code>tabla.md</code> y <code>reporte.html</code> en <code>resultados/</code></td></tr>
+<tr><td><code>patchlayer mutacion</code></td><td>¿La evidencia nota variantes inseguras del parche correcto?</td><td><code>resultados/mutacion.json</code> y <code>mutacion.md</code>, y <code>expedientes/mutantes/</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Todos se lanzan desde la raíz del repo con <code>uv run</code>. <code>expedientes/</code> y <code>resultados/</code> están fuera de git: son salidas que se regeneran.<sup><a href="#f1">1</a></sup></p>
+
+<h2>Hazlo</h2>
+<ol class="steps">
+<li>
+<p>Prepara el entorno (Python 3.12 y <code>uv</code>).</p>
+<pre><code>uv sync</code></pre>
+</li>
+<li>
+<p>Revisa el parche correcto de <code>precio_final</code>. Predice antes el veredicto de C.</p>
+<pre><code>uv run patchlayer revisar precio_final llm_flint_40b_free; echo "código: $?"</code></pre>
+<p class="expect"><code>C: evidencia_favorable</code> y <code>código: 0</code>.</p>
+</li>
+<li>
+<p>Ahora un parche superficial. Predice el veredicto y el código de salida.</p>
+<pre><code>uv run patchlayer revisar precio_final seeded_superficial_1; echo "código: $?"</code></pre>
+<p class="expect"><code>C: rechazado</code> y <code>código: 1</code>. El código es 0 solo con evidencia favorable en C; rechazado y no concluyente dan 1. Así es como una CI bloquearía el merge.</p>
+</li>
+<li>
+<p>Abre el expediente y busca tres cosas: el contraejemplo, la observación y lo que quedó sin verificar.</p>
+<pre><code>uv run python -m json.tool expedientes/precio_final/seeded_superficial_1.json | less</code></pre>
+<p class="expect"><code>"contraejemplo": "precio_entre_cero_y_original(1, -1)"</code>, una observación que empieza por «B favorable pero C rechaza» y cinco líneas en <code>sin_verificar</code>.</p>
+</li>
+<li>
+<p>Mete un parche tuyo. Copia el parche correcto, rómpelo a tu gusto y revísalo.</p>
+<pre><code>cp casos/precio_final/parches/llm_flint_40b_free.py casos/precio_final/parches/mio.py
+# edita mio.py: cambia «&gt; 100» por «&gt; 101»
+uv run patchlayer revisar precio_final mio</code></pre>
+<p class="expect">Predice primero qué capas lo notan. Resultado real: funcional pasa, exploit pasa, verificador falla con el contraejemplo <code>precio_entre_cero_y_original(109, 101)</code>. A y B dan evidencia favorable y C rechaza. Es el mismo cambio que mutmut hizo en la <a href="0010-revisar-mutantes-a-mano.html">lección 10</a>. Prueba luego con <code>&gt; 200</code>: ahí ya lo nota el exploit.</p>
+</li>
+<li>
+<p>Borra tu parche antes de seguir, para no contaminar el corpus.</p>
+<pre><code>rm casos/precio_final/parches/mio.py expedientes/precio_final/mio.json</code></pre>
+<p class="expect">Un parche sin entrada en <code>etiquetas.json</code> sí se revisaría en el experimento, pero saldría como «parche sin etiqueta: fuera de la tabla».</p>
+</li>
+<li>
+<p>Corre el experimento completo.</p>
+<pre><code>uv run patchlayer experimento</code></pre>
+<p class="expect">La tabla A/B/C con 15/15, 10/15 y 0/15 en superficiales, las métricas secundarias, y tres archivos en <code>resultados/</code>. Tarda unos 20 segundos. Abre <code>resultados/reporte.html</code> en el navegador.</p>
+</li>
+<li>
+<p>Corre la mutación.</p>
+<pre><code>uv run patchlayer mutacion</code></pre>
+<p class="expect">Cerca de 45 segundos; casi todo es mutmut. Sale el reporte de mutación en pantalla, con «Reporte sin firmar» mientras nadie llene <code>mutantes/firma.json</code> (<a href="0010-revisar-mutantes-a-mano.html">lección 10</a>). Con <code>--sin-sintacticos</code> no corre mutmut y el reporte que escribe ya no trae esa sección.</p>
+</li>
+</ol>
+
+<div class="warn">
+<span class="label">Dos cosas que no se hacen por accidente</span>
+<p><strong>La corrida oficial</strong> vive en <code>evidencia/experimento/</code> y está versionada. Solo se regenera a propósito, cuando cambia el corpus o la compuerta: <code>uv run patchlayer experimento --salida evidencia/experimento</code>.</p>
+<p><strong>Los parches que revisas se ejecutan de verdad</strong> en tu máquina, en un subproceso con tiempo límite. No revises código en el que no confías fuera de un entorno aislado: es el tercer límite fijo de todo expediente.</p>
+</div>
+
+<h2>Si tocas el código</h2>
+<p>Antes de dar un cambio por terminado, los tres controles tienen que salir en 0. Son los mismos que corre la CI en cada PR a <code>main</code>:<sup><a href="#f2">2</a></sup></p>
+<pre><code>uv run ruff check
+uv run basedpyright
+uv run pytest -q</code></pre>
+
+<h2>Códigos de salida de <code>revisar</code></h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th class="num">Código</th><th>Significa</th></tr></thead>
+<tbody>
+<tr><td class="num">0</td><td>C dio evidencia favorable</td></tr>
+<tr><td class="num">1</td><td>C rechazó o no concluyó</td></tr>
+<tr><td class="num">2</td><td>Uso incorrecto: el parche no existe en <code>casos/&lt;caso&gt;/parches/</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<hr>
+
+<h2>Práctica · Reconocer</h2>
+<p>Después de hacer los pasos, sin volver a mirarlos.</p>
+<div class="quiz" data-quiz-src="q11"></div>
+<script type="application/json" id="q11">
+[
+ {"q":"«revisar» termina con C no concluyente. ¿Código de salida?",
+  "opts":["0","1","2"],
+  "ok":1,"why":"Solo evidencia favorable da 0. Falla cerrada también en el código de salida."},
+ {"q":"¿Dónde escribe «experimento» si no le pasas --salida?",
+  "opts":["En evidencia/experimento/","En expedientes/","En resultados/"],
+  "ok":2,"why":"resultados/ está ignorada por git. La corrida oficial va a evidencia/experimento/ y se pide a propósito."},
+ {"q":"¿Qué hace --sin-sintacticos?",
+  "opts":["Deja fuera a mutmut","Deja fuera a CrossHair","Deja fuera a pytest"],
+  "ok":0,"why":"Quedan solo los mutantes semánticos, que pasan por la cadena completa. mutmut es lo primero que se recorta."},
+ {"q":"Añades un parche sin entrada en etiquetas.json y corres el experimento. ¿Qué pasa?",
+  "opts":["El comando falla nada más empezar","Cuenta como un parche correcto más","Se revisa, fuera de la tabla"],
+  "ok":2,"why":"Tiene expediente y aparece en el reporte, con el hallazgo «parche sin etiqueta: fuera de la tabla»."},
+ {"q":"¿Qué comando te dice si hay evidencia favorable para un solo parche?",
+  "opts":["patchlayer experimento","patchlayer revisar","patchlayer mutacion"],
+  "ok":1,"why":"revisar es la compuerta. Los otros dos miden a la compuerta."}
+]
+</script>
+
+<h2>Fuente principal</h2>
+<p><a href="../patchlayer/cli.py"><code>patchlayer/cli.py</code></a>: 72 líneas, un bloque por subcomando. Si un comando hace algo que no esperabas, la respuesta está ahí.</p>
+
+<footer class="next">
+<p><strong>¿Algo no salió como dice la lección?</strong> Pega la salida en el chat y pregúntale a Claude: es tu profesor en este curso.</p>
+<p>Anterior: <a href="0010-revisar-mutantes-a-mano.html">Lección 10 · Revisar mutantes a mano</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencias: <a href="../reference/patchlayer-por-dentro.html">Patchlayer por dentro</a> y <a href="../reference/pitch-en-una-pagina.html">El pitch en una página</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. <a href="../patchlayer/cli.py"><code>patchlayer/cli.py</code></a> y <code>.gitignore</code>; resolución de <a href="https://github.com/samuelnor/patchlayer/issues/6">#6</a>, sección 7.</small></p>
+<p id="f2" class="why"><small>2. <a href="../AGENTS.md"><code>AGENTS.md</code></a>, «Checks», y <code>.github/workflows/ci.yml</code>.</small></p>
+
+</main>
+</body>
+</html>

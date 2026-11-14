@@ -132,6 +132,51 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 }
 .recall .model[hidden] { display: none; }
 
+/* Componente: flujo de pasos en horizontal; pasa a vertical en móvil */
+.flow { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 1.2rem 0 1.4rem; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; }
+.flow .step { flex: 1 1 6.5rem; border: 1px solid var(--rule); border-radius: 4px; padding: 0.5rem; }
+.flow .step b { display: block; font-size: 0.8rem; }
+.flow .step.us { border: 2px solid var(--accent); background: var(--wash); }
+.flow .arrow { align-self: center; color: var(--muted); }
+
+/* Componente: pasos reales, numerados, para hacer en la terminal */
+ol.steps { list-style: none; counter-reset: paso; padding: 0; margin: 1rem 0 1.4rem; }
+ol.steps > li { counter-increment: paso; position: relative; padding: 0.7rem 0 0.7rem 2.4rem; border-top: 1px solid var(--rule); }
+ol.steps > li::before {
+  content: counter(paso); position: absolute; left: 0; top: 0.75rem;
+  font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; font-weight: 600;
+  width: 1.6rem; height: 1.6rem; line-height: 1.6rem; text-align: center;
+  border: 1px solid var(--ink); border-radius: 50%;
+}
+ol.steps > li > :last-child { margin-bottom: 0; }
+ol.steps .expect { font-size: 0.9rem; color: var(--muted); }
+
+/* Componente: mapa del curso */
+.toc { list-style: none; padding: 0; margin: 0.6rem 0 1.6rem; }
+.toc li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid var(--rule); }
+.toc .n { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.8rem; color: var(--muted); padding-top: 0.15rem; }
+.toc small { display: block; color: var(--muted); }
+
+/* Componente: simulador de la cadena (assets/cadena.js) */
+.cadena { margin: 1.5rem 0; padding: 1rem; background: var(--wash); border-left: 3px solid var(--accent); }
+.cadena .fila { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.6rem; align-items: center; margin-bottom: 0.5rem; }
+.cadena .nombre, .cadena .salida dt { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.cadena .ops { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.cadena button {
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.78rem; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 0.3rem 0.55rem; cursor: pointer;
+}
+.cadena button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.cadena button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cadena .revelar { font-family: ui-sans-serif, system-ui, sans-serif; margin-top: 0.4rem; }
+.cadena .salida { margin: 0.9rem 0 0; padding-top: 0.8rem; border-top: 1px solid var(--rule); }
+.cadena .salida[hidden] { display: none; }
+.cadena .salida dl { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.3rem 0.6rem; margin: 0; }
+.cadena .salida dd { margin: 0; font-size: 0.92rem; }
+.cadena .v-evidencia_favorable { color: var(--ok); font-weight: 600; }
+.cadena .v-rechazado { color: var(--bad); font-weight: 600; }
+.cadena .v-no_concluyente { color: var(--muted); font-weight: 600; }
+
 footer.next {
   margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--ink);
   font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.82rem; color: var(--muted);
@@ -142,12 +187,15 @@ footer.next p { margin-bottom: 0.4rem; }
   html { font-size: 16px; }
   body { padding-top: 1.5rem; }
   .beats li { grid-template-columns: 1fr; gap: 0.1rem; }
+  .flow { flex-direction: column; }
+  .flow .arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 1rem; }
+  .cadena .fila, .cadena .salida dl { grid-template-columns: 1fr; gap: 0.2rem; }
 }
 @media print {
   html { font-size: 11pt; }
   body { padding: 0; background: #fff; color: #000; }
   a { color: inherit; text-decoration: none; }
-  .quiz, .recall, footer.next { display: none; }
+  .quiz, .recall, .cadena, footer.next { display: none; }
   h2 { break-after: avoid; }
   table, .note, .win, .warn { break-inside: avoid; }
 }

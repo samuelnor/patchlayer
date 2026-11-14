@@ -16,6 +16,18 @@
   Ideación original. Use for: la narrativa y la sección 10 (cómo presentarlo al jurado). Ojo: Dafny, SQLite, detección y LLM en vivo ya no aplican.
 - [CrossHair: How does it work?](https://crosshair.readthedocs.io/en/latest/how_does_it_work.html) y [Kinds of contracts](https://crosshair.readthedocs.io/en/latest/kinds_of_contracts.html)
   Documentación primaria. Use for: explicar la ejecución simbólica y los contratos PEP 316.
+- Código del repo: `patchlayer/compuerta.py`, `reglas.py`, `formal.py`, `experimento.py`, `mutacion.py`, `cli.py`.
+  La fuente primaria del mecanismo. Use for: cualquier afirmación sobre lo que la compuerta hace; las lecciones 5 a 11 lo citan por función.
+- `evidencia/experimento/` (`tabla.md`, `experimento.json`, `reporte.html`)
+  Corrida oficial del experimento A/B/C. Use for: toda cifra del experimento.
+- `evidencia/llm/README.md`
+  Cómo se generaron, auditaron y etiquetaron los parches de LLM. Use for: la letra pequeña del corpus (17 de 30 corridas contaminadas y descartadas).
+- `mutantes/README.md` y `resultados/mutacion.md`
+  Método de mutación y su reporte. Use for: semánticos y sintácticos, confirmación, revisión, firma.
+- [mutmut: documentación](https://mutmut.readthedocs.io/en/latest/)
+  Use for: qué es un mutante sintáctico, ejemplos de operadores, configuración en `setup.cfg`.
+- [Jia y Harman: "An Analysis and Survey of the Development of Mutation Testing", IEEE TSE 2011](https://web.eecs.umich.edu/~weimerw/2020-481F/readings/mutation-testing.pdf)
+  Use for: historia de la prueba de mutación y el problema de los mutantes equivalentes. Citado por su resumen; sin leer a fondo.
 - [Smith, Barr, Le Goues, Brun: "Is the Cure Worse Than the Disease? Overfitting in Automated Program Repair", ESEC/FSE 2015](https://www.cs.washington.edu/homes/brun/pubs/pubs/Smith15fse.pdf)
   Use for: la cita del vector de riesgo (parches sobreajustados a la suite).
 - [Qi, Long, Achour, Rinard: "An Analysis of Patch Plausibility and Correctness…", ISSTA 2015](https://www.cs.toronto.edu/~fanl/papers/kali-issta2015.pdf)
@@ -43,6 +55,7 @@
 ## Gaps
 
 - Cuánto cuesta escribir contratos de seguridad por función en una organización real: sin fuente primaria todavía.
-- Cifras del experimento A/B/C (issue #13): no existen todavía.
+- Mutación: ningún mutante confirmado ni revisado por una persona todavía; sin cifra citable.
+- Ninguna medida sobre parches superficiales escritos por un LLM: los del corpus son sembrados.
 - Respuesta acordada del equipo sobre riesgo dual: la Propuesta solo dice «orientación exclusivamente defensiva»; lo de la lección 2 es propuesta de Claude.
 - Criterios de evaluación oficiales del jurado más allá de las cuatro preguntas.

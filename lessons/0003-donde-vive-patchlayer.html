@@ -5,19 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dónde vive Patchlayer</title>
 <link rel="stylesheet" href="../assets/course.css">
-<style>
-  /* Flujo de cinco pasos; pasa a vertical en móvil. Específico de esta lección. */
-  .flow { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 1.2rem 0 1.4rem; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 0.78rem; }
-  .flow .step { flex: 1 1 6.5rem; border: 1px solid var(--rule); border-radius: 4px; padding: 0.5rem; }
-  .flow .step b { display: block; font-size: 0.8rem; }
-  .flow .step.us { border: 2px solid var(--accent); background: var(--wash); }
-  .flow .arrow { align-self: center; color: var(--muted); }
-  @media (max-width: 30rem) { .flow { flex-direction: column; } .flow .arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 1rem; } }
-</style>
 </head>
 <body>
 <main>
-<p class="kicker">Patchlayer · Pitch · Lección 3 de 3 · 10 minutos</p>
+<p class="kicker">Patchlayer · Parte I, el pitch · Lección 3 de 11 · 10 minutos</p>
 <h1>Dónde vive Patchlayer en el mundo real</h1>
 <p class="lede">Una pregunta del jurado casi segura: «¿y esto dónde se usaría?». Si respondes con el lugar exacto del ciclo de desarrollo y con quién lo pagaría, el proyecto deja de sonar a ejercicio académico.</p>
 
@@ -50,7 +41,7 @@
 </ul>
 
 <div class="warn">
-<p><strong>No confundas el destino con el prototipo.</strong> En el hackatón no hay escáner ni LLM en vivo: el caso llega con su contrato y los parches son un corpus estático. El flujo de arriba es dónde viviría la compuerta, no lo que se demuestra hoy. Dilo así en el pitch.</p>
+<p><strong>No confundas el destino con el prototipo.</strong> En el hackatón no hay escáner ni LLM en vivo, ni integración con la CI: el caso llega con su contrato, los parches son un corpus estático y la compuerta es un comando, <code>patchlayer revisar</code>. Ese comando ya termina con código 0 solo si la configuración C da evidencia favorable, que es justo lo que una CI necesita para bloquear un merge (<a href="0011-usar-patchlayer.html">lección 11</a>). El flujo de arriba es dónde viviría la compuerta, no lo que se demuestra hoy. Dilo así en el pitch.</p>
 </div>
 
 <h2>¿Qué código protege?</h2>
@@ -76,7 +67,7 @@
 <p>Sin subir a releer.</p>
 <div class="quiz" data-quiz='[
  {"q":"¿En qué punto del ciclo de desarrollo se coloca Patchlayer?","opts":["Entre el usuario y servidor","Entre el ataque y firewall","Entre el parche y merge","Entre el código y compilador"],"ok":2,"why":"Es una compuerta de CI: evalúa el parche propuesto antes de que entre a main."},
- {"q":"¿Qué parte del flujo real NO existe en el prototipo del hackatón?","opts":["El escáner y el LLM en vivo","El contrato escrito por humanos","El expediente con los pendientes","Las tres capas de la cadena"],"ok":0,"why":"El caso llega con su contrato y los parches son un corpus estático. Decirlo evita sobreprometer."},
+ {"q":"¿Qué parte del flujo real NO existe en el prototipo del hackatón?","opts":["El escáner y un LLM vivo","El contrato que escriben los humanos","El expediente con todos sus pendientes","Las tres capas de la cadena"],"ok":0,"why":"El caso llega con su contrato y los parches son un corpus estático. Decirlo evita sobreprometer."},
  {"q":"En un despliegue real, ¿quién escribe el contrato de seguridad?","opts":["El modelo que genera parches","El escáner estático del repositorio","El auditor externo tras desplegar","El equipo humano de seguridad"],"ok":3,"why":"Si el modelo definiera el contrato, verificaríamos una propiedad que él eligió: circularidad."},
  {"q":"¿Qué tipo de código encaja mejor con la compuerta?","opts":["Interfaces gráficas con mucho estado","Funciones críticas con propiedad expresable","Scripts de instalación de servidores","Configuraciones de red y firewall"],"ok":1,"why":"Hace falta una propiedad acotada que el verificador intente refutar, como la de precio_final."},
  {"q":"Además del veredicto, ¿para qué sirve el expediente fuera del hackatón?","opts":["Entrenar al modelo con parches","Reemplazar siempre al revisor humano","Dejar evidencia auditable del manejo","Acelerar la compilación del proyecto"],"ok":2,"why":"La procedencia y lo que quedó sin verificar sirven a revisores, auditores y a obligaciones como la CRA o el SSDF."}
@@ -97,7 +88,7 @@
 
 <footer class="next">
 <p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat: es tu profesor en este curso. Pídele que te interrogue como jurado mezclando las tres lecciones.</p>
-<p>Anterior: <a href="0002-limites-sin-sobreprometer.html">Lección 2 · Límites sin sobreprometer</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html#mundo-real">El pitch en una página</a></p>
+<p>Anterior: <a href="0002-limites-sin-sobreprometer.html">Lección 2 · Límites sin sobreprometer</a> · Siguiente: <a href="0004-anatomia-de-un-caso.html">Lección 4 · Anatomía de un caso</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/pitch-en-una-pagina.html#mundo-real">El pitch en una página</a></p>
 </footer>
 
 <p id="f1" class="why"><small>1. GitHub Changelog, <a href="https://github.blog/changelog/2026-10-15-agentic-autofix-for-code-scanning-alerts-general-availability">Agentic autofix for code scanning alerts, general availability</a> (oct. 2026).</small></p>

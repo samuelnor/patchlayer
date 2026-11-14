@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lección 9 · Mutación</title>
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+
+<p class="kicker">Patchlayer · Parte III, la evidencia · Lección 9 de 11 · 10 minutos</p>
+<h1>Mutación: ¿quién vigila a la evidencia?</h1>
+<p class="lede">El experimento dice que C rechazó 15 de 15. Pero esos 15 los eligió el equipo. La mutación hace la pregunta incómoda: si fabricamos parches inseguros nuevos, ¿la evidencia los nota?</p>
+
+<div class="win">
+<span class="label">Lo que te llevas</span>
+Explicas qué mide la mutación, por qué hay dos clases de mutantes que no se suman, y qué se puede decir hoy de sus resultados (poco, y sabes por qué).
+</div>
+
+<h2>La idea, prestada de las pruebas</h2>
+<p>La prueba de mutación es una técnica clásica para medir una suite de pruebas: se introduce un cambio pequeño en el código (un <em>mutante</em>) y se corren las pruebas. Si alguna falla, el mutante quedó detectado. Si todas pasan, <strong>sobrevive</strong>, y eso señala algo que la suite no comprueba.<sup><a href="#f1">1</a></sup></p>
+<p>Patchlayer la aplica a su propia evidencia. Se parte del <strong>parche de referencia</strong> de cada caso (su parche correcto), se fabrican variantes y se mira si las configuraciones las dejan pasar.</p>
+
+<div class="note">
+<span class="label">No es una capa</span>
+<p>La mutación mide la <em>fiabilidad de la evidencia</em>. No cambia ningún veredicto, no entra al expediente de un parche candidato ni a la tabla del experimento. Los mutantes viven en <code>mutantes/</code>, fuera de <code>casos/&lt;caso&gt;/parches/</code>.<sup><a href="#f2">2</a></sup></p>
+</div>
+
+<h2>Dos clases de mutantes</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th></th><th>Mutante semántico</th><th>Mutante sintáctico</th></tr></thead>
+<tbody>
+<tr><td>Quién lo hace</td><td>Un LLM, con una instrucción fija</td><td>mutmut, con cambios mecánicos</td></tr>
+<tr><td>Cómo es</td><td>Una «corrección plausible» que deja la vulnerabilidad</td><td>Un operador o una constante cambiados (<code>&lt;</code> por <code>&lt;=</code>, <code>100</code> por <code>101</code>)</td></tr>
+<tr><td>Contra qué se mide</td><td>A, B y C (cadena completa)</td><td>Solo A y B (las suites de pytest)</td></tr>
+<tr><td>Cuándo cuenta</td><td>Si una persona lo confirmó como inseguro</td><td>Siempre; una persona revisa los que sobreviven a B</td></tr>
+<tr><td>Pregunta que responde</td><td>¿El verificador ve parches inseguros que no escribimos nosotros?</td><td>¿Qué dejan sin comprobar las pruebas del contrato?</td></tr>
+</tbody>
+</table>
+</div>
+<p>Son dos métricas. <strong>Nunca se suman.</strong></p>
+
+<h3>Un mutante semántico</h3>
+<pre><code># mutantes/precio_final/semanticos/sem_2.py
+if abs(descuento_pct) &gt; 100:
+    raise ValueError("El descuento debe estar entre 0 y 100.")</code></pre>
+<p>Parece una validación razonable. Rechaza 150 y −150, así que el exploit conocido no funciona. Pero deja pasar −50. La cadena le dio evidencia favorable en A y en B, y C lo rechazó con el contraejemplo <code>(1, -1)</code>.</p>
+
+<h3>Dos mutantes sintácticos que sobrevivieron a B</h3>
+<pre><code>-    if descuento_pct &lt; 0 or descuento_pct &gt; 100:
++    if descuento_pct &lt; 0 or descuento_pct &gt; 101:
+
+-        raise ValueError("El descuento debe estar entre 0 y 100.")
++        raise ValueError("XXEl descuento debe estar entre 0 y 100.XX")</code></pre>
+<p>Los dos pasan las pruebas funcionales y el exploit. Que un mutante sobreviva no dice todavía si es grave. Para eso una persona hace la <strong>revisión</strong>: <em>equivalente</em> (no cambia el comportamiento) o <em>hueco</em> (falta real de la suite). Decidir si un mutante es equivalente no se puede automatizar en general; por eso lo hace una persona.<sup><a href="#f3">3</a></sup></p>
+
+<h2>Lo que hay hoy</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Semánticos</th><th class="num">Total</th></tr></thead>
+<tbody>
+<tr><td>Generados (5 por caso)</td><td class="num">25</td></tr>
+<tr><td>Confirmados como inseguros por una persona</td><td class="num">0</td></tr>
+<tr><td>Sin confirmar</td><td class="num">25</td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Sintácticos</th><th class="num">Total</th></tr></thead>
+<tbody>
+<tr><td>Generados por mutmut</td><td class="num">49</td></tr>
+<tr><td>Sobreviven a A</td><td class="num">29</td></tr>
+<tr><td>Sobreviven a B</td><td class="num">28</td></tr>
+<tr><td>Revisados (equivalente o hueco)</td><td class="num">0</td></tr>
+</tbody>
+</table>
+</div>
+<p>Como ningún semántico está confirmado, la tabla oficial de sobrevivientes está en ceros y el reporte sale <strong>sin firmar</strong>.<sup><a href="#f4">4</a></sup> Lo que sí se ve en la lista de «sin confirmación humana»: de los 25, A le dio evidencia favorable a 24, B a 18 y C a ninguno.</p>
+
+<div class="warn">
+<span class="label">Lo que se puede decir hoy</span>
+<p><strong>Sí:</strong> «Generamos 25 mutantes semánticos y la cadena completa rechazó los 25; falta que una persona confirme que son inseguros, así que aún no es una cifra».</p>
+<p><strong>No:</strong> «0 de 25 mutantes sobreviven a C». Sin confirmación, un mutante podría no ser inseguro, y entonces rechazarlo no prueba nada. Y 28 sobrevivientes sintácticos no son 28 huecos: muchos cambian solo el texto de un mensaje de error.</p>
+</div>
+
+<h2>Sobreviviente no es falso negativo</h2>
+<p>Los dos son «algo inseguro que pasó». La diferencia es de dónde viene: un <strong>falso negativo</strong> es un parche candidato del corpus, con etiqueta. Un <strong>sobreviviente</strong> es un mutante, fuera del corpus. Usar una palabra por la otra mezcla el experimento con la mutación.</p>
+
+<hr>
+
+<h2>Práctica 1 · Reconocer</h2>
+<div class="quiz" data-quiz-src="q9"></div>
+<script type="application/json" id="q9">
+[
+ {"q":"¿Qué mide la mutación en Patchlayer?",
+  "opts":["La calidad del parche candidato","La fiabilidad de la evidencia","La velocidad de cada capa"],
+  "ok":1,"why":"No juzga parches del corpus: comprueba si la evidencia nota variantes inseguras del parche correcto."},
+ {"q":"¿Contra qué configuraciones se mide un mutante sintáctico?",
+  "opts":["Solo contra la configuración C","Contra A, B y C","Solo contra A y B"],
+  "ok":2,"why":"mutmut corre las suites de pytest. Los sintácticos no pasan por el verificador."},
+ {"q":"¿Cuándo cuenta un mutante semántico?",
+  "opts":["Cuando el modelo afirma que es inseguro","Cuando una persona confirma que es inseguro","Cuando el verificador le halla un contraejemplo"],
+  "ok":1,"why":"Lo que el modelo afirma es descripcion_llm, no una confirmación. Y la confirmación no se copia de C."},
+ {"q":"Un mutante semántico confirmado recibe evidencia favorable de B. Es…",
+  "opts":["un falso negativo de B","un mutante sobreviviente de B","un hallazgo nuevo de B"],
+  "ok":1,"why":"Falso negativo y hallazgo son palabras del experimento, para parches candidatos del corpus."},
+ {"q":"Hoy, ¿cuántos mutantes semánticos están confirmados?",
+  "opts":["25 de 25","18 de 25","0 de 25"],
+  "ok":2,"why":"Todos están sin confirmar y el reporte está sin firmar. Por eso todavía no hay cifra citable."}
+]
+</script>
+
+<h2>Práctica 2 · Recordar</h2>
+<div class="recall" data-prompt="¿Por qué los semánticos se miden contra C y los sintácticos no? Dos frases">
+<div class="model note" hidden>
+<span class="label">Respuesta modelo</span>
+<p>Los semánticos se escriben para parecer correcciones plausibles que violan la propiedad, que es justo lo que el verificador existe para atrapar; por eso pasan por la cadena completa. Los sintácticos son cambios mecánicos que miden qué dejan sin comprobar las suites de pytest del contrato, y eso son A y B.</p>
+<p>Por eso son dos métricas separadas y no se suman.</p>
+</div>
+</div>
+
+<h2>Fuente principal</h2>
+<p><a href="../mutantes/README.md"><code>mutantes/README.md</code></a>: es corto y es la fuente del equipo sobre el método. Para la técnica general, la documentación de <a href="https://mutmut.readthedocs.io/en/latest/">mutmut</a>; para su historia y el problema de los mutantes equivalentes, el estudio de <a href="https://web.eecs.umich.edu/~weimerw/2020-481F/readings/mutation-testing.pdf">Jia y Harman (2011)</a>.</p>
+
+<footer class="next">
+<p><strong>¿Algo no cuadra?</strong> Pregúntale a Claude en el chat. Pídele que te muestre otro mutante y que te deje decidir si es inseguro antes de ver qué dijo la cadena.</p>
+<p>Anterior: <a href="0008-el-experimento-abc.html">Lección 8 · El experimento A/B/C</a> · Siguiente: <a href="0010-revisar-mutantes-a-mano.html">Lección 10 · Revisar mutantes a mano</a> · <a href="../reference/mapa-del-curso.html">Mapa del curso</a> · Referencia: <a href="../reference/patchlayer-por-dentro.html#mutacion">Patchlayer por dentro</a></p>
+</footer>
+
+<hr>
+<p id="f1" class="why"><small>1. Documentación de <a href="https://mutmut.readthedocs.io/en/latest/">mutmut</a>: «a mutation testing system for Python»; ejemplos de mutación: sumar 1 a un entero, cambiar <code>&lt;</code> por <code>&lt;=</code>.</small></p>
+<p id="f2" class="why"><small>2. <a href="../mutantes/README.md"><code>mutantes/README.md</code></a>; resoluciones de <a href="https://github.com/samuelnor/patchlayer/issues/4">#4</a> y <a href="https://github.com/samuelnor/patchlayer/issues/14">#14</a>; <a href="../GLOSSARY.md">glosario</a>, sección «Mutación».</small></p>
+<p id="f3" class="why"><small>3. Jia y Harman, <a href="https://web.eecs.umich.edu/~weimerw/2020-481F/readings/mutation-testing.pdf">«An Analysis and Survey of the Development of Mutation Testing»</a>, IEEE TSE 37(5), 2011. Citado por su resumen; el equipo no lo ha leído a fondo.</small></p>
+<p id="f4" class="why"><small>4. <code>resultados/mutacion.md</code>, corrida del 14-nov-2026 con mutmut 3.8.1. La carpeta <code>resultados/</code> no está versionada: se regenera con <code>uv run patchlayer mutacion</code>.</small></p>
+
+</main>
+</body>
+</html>
