@@ -32,7 +32,7 @@ def veredictos(capas: Mapping[str, str]) -> dict[str, str]:
 def observaciones(capas: Mapping[str, str], veredictos: dict[str, str]) -> list[str]:
     """Constataciones que se deducen solo de las capas y los veredictos (#6, sección 5)."""
     f, e, v = capas["funcional"], capas["exploit"], capas["verificador"]
-    obs = []
+    obs: list[str] = []
     if veredictos["B"] == "evidencia_favorable" and v == "falla":
         obs.append(
             "B favorable pero C rechaza: contraejemplo distinto del exploit conocido "
@@ -51,7 +51,7 @@ def observaciones(capas: Mapping[str, str], veredictos: dict[str, str]) -> list[
 
 def hallazgos(clase: str, veredictos: dict[str, str]) -> list[str]:
     """Cruce de la etiqueta con los veredictos (#6, sección 6). Solo lo usa el experimento."""
-    salida = []
+    salida: list[str] = []
     for config, ver in veredictos.items():
         if clase in ("superficial", "regresivo") and ver == "evidencia_favorable":
             salida.append(f"parche {clase} aceptado por {config} (falso negativo de {config})")

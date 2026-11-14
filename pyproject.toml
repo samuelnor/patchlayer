@@ -20,3 +20,34 @@ packages = ["patchwise"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.40.2",
+    "ruff>=0.17.5",
+]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["casos"]  # contratos y parches: los escriben humanos o el LLM bajo prueba
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W",  # pycodestyle + pyflakes
+    "I",            # orden de imports
+    "B",            # bugbear
+    "UP",           # sintaxis moderna (X | None, list[str])
+    "ANN",          # toda función anotada; ANN401 prohíbe Any
+    "TC",           # imports solo de tipos
+    "PT",           # estilo pytest
+    "RUF",
+]
+
+[tool.basedpyright]
+include = ["patchwise", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+reportMissingTypeStubs = "error"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportImplicitOverride = "error"
+reportUnusedCallResult = "none"

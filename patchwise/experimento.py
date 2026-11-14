@@ -1,12 +1,15 @@
-"""Experimento A/B/C: corre todos los pares (caso, parche) y cruza etiquetas con veredictos (#6, sección 6).
+"""Experimento A/B/C: corre todos los pares (caso, parche) y cruza etiquetas con veredictos.
+
+Formato en #6, sección 6.
 
 Aquí, y solo aquí, entra la etiqueta. Solo `evidencia_favorable` cuenta como aceptación.
 """
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
+from typing import TypedDict
 
 from patchwise import formal
 from patchwise.compuerta import Verificar, escribir_expediente, revisar
@@ -15,15 +18,43 @@ from patchwise.reglas import CONFIGURACIONES, hallazgos
 CLASES = ("superficial", "regresivo", "correcto")
 
 
+class Par(TypedDict):
+    """Un par (caso, parche) del experimento, con su etiqueta ya cruzada."""
+
+    caso: str
+    parche: str
+    clase: str | None
+    origen: str | None
+    capas: dict[str, str]
+    veredictos: dict[str, str]
+    hallazgos: list[str]
+    pendientes: list[str]
+    observaciones: list[str]
+
+
+class Conteo(TypedDict):
+    aceptados: int
+    total: int
+
+
+Tabla = dict[str, dict[str, Conteo]]  # configuración -> clase -> conteo
+
+
+class ResultadoExperimento(TypedDict):
+    generado_en: str
+    pares: list[Par]
+    tabla: Tabla
+
+
 def experimento(
     casos_dir: Path,
     expedientes_dir: Path,
     resultados_dir: Path,
     verificar: Verificar = formal.verificar,
     timeout_s: float = 60,
-) -> dict:
+) -> ResultadoExperimento:
     """Revisa cada parche de cada caso y escribe experimento.json, reporte.html y tabla.md."""
-    pares = []
+    pares: list[Par] = []
     for caso_dir in sorted(p for p in casos_dir.iterdir() if (p / "caso.json").is_file()):
         etiquetas = _etiquetas(caso_dir)
         for parche_py in sorted((caso_dir / "parches").glob("*.py")):
@@ -49,8 +80,8 @@ def experimento(
             )
 
     tabla = _tabla(pares)
-    resultado = {
-        "generado_en": datetime.now(timezone.utc).isoformat(),
+    resultado: ResultadoExperimento = {
+        "generado_en": datetime.now(UTC).isoformat(),
         "pares": pares,
         "tabla": tabla,
     }
@@ -64,18 +95,20 @@ def experimento(
     return resultado
 
 
-def _etiquetas(caso_dir: Path) -> dict:
+def _etiquetas(caso_dir: Path) -> dict[str, dict[str, str]]:
     ruta = caso_dir / "parches" / "etiquetas.json"
     return json.loads(ruta.read_text()) if ruta.exists() else {}
 
 
-def _tabla(pares: list[dict]) -> dict:
+def _tabla(pares: list[Par]) -> Tabla:
     """Por configuración y clase: cuántos parches aceptó (evidencia_favorable) de cuántos."""
     return {
         config: {
             clase: {
                 "aceptados": sum(
-                    p["veredictos"][config] == "evidencia_favorable" for p in pares if p["clase"] == clase
+                    p["veredictos"][config] == "evidencia_favorable"
+                    for p in pares
+                    if p["clase"] == clase
                 ),
                 "total": sum(p["clase"] == clase for p in pares),
             }
@@ -85,7 +118,7 @@ def _tabla(pares: list[dict]) -> dict:
     }
 
 
-def tabla_markdown(tabla: dict) -> str:
+def tabla_markdown(tabla: Tabla) -> str:
     filas = [
         "| Configuración | Superficiales aceptados | Regresivos aceptados | Correctos aceptados |",
         "| --- | --- | --- | --- |",
@@ -96,7 +129,7 @@ def tabla_markdown(tabla: dict) -> str:
     return "\n".join(filas) + "\n"
 
 
-def reporte_html(resultado: dict) -> str:
+def reporte_html(resultado: ResultadoExperimento) -> str:
     tabla = resultado["tabla"]
     filas_tabla = "".join(
         f"<tr><th>{config}</th>"
@@ -142,10 +175,10 @@ ul {{ margin: 0; padding-left: 1.1rem; }}
 </table></div>
 </body>
 </html>
-"""
+"""  # noqa: E501 - plantilla HTML
 
 
-def _fila_par(p: dict) -> str:
+def _fila_par(p: Par) -> str:
     capas = "<br>".join(f"{escape(n)}: {escape(r)}" for n, r in p["capas"].items())
     veredictos = "<br>".join(f"{c}: {escape(v)}" for c, v in p["veredictos"].items())
     return (

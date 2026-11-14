@@ -1,7 +1,7 @@
 """Resultado de una capa de la cadena (formato del expediente, #6)."""
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal, TypedDict
 
 Resultado = Literal["pasa", "falla", "no_concluyente"]
 
@@ -19,6 +19,20 @@ class ResultadoCapa:
     detalle: str
     pendiente: str | None = None
     contraejemplo: str | None = None  # solo la capa verificador
+
+
+class Expediente(TypedDict):
+    """Expediente de un parche tal como se escribe a JSON (#6)."""
+
+    caso: dict[str, str]
+    parche: dict[str, str | None]
+    contrato_sha256: str
+    capas: dict[str, dict[str, Any]]  # cada `ResultadoCapa` pasado por `asdict`
+    veredictos: dict[str, str]
+    sin_verificar: list[str]
+    pendientes: list[str]
+    observaciones: list[str]
+    generado_en: str
 
 
 # Catálogo fijo de pendientes por motivo de `no_concluyente` (#6, sección 5).

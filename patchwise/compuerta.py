@@ -7,15 +7,15 @@ import subprocess
 import sys
 import tempfile
 import time
+from collections.abc import Callable
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Callable
 
 import pytest
 
 from patchwise import formal
-from patchwise.capas import PENDIENTES, Resultado, ResultadoCapa
+from patchwise.capas import PENDIENTES, Expediente, Resultado, ResultadoCapa
 from patchwise.reglas import observaciones, veredictos
 
 Verificar = Callable[[Path, float], ResultadoCapa]
@@ -34,7 +34,7 @@ def revisar(
     parche: str,
     verificar: Verificar = formal.verificar,
     timeout_s: float = 60,
-) -> dict:
+) -> Expediente:
     """Corre siempre las tres capas sobre `parches/<parche>.py` y devuelve el expediente."""
     caso = json.loads((caso_dir / "caso.json").read_text())
     parche_py = caso_dir / "parches" / f"{parche}.py"
@@ -73,11 +73,11 @@ def revisar(
         + [f"capa {n}: {c.detalle}" for n, c in no_concluyentes],
         "pendientes": [c.pendiente for _, c in no_concluyentes if c.pendiente],
         "observaciones": observaciones(resultados, ver),
-        "generado_en": datetime.now(timezone.utc).isoformat(),
+        "generado_en": datetime.now(UTC).isoformat(),
     }
 
 
-def escribir_expediente(expediente: dict, raiz: Path) -> Path:
+def escribir_expediente(expediente: Expediente, raiz: Path) -> Path:
     """Escribe `<raiz>/<caso>/<parche>.json` y devuelve su ruta."""
     ruta = raiz / expediente["caso"]["id"] / f"{expediente['parche']['id']}.json"
     ruta.parent.mkdir(parents=True, exist_ok=True)
@@ -106,8 +106,14 @@ def _importar_objetivo(directorio: Path, timeout_s: float) -> tuple[bool, str] |
 
 
 def _pytest(directorio: Path, archivo: str, timeout_s: float) -> ResultadoCapa:
-    comando = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", f"contrato/{archivo}"]
-    base = dict(herramienta="pytest", version=pytest.__version__, comando=" ".join(["python", *comando[1:]]))
+    comando = [
+        sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", f"contrato/{archivo}"
+    ]  # fmt: skip
+    base = dict(
+        herramienta="pytest",
+        version=pytest.__version__,
+        comando=" ".join(["python", *comando[1:]]),
+    )
     inicio = time.monotonic()
     try:
         proc = subprocess.run(
@@ -153,7 +159,7 @@ def _verificador(verificar: Verificar, directorio: Path, timeout_s: float) -> Re
         elif capa.resultado == "no_concluyente" and not capa.pendiente:
             capa.pendiente = PENDIENTES["no_confirmado"]
         return capa
-    except Exception as exc:  # noqa: BLE001 - cualquier error de la capa es no concluyente
+    except Exception as exc:
         return ResultadoCapa(
             resultado="no_concluyente",
             herramienta="crosshair",
@@ -178,7 +184,7 @@ def _sin_carga(agoto_tiempo: bool, salida: str) -> dict[str, ResultadoCapa]:
         detalle = "el parche no carga (error al importar objetivo.py)"
         pendiente = PENDIENTES["importacion"]
 
-    def capa(resultado, herramienta, version):
+    def capa(resultado: Resultado, herramienta: str, version: str) -> ResultadoCapa:
         return ResultadoCapa(
             resultado=resultado,
             herramienta=herramienta,
@@ -191,7 +197,9 @@ def _sin_carga(agoto_tiempo: bool, salida: str) -> dict[str, ResultadoCapa]:
         )
 
     return {
-        "funcional": capa("no_concluyente" if agoto_tiempo else "falla", "pytest", pytest.__version__),
+        "funcional": capa(
+            "no_concluyente" if agoto_tiempo else "falla", "pytest", pytest.__version__
+        ),
         "exploit": capa("no_concluyente", "pytest", pytest.__version__),
         "verificador": capa("no_concluyente", "crosshair", "no ejecutado"),
     }
@@ -210,7 +218,10 @@ def _sha256(datos: bytes) -> str:
 
 def _sha256_dir(directorio: Path) -> str:
     h = hashlib.sha256()
-    for archivo in sorted(p for p in directorio.rglob("*") if p.is_file() and "__pycache__" not in p.parts):
+    archivos = (
+        p for p in directorio.rglob("*") if p.is_file() and "__pycache__" not in p.parts
+    )
+    for archivo in sorted(archivos):
         h.update(archivo.relative_to(directorio).as_posix().encode() + b"\0")
         h.update(archivo.read_bytes())
     return h.hexdigest()
