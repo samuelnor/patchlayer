@@ -1,3 +1,7 @@
 {
-  "control": {"clase": "superficial", "origen": "control"}
+  "control": {"clase": "superficial", "origen": "control"},
+  "correcto": {"clase": "correcto", "origen": "human:seeded"},
+  "superficial_solo_maximo": {"clase": "superficial", "origen": "human:seeded"},
+  "superficial_precio_no_negativo": {"clase": "superficial", "origen": "human:seeded"},
+  "regresivo_bordes": {"clase": "regresivo", "origen": "human:seeded"}
 }

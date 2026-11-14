@@ -92,3 +92,11 @@ _Avoid_: observación (esa es del expediente)
 
 **Falso rechazo**:
 Un parche correcto que una configuración no acepta.
+
+**Falso negativo**:
+Un parche superficial o regresivo que una configuración acepta (le da evidencia favorable). Es el error que la compuerta existe para evitar.
+_Avoid_: falso positivo, parche colado
+
+**Reporte del experimento**:
+La página HTML estática (`resultados/reporte.html`) que muestra la tabla A/B/C y, por cada par (caso, parche), sus veredictos, hallazgos, observaciones y pendientes. Es del experimento, no de un parche: lo que la compuerta sabe de un parche es su expediente.
+_Avoid_: reporte a secas para referirse a un expediente

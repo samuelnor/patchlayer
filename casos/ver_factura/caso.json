@@ -1,0 +1,10 @@
+{
+  "id": "ver_factura",
+  "cwe": "CWE-639",
+  "vulnerabilidad": "ver_factura solo verifica que el actor esté autenticado (actor_id > 0), sin comprobar que sea el dueño de la factura.",
+  "propiedad": "Si ver_factura devuelve el total, el actor es el dueño de la factura; si no lo es, la lectura se rechaza con PermissionError.",
+  "limites": [
+    "Solo modela un predicado puro sobre dataclass e int; no cubre sesiones HTTP ni consultas a base de datos.",
+    "No cubre permisos administrativos delegados."
+  ]
+}

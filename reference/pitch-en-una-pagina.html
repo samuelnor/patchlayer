@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Referencia · El pitch en una página</title>
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+<main class="wide">
+
+<p class="kicker">Patchwise · Referencia · para imprimir y llevar al ensayo de las 15:40</p>
+<h1>El pitch en una página</h1>
+<p class="lede">Hackatón Defensive Acceleration, frente 03: ciberdefensa automatizada y verificación formal. Entrega 15:55.</p>
+
+<blockquote>No confíes en el parche. Confía en la evidencia.</blockquote>
+
+<h2>Las cuatro respuestas</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Pregunta del jurado</th><th>Una frase</th></tr></thead>
+<tbody>
+<tr><td>Vector de riesgo</td><td>Aceptar un parche de IA que pasa las pruebas pero deja la vulnerabilidad explotable (parche superficial).</td></tr>
+<tr><td>Mecanismo defensivo</td><td>Contrato de seguridad humano, fijado antes del parche, y una cadena de tres capas que emite un expediente con veredicto y con lo que quedó sin verificar.</td></tr>
+<tr><td>Validación empírica</td><td>El mismo corpus etiquetado por humanos bajo A, B y C: cuántos parches superficiales acepta cada configuración.</td></tr>
+<tr><td>Límites y riesgo dual</td><td>Búsqueda simbólica acotada, no prueba; cubre solo lo que dice el contrato; funciones puras; aislamiento débil.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Guion de dos minutos <small>(borrador sugerido; el oficial es el de <a href="https://github.com/samuelnor/patchwise/issues/15">#15</a>)</small></h2>
+<ol class="beats">
+<li><span class="t">0:00–0:20<br>Riesgo</span><span>Hoy un equipo le pide a un asistente de IA que corrija una vulnerabilidad y acepta el parche porque las pruebas pasan. Pero pasar las pruebas no es estar corregido: un parche superficial bloquea el exploit conocido y deja la vulnerabilidad explotable.</span></li>
+<li><span class="t">0:20–0:55<br>Mecanismo</span><span>Patchwise es una compuerta de evidencia. Antes de pedir el parche, un humano escribe el contrato de seguridad: una propiedad, el exploit y las pruebas funcionales. El modelo nunca lo toca. Cada parche candidato pasa por tres capas: prueba funcional, exploit y un verificador que busca, sobre el código Python real, cualquier entrada que viole la propiedad. La salida es un expediente: qué dijo cada capa, el veredicto y qué quedó sin verificar. Si el verificador no concluye, no hay aceptación.</span></li>
+<li><span class="t">0:55–1:30<br>Evidencia</span><span>Lo medimos. Sobre <span class="blank">N</span> parches etiquetados por humanos en <span class="blank">5</span> casos: con solo pruebas funcionales se aceptaron <span class="blank">? de ?</span> parches superficiales; con el exploit, <span class="blank">? de ?</span>; con la cadena completa, <span class="blank">? de ?</span>. El costo: <span class="blank">?</span> falsos rechazos y <span class="blank">?</span> s por parche. <em>[Demo: un expediente donde A y B dan evidencia favorable y C rechaza con un contraejemplo distinto del exploit conocido.]</em></span></li>
+<li><span class="t">1:30–1:50<br>Límites</span><span>No es una prueba certificada: es búsqueda simbólica acotada, sobre funciones puras, y cubre solo lo que el contrato dice. El aislamiento es un subproceso con tiempo límite. Y como la compuerta ejecuta código no confiable y sus contraejemplos son entradas de ataque, en producción necesita un entorno aislado.</span></li>
+<li><span class="t">1:50–2:00<br>Cierre</span><span>La IA propone, la evidencia decide y el expediente dice lo que no sabemos. No confíes en el parche; confía en la evidencia.</span></li>
+</ol>
+<p class="why">Unas 290 palabras. Sin decidir todavía en el mapa: qué caso se muestra en vivo y qué cifra abre el pitch; dependen del experimento (<a href="https://github.com/samuelnor/patchwise/issues/13">#13</a>).</p>
+
+<h2>Cómo funciona, en tres tablas</h2>
+<h3>Cadena: tres capas que corren siempre</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Capa</th><th>Herramienta</th><th>Atrapa</th><th>No ve</th></tr></thead>
+<tbody>
+<tr><td>Prueba funcional</td><td>pytest</td><td>Parches regresivos</td><td>La vulnerabilidad</td></tr>
+<tr><td>Exploit</td><td>pytest</td><td>El ataque conocido (parche de control)</td><td>Variantes del ataque</td></tr>
+<tr><td>Verificador</td><td>CrossHair (Z3)</td><td>Parches superficiales, con contraejemplo</td><td>Parches regresivos</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Veredicto por configuración</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Veredicto</th><th>Regla</th><th>¿Cuenta como aceptación?</th></tr></thead>
+<tbody>
+<tr><td>Rechazado</td><td>Alguna capa de la configuración falla</td><td>No</td></tr>
+<tr><td>No concluyente</td><td>Ninguna falla, alguna no concluye</td><td>No (fallo cerrado)</td></tr>
+<tr><td>Evidencia favorable</td><td>Todas pasan</td><td>Sí</td></tr>
+</tbody>
+</table>
+</div>
+<h3>Corpus</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Caso</th><th>CWE</th><th>Propiedad</th><th>Exploit</th></tr></thead>
+<tbody>
+<tr><td><code>precio_final</code></td><td>20</td><td>El precio final queda entre 0 y el original</td><td><code>precio_final(1000, 150)</code> da −500</td></tr>
+<tr><td><code>transferir</code></td><td>20</td><td>El dinero se conserva; el origen no sube ni queda negativo</td><td>monto negativo</td></tr>
+<tr><td><code>ver_factura</code></td><td>639</td><td>Si devuelve el total, el actor es el dueño</td><td>factura ajena</td></tr>
+<tr><td><code>cancelar_pedido</code></td><td>639</td><td>Solo cancela si el dueño registrado es el actor</td><td>dueño declarado por el cliente</td></tr>
+<tr><td><code>puede_leer</code></td><td>639</td><td>Nadie lee documentos de otra organización</td><td>actor de otra organización</td></tr>
+</tbody>
+</table>
+</div>
+<p>Por caso: 1 parche correcto, 2 superficiales, 1 regresivo (20 en total), más el original como parche de control. Origen mixto y registrado: LLMs que no vieron el contrato ni el exploit, y siembra manual. Etiquetas por revisión humana cruzada, independiente de la compuerta; nunca van en el expediente.</p>
+
+<h2 id="medido">Lo que ya está medido <small>(investigación previa, no el experimento)</small></h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Hecho</th><th>Fuente</th></tr></thead>
+<tbody>
+<tr><td>CrossHair halla el contraejemplo de <code>transferir</code> vulnerable en 190 ms y confirma la corregida en 176 a 195 ms.</td><td><a href="https://github.com/samuelnor/patchwise/issues/2">#2</a></td></tr>
+<tr><td>Puerta trasera con constante mágica: CrossHair la encuentra en 207 ms; Hypothesis con 1000 ejemplos, no.</td><td><a href="https://github.com/samuelnor/patchwise/issues/2">#2</a></td></tr>
+<tr><td>Contraejemplo en los 8 bocetos vulnerables; los 6 parches superficiales probados, rechazados con un contraejemplo distinto del exploit conocido; ninguno en los 7 correctos. 21 s para 13 funciones.</td><td><a href="https://github.com/samuelnor/patchwise/issues/3">#3</a></td></tr>
+<tr><td>IDOR es API1 del OWASP API Security Top 10:2023 y está dentro de A01 del OWASP Top 10:2025.</td><td><a href="https://api-security.owasp.org/editions/2023/en/0x11-t10">OWASP API</a>, <a href="https://top10.owasp.org/2025/A01_2025-Broken_Access_Control">OWASP A01</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Cifras que faltan <small>(llenar tras las 14:45)</small></h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Métrica</th><th class="num">A</th><th class="num">B</th><th class="num">C</th></tr></thead>
+<tbody>
+<tr><td>Parches superficiales aceptados (principal)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
+<tr><td>Falsos rechazos (parches correctos no aceptados)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
+<tr><td>No concluyentes del verificador</td><td class="num">n/a</td><td class="num">n/a</td><td class="num"><span class="blank">&nbsp;</span></td></tr>
+<tr><td>Tiempo por capa, mediana y máximo (s)</td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td><td class="num"><span class="blank">&nbsp;</span></td></tr>
+</tbody>
+</table>
+</div>
+<p>Siempre en conteos absolutos («3 de 12»), sin porcentajes. La mutación es una métrica de fiabilidad aparte y es lo primero que se recorta: no la prometas hasta saber si se corrió.</p>
+
+<h2>Lo que la Propuesta decía y ya no es cierto</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Propuesta.pdf</th><th>Lo que se construye</th></tr></thead>
+<tbody>
+<tr><td>Verificación formal con Dafny</td><td>CrossHair sobre el Python real; Dafny fuera de la cadena</td></tr>
+<tr><td>El sistema detecta la vulnerabilidad (Vulnerability Mapper)</td><td>Sin detección: el caso llega con su contrato</td></tr>
+<tr><td>Un LLM genera parches en vivo (Repair Engine)</td><td>Corpus estático de parches guardados en el repo</td></tr>
+<tr><td>Evidence Ledger en SQLite, grafo de conocimiento</td><td>Expediente en JSON y un reporte HTML estático</td></tr>
+<tr><td>La mutación es una capa de la cadena</td><td>Métrica de fiabilidad, fuera de los veredictos</td></tr>
+<tr><td>Tasas y porcentajes</td><td>Conteos absolutos</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Palabras</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Di</th><th>No digas</th></tr></thead>
+<tbody>
+<tr><td>Evidencia favorable</td><td>Seguro, aprobado, válido</td></tr>
+<tr><td>Compuerta</td><td>Pipeline, validador</td></tr>
+<tr><td>Expediente</td><td>Reporte, log</td></tr>
+<tr><td>Contrato de seguridad</td><td>Spec, oráculo</td></tr>
+<tr><td>Parche superficial</td><td>Parche malo, parche parcial</td></tr>
+<tr><td>Búsqueda simbólica acotada</td><td>Prueba formal, demostrado</td></tr>
+</tbody>
+</table>
+</div>
+<p>Definiciones completas en el <a href="../GLOSSARY.md">glosario del repo</a>. Objeciones del jurado y cómo responderlas: <a href="../lessons/0002-limites-sin-sobreprometer.html">lección 2</a>. Esqueleto de las respuestas: <a href="../lessons/0001-las-cuatro-respuestas.html">lección 1</a>.</p>
+
+</main>
+</body>
+</html>
