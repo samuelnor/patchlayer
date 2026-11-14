@@ -1,0 +1,7 @@
+{
+  "control": {"clase": "superficial", "origen": "control"},
+  "correcto": {"clase": "correcto", "origen": "human:seeded"},
+  "superficial_lista_negra": {"clase": "superficial", "origen": "human:seeded"},
+  "superficial_solo_dueno_uno": {"clase": "superficial", "origen": "human:seeded"},
+  "regresivo_exige_id_igual": {"clase": "regresivo", "origen": "human:seeded"}
+}
