@@ -1,6 +1,6 @@
 """Reglas deterministas de veredictos, observaciones y hallazgos (#6, secciones 4 a 6)."""
 
-from patchwise.reglas import hallazgos, observaciones, veredictos
+from patchlayer.reglas import hallazgos, observaciones, veredictos
 
 
 def test_todas_las_capas_pasan_da_evidencia_favorable_en_las_tres_configuraciones() -> None:

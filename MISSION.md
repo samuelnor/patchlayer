@@ -1,7 +1,7 @@
-# Mission: presentar y defender el pitch de Patchwise
+# Mission: presentar y defender el pitch de Patchlayer
 
 ## Why
-El 14-nov-2026 a las 15:55 el equipo entrega Patchwise en la hackatón Defensive Acceleration (frente 03) con un pitch de 2 minutos y un documento con las cuatro preguntas del jurado. Josué lleva la capa formal y necesita poder explicar el proyecto entero y sostener las preguntas del jurado sin sobreprometer.
+El 14-nov-2026 a las 15:55 el equipo entrega Patchlayer en la hackatón Defensive Acceleration (frente 03) con un pitch de 2 minutos y un documento con las cuatro preguntas del jurado. Josué lleva la capa formal y necesita poder explicar el proyecto entero y sostener las preguntas del jurado sin sobreprometer.
 
 ## Success looks like
 - Decir de memoria, en una frase cada una, las cuatro respuestas: vector de riesgo, mecanismo defensivo, validación empírica, límites y riesgo dual.

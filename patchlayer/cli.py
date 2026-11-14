@@ -1,14 +1,14 @@
-"""CLI `patchwise` (#6, sección 7)."""
+"""CLI `patchlayer` (#6, sección 7)."""
 
 import argparse
 from pathlib import Path
 
-from patchwise.compuerta import escribir_expediente, revisar
-from patchwise.experimento import experimento, tabla_markdown
+from patchlayer.compuerta import escribir_expediente, revisar
+from patchlayer.experimento import experimento, tabla_markdown
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="patchwise", description=__doc__)
+    parser = argparse.ArgumentParser(prog="patchlayer", description=__doc__)
     sub = parser.add_subparsers(dest="subcomando", required=True)
 
     p_revisar = sub.add_parser(

@@ -32,7 +32,7 @@ Examples:
 ```
 feat(api): ✨ add patch preview endpoint
 fix: 🐛 handle empty diff in parser
-feat(config)!: 💥 rename settings file to patchwise.toml
+feat(config)!: 💥 rename settings file to patchlayer.toml
 ```
 
 ## Checks
@@ -45,15 +45,15 @@ uv run basedpyright      # type checker, strict mode
 uv run pytest -q
 ```
 
-- Both checkers cover `patchwise/` and `tests/`. `casos/` is excluded: contracts and patches import `objetivo`, which only exists once the gate assembles the directory.
+- Both checkers cover `patchlayer/` and `tests/`. `casos/` is excluded: contracts and patches import `objetivo`, which only exists once the gate assembles the directory.
 - Fix the type, don't silence it. A `# pyright: ignore[rule]` needs the rule name and a reason on the same line, and is only for tests that pass an invalid value on purpose.
-- The expediente and experiment shapes are `TypedDict`s (`Expediente` in `patchwise/capas.py`, `ResultadoExperimento` in `patchwise/experimento.py`). Change them there when the format in issue #6 changes.
+- The expediente and experiment shapes are `TypedDict`s (`Expediente` in `patchlayer/capas.py`, `ResultadoExperimento` in `patchlayer/experimento.py`). Change them there when the format in issue #6 changes.
 
 ## Agent skills
 
 ### Issue tracker
 
-Issues live in GitHub Issues for samuelnor/patchwise, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+Issues live in GitHub Issues for samuelnor/patchlayer, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

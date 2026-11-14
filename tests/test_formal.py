@@ -4,7 +4,7 @@ from pathlib import Path
 
 from conftest import Armar
 
-from patchwise.formal import verificar
+from patchlayer.formal import verificar
 
 CASOS = Path(__file__).resolve().parents[1] / "casos"
 
