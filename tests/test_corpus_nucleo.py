@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -11,12 +12,29 @@ import pytest
 DIR_CASOS = Path(__file__).resolve().parents[1] / "casos"
 CASOS_ADICIONALES = ["transferir", "ver_factura", "cancelar_pedido", "puede_leer"]
 
-# (funcional_rc, exploit_rc, crosshair_rc) esperados por rol/etiqueta
-RESULTADOS_ESPERADOS: dict[str, tuple[int, int, int]] = {
-    "control": (0, 1, 1),
-    "correcto": (0, 0, 0),
-    "superficial": (0, 0, 1),
-    "regresivo": (1, 0, 0),
+
+@dataclass(frozen=True)
+class ExpectativaCapas:
+    """Códigos de salida esperados para funcional, exploit y verificador formal."""
+
+    funcional: int
+    exploit: int
+    formal: int
+
+
+RESULTADOS_ESPERADOS: dict[str, ExpectativaCapas] = {
+    "control": ExpectativaCapas(funcional=0, exploit=1, formal=1),
+    "correcto": ExpectativaCapas(funcional=0, exploit=0, formal=0),
+    "superficial": ExpectativaCapas(funcional=0, exploit=0, formal=1),
+    "regresivo": ExpectativaCapas(funcional=1, exploit=0, formal=0),
+}
+
+# Documentado en evidencia/llm/REVISION.md: lanza ValueError si el pedido no existe,
+# excepción que cancelar_pedido/contrato/propiedad.py rechaza explícitamente.
+EXCEPCIONES_POR_PARCHE: dict[tuple[str, str], ExpectativaCapas] = {
+    ("cancelar_pedido", "llm_deepseek_v4_1_flash_free"): ExpectativaCapas(
+        funcional=1, exploit=0, formal=1
+    ),
 }
 
 
@@ -38,7 +56,8 @@ def _ejecutar_en_directorio(
 
 def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> None:
     """Comprueba que funcional, exploit y CrossHair devuelven los códigos esperados."""
-    esp_funcional, esp_exploit, esp_formal = RESULTADOS_ESPERADOS[clase]
+    clave = "control" if parche.stem == "control" else clase
+    esperado = EXCEPCIONES_POR_PARCHE.get((caso, parche.stem), RESULTADOS_ESPERADOS[clave])
 
     rc_funcional = _ejecutar_en_directorio(
         caso,
@@ -54,7 +73,7 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     ).returncode
-    assert rc_funcional == esp_funcional, f"{parche.name}: funcional={rc_funcional}"
+    assert rc_funcional == esperado.funcional, f"{parche.name}: funcional={rc_funcional}"
 
     rc_exploit = _ejecutar_en_directorio(
         caso,
@@ -62,7 +81,7 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "contrato/exploit.py"],
         tmp_path,
     ).returncode
-    assert rc_exploit == esp_exploit, f"{parche.name}: exploit={rc_exploit}"
+    assert rc_exploit == esperado.exploit, f"{parche.name}: exploit={rc_exploit}"
 
     res_formal = _ejecutar_en_directorio(
         caso,
@@ -78,10 +97,10 @@ def _verificar_capas(caso: str, parche: Path, clase: str, tmp_path: Path) -> Non
         ],
         tmp_path,
     )
-    assert res_formal.returncode == esp_formal, (
+    assert res_formal.returncode == esperado.formal, (
         f"{parche.name}: {res_formal.stdout}{res_formal.stderr}"
     )
-    if esp_formal == 1:
+    if esperado.formal == 1:
         assert "error:" in res_formal.stdout
 
 
@@ -110,6 +129,7 @@ def test_estructura_de_caso_y_etiquetas(caso: str) -> None:
     assert clases.count("correcto") == 1
     assert clases.count("superficial") == 2
     assert clases.count("regresivo") == 1
+    assert any(v["origen"].startswith("llm:") for v in candidatos.values())
 
     for nombre, meta in etiquetas.items():
         assert set(meta) == {"clase", "origen"}
@@ -124,5 +144,4 @@ def test_control_y_candidatos_se_comportan_segun_su_etiqueta(
     for nombre, meta in _leer_etiquetas(caso).items():
         sub = tmp_path / nombre
         sub.mkdir()
-        clave = "control" if nombre == "control" else meta["clase"]
-        _verificar_capas(caso, DIR_CASOS / caso / "parches" / f"{nombre}.py", clave, sub)
+        _verificar_capas(caso, DIR_CASOS / caso / "parches" / f"{nombre}.py", meta["clase"], sub)

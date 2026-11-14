@@ -9,9 +9,9 @@ class Factura:
 
 
 def ver_factura(factura: Factura, actor_id: int) -> int:
-    """Devuelve el total de la factura si el actor está autenticado."""
+    """Devuelve el total de la factura al actor que la consulta."""
     if actor_id <= 0:
         raise PermissionError("no autenticado")
-    if factura.owner_id == 1 and actor_id != 1:
-        raise PermissionError("acceso denegado")
+    if factura.id == 1 and factura.owner_id != actor_id:
+        raise PermissionError("no autorizado")
     return factura.total

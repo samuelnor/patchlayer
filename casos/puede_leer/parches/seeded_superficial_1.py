@@ -18,5 +18,7 @@ class Documento:
 
 
 def puede_leer(doc: Documento, actor: Actor) -> bool:
-    """Exige ser el dueño del documento incluso en documentos públicos de la organización."""
-    return doc.org_id == actor.org_id and doc.owner_id == actor.id
+    """Indica si el actor puede leer el documento."""
+    if doc.privado:
+        return doc.owner_id == actor.id or actor.rol == ADMIN
+    return doc.org_id == actor.org_id and actor.rol >= USUARIO

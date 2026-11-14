@@ -68,7 +68,7 @@ def test_el_verificador_rechaza_al_parche_de_control(tmp_path: Path) -> None:
 
 
 def test_el_parche_correcto_pasa_las_tres_capas(tmp_path: Path) -> None:
-    parche = CASO / "parches" / "correcto.py"
+    parche = CASO / "parches" / "llm_flint_40b_free.py"
     assert correr_contrato(parche, "test_funcional.py", tmp_path) == 0
     assert correr_contrato(parche, "exploit.py", tmp_path) == 0
     res = correr_verificador(parche, tmp_path)
@@ -77,7 +77,7 @@ def test_el_parche_correcto_pasa_las_tres_capas(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     "nombre_archivo",
-    ["superficial_solo_maximo.py", "superficial_precio_no_negativo.py"],
+    ["seeded_superficial_1.py", "seeded_superficial_2.py"],
 )
 def test_parche_superficial_burla_b_y_cae_en_c(nombre_archivo: str, tmp_path: Path) -> None:
     parche = CASO / "parches" / nombre_archivo
@@ -91,7 +91,7 @@ def test_parche_superficial_burla_b_y_cae_en_c(nombre_archivo: str, tmp_path: Pa
 def test_parche_regresivo_cae_en_funcional_aunque_pase_exploit_y_verificador(
     tmp_path: Path,
 ) -> None:
-    parche = CASO / "parches" / "regresivo_bordes.py"
+    parche = CASO / "parches" / "seeded_regresivo.py"
     assert correr_contrato(parche, "test_funcional.py", tmp_path) == 1
     assert correr_contrato(parche, "exploit.py", tmp_path) == 0
     res = correr_verificador(parche, tmp_path)
@@ -114,6 +114,7 @@ def test_estructura_de_caso_y_etiquetas() -> None:
     assert clases.count("correcto") == 1
     assert clases.count("superficial") == 2
     assert clases.count("regresivo") == 1
+    assert any(v["origen"].startswith("llm:") for v in candidatos.values())
 
     for nombre, meta in etiquetas.items():
         assert set(meta) == {"clase", "origen"}
