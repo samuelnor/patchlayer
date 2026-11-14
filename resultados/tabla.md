@@ -26,17 +26,17 @@ Pares (caso, parche) en que la capa no dio ni pasa ni falla.
 
 ## Costo temporal por capa
 
-Segundos de reloj por parche. Tiempo límite por capa: 60 s.
+Segundos de reloj por parche. Tiempo límite por capa: 60 s (CrossHair: `--per_condition_timeout=30`).
 
 | Capa | Mediana (s) | Máximo (s) |
 | --- | --- | --- |
-| funcional | 0.13 | 0.15 |
+| funcional | 0.13 | 0.18 |
 | exploit | 0.12 | 0.15 |
-| verificador | 0.16 | 0.21 |
+| verificador | 0.15 | 0.21 |
 
 ## Detección marginal
 
-Parches que la configuración no acepta y la anterior sí (A: todo lo que A no acepta).
+Parches que la configuración no acepta y la anterior sí (A: todo lo que A no acepta). En la columna de correctos son falsos rechazos, no detecciones.
 
 | Configuración | Superficiales | Regresivos | Correctos |
 | --- | --- | --- | --- |

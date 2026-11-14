@@ -120,10 +120,10 @@ def test_falsos_rechazos_separan_falla_de_no_concluyente(tmp_path: Path) -> None
     metricas = correr_sin_confirmar(tmp_path)["metricas"]
 
     assert metricas["falsos_rechazos"]["A"] == {
-        "por_falla": 0, "por_no_concluyente": 0, "total": 1
+        "por_falla": 0, "por_no_concluyente": 0, "correctos": 1
     }  # fmt: skip
     assert metricas["falsos_rechazos"]["C"] == {
-        "por_falla": 0, "por_no_concluyente": 1, "total": 1
+        "por_falla": 0, "por_no_concluyente": 1, "correctos": 1
     }  # fmt: skip
 
 

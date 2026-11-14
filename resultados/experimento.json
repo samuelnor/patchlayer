@@ -1,5 +1,5 @@
 {
-  "generado_en": "2026-11-14T19:10:13.457335+00:00",
+  "generado_en": "2026-11-14T19:12:41.230571+00:00",
   "pares": [
     {
       "caso": "cancelar_pedido",
@@ -12,9 +12,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.12981219900029828,
-        "exploit": 0.1221365909987071,
-        "verificador": 0.148
+        "funcional": 0.14502208799967775,
+        "exploit": 0.15445191799881286,
+        "verificador": 0.153
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -40,9 +40,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.137456280997867,
-        "exploit": 0.11639395900056115,
-        "verificador": 0.157
+        "funcional": 0.17785977399762487,
+        "exploit": 0.11233443499804707,
+        "verificador": 0.155
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -64,9 +64,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.14113371400162578,
-        "exploit": 0.1241231770000013,
-        "verificador": 0.188
+        "funcional": 0.1273157440009527,
+        "exploit": 0.12415578799846116,
+        "verificador": 0.164
       },
       "veredictos": {
         "A": "rechazado",
@@ -88,9 +88,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.11773374699987471,
-        "exploit": 0.1233008310009609,
-        "verificador": 0.168
+        "funcional": 0.13463034500091453,
+        "exploit": 0.12208981000003405,
+        "verificador": 0.155
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -117,9 +117,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.14304582399927313,
-        "exploit": 0.11971169699972961,
-        "verificador": 0.151
+        "funcional": 0.13710759500099812,
+        "exploit": 0.1288754089982831,
+        "verificador": 0.147
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -146,9 +146,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.12562612300098408,
-        "exploit": 0.13912943499963148,
-        "verificador": 0.132
+        "funcional": 0.12000519100183737,
+        "exploit": 0.12135653799850843,
+        "verificador": 0.158
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -174,9 +174,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.13103471899739816,
-        "exploit": 0.11771158400006243,
-        "verificador": 0.14
+        "funcional": 0.12198265099868877,
+        "exploit": 0.11505374899934395,
+        "verificador": 0.142
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -198,9 +198,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.13576263099821517,
-        "exploit": 0.12317778000215185,
-        "verificador": 0.137
+        "funcional": 0.1311789229985152,
+        "exploit": 0.12008140800026013,
+        "verificador": 0.14
       },
       "veredictos": {
         "A": "rechazado",
@@ -224,9 +224,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.13520454700119444,
-        "exploit": 0.12464468699909048,
-        "verificador": 0.144
+        "funcional": 0.12297513199882815,
+        "exploit": 0.12696717599828844,
+        "verificador": 0.133
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -253,9 +253,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.13515430500046932,
-        "exploit": 0.11690419799924712,
-        "verificador": 0.161
+        "funcional": 0.12959818099989207,
+        "exploit": 0.13012577400149894,
+        "verificador": 0.155
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -282,9 +282,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.12034077399948728,
-        "exploit": 0.12338681599794654,
-        "verificador": 0.185
+        "funcional": 0.12298922900299658,
+        "exploit": 0.15326832799837575,
+        "verificador": 0.184
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -310,8 +310,8 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.13369559300190303,
-        "exploit": 0.12737261999791372,
+        "funcional": 0.11700851299974602,
+        "exploit": 0.11365664900222328,
         "verificador": 0.212
       },
       "veredictos": {
@@ -334,9 +334,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.13094285699844477,
-        "exploit": 0.11751332499989076,
-        "verificador": 0.181
+        "funcional": 0.12562831999821356,
+        "exploit": 0.11782199400113313,
+        "verificador": 0.159
       },
       "veredictos": {
         "A": "rechazado",
@@ -360,9 +360,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.13304573999994318,
-        "exploit": 0.12332430999958888,
-        "verificador": 0.179
+        "funcional": 0.11655364900070708,
+        "exploit": 0.14151510800002143,
+        "verificador": 0.176
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -389,9 +389,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.13373705100093503,
-        "exploit": 0.11737975099822506,
-        "verificador": 0.177
+        "funcional": 0.11816512600125861,
+        "exploit": 0.12719929200102342,
+        "verificador": 0.173
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -418,9 +418,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.12070023599881097,
-        "exploit": 0.12645004600199172,
-        "verificador": 0.154
+        "funcional": 0.1405376080001588,
+        "exploit": 0.12384388299687998,
+        "verificador": 0.144
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -446,9 +446,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.1436316710023675,
-        "exploit": 0.1345680500016897,
-        "verificador": 0.154
+        "funcional": 0.1175475979980547,
+        "exploit": 0.11618947299939464,
+        "verificador": 0.167
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -470,9 +470,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.14469347599879256,
-        "exploit": 0.12566235700069228,
-        "verificador": 0.158
+        "funcional": 0.13361386700125877,
+        "exploit": 0.12473747299736715,
+        "verificador": 0.155
       },
       "veredictos": {
         "A": "rechazado",
@@ -496,9 +496,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.12955598299959092,
-        "exploit": 0.12312641800235724,
-        "verificador": 0.158
+        "funcional": 0.13843339700179058,
+        "exploit": 0.1291123589980998,
+        "verificador": 0.178
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -525,9 +525,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.11903314699884504,
-        "exploit": 0.11883016299907467,
-        "verificador": 0.161
+        "funcional": 0.12397912799860933,
+        "exploit": 0.11573664299794473,
+        "verificador": 0.165
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -554,9 +554,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.11806238499775645,
-        "exploit": 0.12838763200124959,
-        "verificador": 0.155
+        "funcional": 0.1203449009990436,
+        "exploit": 0.1338003109995043,
+        "verificador": 0.147
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -582,9 +582,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.1466664090003178,
-        "exploit": 0.1398189520004962,
-        "verificador": 0.151
+        "funcional": 0.1427343449977343,
+        "exploit": 0.1184292079997249,
+        "verificador": 0.149
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -606,9 +606,9 @@
         "verificador": "pasa"
       },
       "duraciones": {
-        "funcional": 0.1297611500012863,
-        "exploit": 0.1504224839991366,
-        "verificador": 0.134
+        "funcional": 0.13263884999832953,
+        "exploit": 0.11456598499717074,
+        "verificador": 0.131
       },
       "veredictos": {
         "A": "rechazado",
@@ -632,9 +632,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.1191395569985616,
-        "exploit": 0.12652973999865935,
-        "verificador": 0.168
+        "funcional": 0.11984634100008407,
+        "exploit": 0.12769398100135732,
+        "verificador": 0.143
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -661,9 +661,9 @@
         "verificador": "falla"
       },
       "duraciones": {
-        "funcional": 0.11890989499806892,
-        "exploit": 0.12867471800200292,
-        "verificador": 0.152
+        "funcional": 0.13475059800111922,
+        "exploit": 0.11622989199895528,
+        "verificador": 0.162
       },
       "veredictos": {
         "A": "evidencia_favorable",
@@ -729,17 +729,17 @@
       "A": {
         "por_falla": 0,
         "por_no_concluyente": 0,
-        "total": 5
+        "correctos": 5
       },
       "B": {
         "por_falla": 0,
         "por_no_concluyente": 0,
-        "total": 5
+        "correctos": 5
       },
       "C": {
         "por_falla": 0,
         "por_no_concluyente": 0,
-        "total": 5
+        "correctos": 5
       }
     },
     "deteccion_marginal": {
@@ -789,15 +789,15 @@
     },
     "costo_por_capa": {
       "funcional": {
-        "mediana_s": 0.13103471899739816,
-        "maximo_s": 0.1466664090003178
+        "mediana_s": 0.1273157440009527,
+        "maximo_s": 0.17785977399762487
       },
       "exploit": {
-        "mediana_s": 0.12338681599794654,
-        "maximo_s": 0.1504224839991366
+        "mediana_s": 0.12384388299687998,
+        "maximo_s": 0.15445191799881286
       },
       "verificador": {
-        "mediana_s": 0.157,
+        "mediana_s": 0.155,
         "maximo_s": 0.212
       }
     },

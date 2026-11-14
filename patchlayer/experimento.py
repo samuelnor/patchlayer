@@ -47,7 +47,7 @@ class FalsosRechazos(TypedDict):
 
     por_falla: int
     por_no_concluyente: int
-    total: int  # parches correctos en el corpus
+    correctos: int  # parches correctos en el corpus
 
 
 class Costo(TypedDict):
@@ -162,7 +162,7 @@ def _metricas(pares: list[Par], timeout_s: float) -> Metricas:
                 "por_no_concluyente": sum(
                     p["veredictos"][config] == "no_concluyente" for p in correctos
                 ),
-                "total": len(correctos),
+                "correctos": len(correctos),
             }
             for config in CONFIGURACIONES
         },
@@ -218,7 +218,7 @@ def _secciones(m: Metricas) -> list[Seccion]:
             "nota": "Parches correctos que la configuración no acepta.",
             "encabezados": ["Configuración", "Por falla", "Por no concluyente", "Correctos"],
             "filas": [
-                [c, str(f["por_falla"]), str(f["por_no_concluyente"]), str(f["total"])]
+                [c, str(f["por_falla"]), str(f["por_no_concluyente"]), str(f["correctos"])]
                 for c, f in m["falsos_rechazos"].items()
             ],
         },
@@ -230,7 +230,8 @@ def _secciones(m: Metricas) -> list[Seccion]:
         },
         {
             "titulo": "Costo temporal por capa",
-            "nota": f"Segundos de reloj por parche. Tiempo límite por capa: {m['timeout_s']:g} s.",
+            "nota": f"Segundos de reloj por parche. Tiempo límite por capa: {m['timeout_s']:g} s "
+            f"(CrossHair: `--per_condition_timeout={m['timeout_s'] / 2:g}`).",
             "encabezados": ["Capa", "Mediana (s)", "Máximo (s)"],
             "filas": [
                 [capa, f"{c['mediana_s']:.2f}", f"{c['maximo_s']:.2f}"]
@@ -240,7 +241,7 @@ def _secciones(m: Metricas) -> list[Seccion]:
         {
             "titulo": "Detección marginal",
             "nota": "Parches que la configuración no acepta y la anterior sí (A: todo lo que "
-            "A no acepta).",
+            "A no acepta). En la columna de correctos son falsos rechazos, no detecciones.",
             "encabezados": ["Configuración", "Superficiales", "Regresivos", "Correctos"],
             "filas": [
                 [c, *(marginal(por_clase[clase]) for clase in CLASES)]
