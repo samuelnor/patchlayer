@@ -9,7 +9,7 @@ seguridad. La revisión se pide en el PR de `entrega/parches-llm`.
 
 ```sh
 # 1. Reproducir la propuesta de etiqueta con el oráculo de apoyo
-uv run python evidencia/llm/verificar_etiquetas.py
+python3 evidencia/llm/verificar_etiquetas.py
 
 # 2. Contrastar origen y aislamiento
 python3 -m json.tool evidencia/llm/manifiesto.json

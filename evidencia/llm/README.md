@@ -86,7 +86,7 @@ No es la compuerta ni el contrato oficial: es una ayuda para que la revisión
 cruzada sea reproducible.
 
 ```sh
-uv run python evidencia/llm/verificar_etiquetas.py
+python3 evidencia/llm/verificar_etiquetas.py
 # 0 discrepancias
 ```
 
@@ -120,7 +120,7 @@ uv run python evidencia/llm/verificar_etiquetas.py
 
 ```sh
 # Etiquetas y verificación de apoyo
-uv run python evidencia/llm/verificar_etiquetas.py
+python3 evidencia/llm/verificar_etiquetas.py
 
 # Trazabilidad
 python3 -m json.tool evidencia/llm/manifiesto.json | less
