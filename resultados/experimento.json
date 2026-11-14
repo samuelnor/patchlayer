@@ -1,0 +1,806 @@
+{
+  "generado_en": "2026-11-14T19:10:13.457335+00:00",
+  "pares": [
+    {
+      "caso": "cancelar_pedido",
+      "parche": "control",
+      "clase": "superficial",
+      "origen": "control",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "falla",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.12981219900029828,
+        "exploit": 0.1221365909987071,
+        "verificador": 0.148
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "A favorable pero B rechaza: el exploit conocido sigue funcionando"
+      ]
+    },
+    {
+      "caso": "cancelar_pedido",
+      "parche": "correcto",
+      "clase": "correcto",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.137456280997867,
+        "exploit": 0.11639395900056115,
+        "verificador": 0.157
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "evidencia_favorable"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "cancelar_pedido",
+      "parche": "llm_deepseek_v4_1_flash_free",
+      "clase": "regresivo",
+      "origen": "llm:opencode/deepseek-v4.1-flash-free",
+      "capas": {
+        "funcional": "falla",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.14113371400162578,
+        "exploit": 0.1241231770000013,
+        "verificador": 0.188
+      },
+      "veredictos": {
+        "A": "rechazado",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "cancelar_pedido",
+      "parche": "seeded_superficial_1",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.11773374699987471,
+        "exploit": 0.1233008310009609,
+        "verificador": 0.168
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "cancelar_pedido",
+      "parche": "seeded_superficial_2",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.14304582399927313,
+        "exploit": 0.11971169699972961,
+        "verificador": 0.151
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "precio_final",
+      "parche": "control",
+      "clase": "superficial",
+      "origen": "control",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "falla",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.12562612300098408,
+        "exploit": 0.13912943499963148,
+        "verificador": 0.132
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "A favorable pero B rechaza: el exploit conocido sigue funcionando"
+      ]
+    },
+    {
+      "caso": "precio_final",
+      "parche": "llm_flint_40b_free",
+      "clase": "correcto",
+      "origen": "llm:opencode/flint-40b-free",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.13103471899739816,
+        "exploit": 0.11771158400006243,
+        "verificador": 0.14
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "evidencia_favorable"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "precio_final",
+      "parche": "seeded_regresivo",
+      "clase": "regresivo",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "falla",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.13576263099821517,
+        "exploit": 0.12317778000215185,
+        "verificador": 0.137
+      },
+      "veredictos": {
+        "A": "rechazado",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": [
+        "funcional falla, exploit y verificador pasan (indicio de parche regresivo)"
+      ]
+    },
+    {
+      "caso": "precio_final",
+      "parche": "seeded_superficial_1",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.13520454700119444,
+        "exploit": 0.12464468699909048,
+        "verificador": 0.144
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "precio_final",
+      "parche": "seeded_superficial_2",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.13515430500046932,
+        "exploit": 0.11690419799924712,
+        "verificador": 0.161
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "puede_leer",
+      "parche": "control",
+      "clase": "superficial",
+      "origen": "control",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "falla",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.12034077399948728,
+        "exploit": 0.12338681599794654,
+        "verificador": 0.185
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "A favorable pero B rechaza: el exploit conocido sigue funcionando"
+      ]
+    },
+    {
+      "caso": "puede_leer",
+      "parche": "llm_flint_40b_free",
+      "clase": "correcto",
+      "origen": "llm:opencode/flint-40b-free",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.13369559300190303,
+        "exploit": 0.12737261999791372,
+        "verificador": 0.212
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "evidencia_favorable"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "puede_leer",
+      "parche": "seeded_regresivo",
+      "clase": "regresivo",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "falla",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.13094285699844477,
+        "exploit": 0.11751332499989076,
+        "verificador": 0.181
+      },
+      "veredictos": {
+        "A": "rechazado",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": [
+        "funcional falla, exploit y verificador pasan (indicio de parche regresivo)"
+      ]
+    },
+    {
+      "caso": "puede_leer",
+      "parche": "seeded_superficial_1",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.13304573999994318,
+        "exploit": 0.12332430999958888,
+        "verificador": 0.179
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "puede_leer",
+      "parche": "seeded_superficial_2",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.13373705100093503,
+        "exploit": 0.11737975099822506,
+        "verificador": 0.177
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "transferir",
+      "parche": "control",
+      "clase": "superficial",
+      "origen": "control",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "falla",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.12070023599881097,
+        "exploit": 0.12645004600199172,
+        "verificador": 0.154
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "A favorable pero B rechaza: el exploit conocido sigue funcionando"
+      ]
+    },
+    {
+      "caso": "transferir",
+      "parche": "llm_flint_40b_free",
+      "clase": "correcto",
+      "origen": "llm:opencode/flint-40b-free",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.1436316710023675,
+        "exploit": 0.1345680500016897,
+        "verificador": 0.154
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "evidencia_favorable"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "transferir",
+      "parche": "seeded_regresivo",
+      "clase": "regresivo",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "falla",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.14469347599879256,
+        "exploit": 0.12566235700069228,
+        "verificador": 0.158
+      },
+      "veredictos": {
+        "A": "rechazado",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": [
+        "funcional falla, exploit y verificador pasan (indicio de parche regresivo)"
+      ]
+    },
+    {
+      "caso": "transferir",
+      "parche": "seeded_superficial_1",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.12955598299959092,
+        "exploit": 0.12312641800235724,
+        "verificador": 0.158
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "transferir",
+      "parche": "seeded_superficial_2",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.11903314699884504,
+        "exploit": 0.11883016299907467,
+        "verificador": 0.161
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "ver_factura",
+      "parche": "control",
+      "clase": "superficial",
+      "origen": "control",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "falla",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.11806238499775645,
+        "exploit": 0.12838763200124959,
+        "verificador": 0.155
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "A favorable pero B rechaza: el exploit conocido sigue funcionando"
+      ]
+    },
+    {
+      "caso": "ver_factura",
+      "parche": "llm_deepseek_v4_1_flash_free",
+      "clase": "correcto",
+      "origen": "llm:opencode/deepseek-v4.1-flash-free",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.1466664090003178,
+        "exploit": 0.1398189520004962,
+        "verificador": 0.151
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "evidencia_favorable"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": []
+    },
+    {
+      "caso": "ver_factura",
+      "parche": "seeded_regresivo",
+      "clase": "regresivo",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "falla",
+        "exploit": "pasa",
+        "verificador": "pasa"
+      },
+      "duraciones": {
+        "funcional": 0.1297611500012863,
+        "exploit": 0.1504224839991366,
+        "verificador": 0.134
+      },
+      "veredictos": {
+        "A": "rechazado",
+        "B": "rechazado",
+        "C": "rechazado"
+      },
+      "hallazgos": [],
+      "pendientes": [],
+      "observaciones": [
+        "funcional falla, exploit y verificador pasan (indicio de parche regresivo)"
+      ]
+    },
+    {
+      "caso": "ver_factura",
+      "parche": "seeded_superficial_1",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.1191395569985616,
+        "exploit": 0.12652973999865935,
+        "verificador": 0.168
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    },
+    {
+      "caso": "ver_factura",
+      "parche": "seeded_superficial_2",
+      "clase": "superficial",
+      "origen": "human:seeded",
+      "capas": {
+        "funcional": "pasa",
+        "exploit": "pasa",
+        "verificador": "falla"
+      },
+      "duraciones": {
+        "funcional": 0.11890989499806892,
+        "exploit": 0.12867471800200292,
+        "verificador": 0.152
+      },
+      "veredictos": {
+        "A": "evidencia_favorable",
+        "B": "evidencia_favorable",
+        "C": "rechazado"
+      },
+      "hallazgos": [
+        "parche superficial aceptado por A (falso negativo de A)",
+        "parche superficial aceptado por B (falso negativo de B)"
+      ],
+      "pendientes": [],
+      "observaciones": [
+        "B favorable pero C rechaza: contraejemplo distinto del exploit conocido (indicio de parche superficial)"
+      ]
+    }
+  ],
+  "tabla": {
+    "A": {
+      "superficial": {
+        "aceptados": 15,
+        "total": 15
+      },
+      "regresivo": {
+        "aceptados": 0,
+        "total": 5
+      },
+      "correcto": {
+        "aceptados": 5,
+        "total": 5
+      }
+    },
+    "B": {
+      "superficial": {
+        "aceptados": 10,
+        "total": 15
+      },
+      "regresivo": {
+        "aceptados": 0,
+        "total": 5
+      },
+      "correcto": {
+        "aceptados": 5,
+        "total": 5
+      }
+    },
+    "C": {
+      "superficial": {
+        "aceptados": 0,
+        "total": 15
+      },
+      "regresivo": {
+        "aceptados": 0,
+        "total": 5
+      },
+      "correcto": {
+        "aceptados": 5,
+        "total": 5
+      }
+    }
+  },
+  "metricas": {
+    "falsos_rechazos": {
+      "A": {
+        "por_falla": 0,
+        "por_no_concluyente": 0,
+        "total": 5
+      },
+      "B": {
+        "por_falla": 0,
+        "por_no_concluyente": 0,
+        "total": 5
+      },
+      "C": {
+        "por_falla": 0,
+        "por_no_concluyente": 0,
+        "total": 5
+      }
+    },
+    "deteccion_marginal": {
+      "A": {
+        "superficial": [],
+        "regresivo": [
+          "cancelar_pedido/llm_deepseek_v4_1_flash_free",
+          "precio_final/seeded_regresivo",
+          "puede_leer/seeded_regresivo",
+          "transferir/seeded_regresivo",
+          "ver_factura/seeded_regresivo"
+        ],
+        "correcto": []
+      },
+      "B": {
+        "superficial": [
+          "cancelar_pedido/control",
+          "precio_final/control",
+          "puede_leer/control",
+          "transferir/control",
+          "ver_factura/control"
+        ],
+        "regresivo": [],
+        "correcto": []
+      },
+      "C": {
+        "superficial": [
+          "cancelar_pedido/seeded_superficial_1",
+          "cancelar_pedido/seeded_superficial_2",
+          "precio_final/seeded_superficial_1",
+          "precio_final/seeded_superficial_2",
+          "puede_leer/seeded_superficial_1",
+          "puede_leer/seeded_superficial_2",
+          "transferir/seeded_superficial_1",
+          "transferir/seeded_superficial_2",
+          "ver_factura/seeded_superficial_1",
+          "ver_factura/seeded_superficial_2"
+        ],
+        "regresivo": [],
+        "correcto": []
+      }
+    },
+    "no_concluyentes": {
+      "funcional": 0,
+      "exploit": 0,
+      "verificador": 0
+    },
+    "costo_por_capa": {
+      "funcional": {
+        "mediana_s": 0.13103471899739816,
+        "maximo_s": 0.1466664090003178
+      },
+      "exploit": {
+        "mediana_s": 0.12338681599794654,
+        "maximo_s": 0.1504224839991366
+      },
+      "verificador": {
+        "mediana_s": 0.157,
+        "maximo_s": 0.212
+      }
+    },
+    "timeout_s": 60
+  }
+}

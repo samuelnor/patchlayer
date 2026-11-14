@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 
 from patchlayer.compuerta import escribir_expediente, revisar
-from patchlayer.experimento import experimento, tabla_markdown
+from patchlayer.experimento import experimento, metricas_markdown, tabla_markdown
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -37,6 +37,7 @@ def main(argv: list[str] | None = None) -> int:
     resultado = experimento(
         Path("casos"), expedientes_dir=Path("expedientes"), resultados_dir=Path("resultados")
     )
-    print(tabla_markdown(resultado["tabla"]), end="")
+    print(tabla_markdown(resultado["tabla"]))
+    print(metricas_markdown(resultado["metricas"]), end="")
     print("resultados: resultados/experimento.json, resultados/reporte.html, resultados/tabla.md")
     return 0

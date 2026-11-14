@@ -6,6 +6,7 @@ Aquí, y solo aquí, entra la etiqueta. Solo `evidencia_favorable` cuenta como a
 """
 
 import json
+import statistics
 from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
@@ -26,6 +27,7 @@ class Par(TypedDict):
     clase: str | None
     origen: str | None
     capas: dict[str, str]
+    duraciones: dict[str, float]  # segundos de reloj por capa
     veredictos: dict[str, str]
     hallazgos: list[str]
     pendientes: list[str]
@@ -40,10 +42,36 @@ class Conteo(TypedDict):
 Tabla = dict[str, dict[str, Conteo]]  # configuración -> clase -> conteo
 
 
+class FalsosRechazos(TypedDict):
+    """Parches correctos que una configuración no acepta, por motivo (#4)."""
+
+    por_falla: int
+    por_no_concluyente: int
+    total: int  # parches correctos en el corpus
+
+
+class Costo(TypedDict):
+    mediana_s: float
+    maximo_s: float
+
+
+class Metricas(TypedDict):
+    """Métricas secundarias de #4, en conteos absolutos."""
+
+    falsos_rechazos: dict[str, FalsosRechazos]  # configuración -> conteo
+    # configuración -> clase -> "caso/parche" que esa configuración no acepta
+    # y la anterior sí (para A: todo lo que A no acepta)
+    deteccion_marginal: dict[str, dict[str, list[str]]]
+    no_concluyentes: dict[str, int]  # capa -> pares en que dio no_concluyente
+    costo_por_capa: dict[str, Costo]  # capa -> segundos por parche
+    timeout_s: float  # tiempo límite de cada capa, declarado junto al costo
+
+
 class ResultadoExperimento(TypedDict):
     generado_en: str
     pares: list[Par]
     tabla: Tabla
+    metricas: Metricas
 
 
 def experimento(
@@ -70,6 +98,9 @@ def experimento(
                     "clase": clase,
                     "origen": etiqueta.get("origen"),
                     "capas": {n: c["resultado"] for n, c in expediente["capas"].items()},
+                    "duraciones": {
+                        n: c["duracion_s"] for n, c in expediente["capas"].items()
+                    },
                     "veredictos": expediente["veredictos"],
                     "hallazgos": hallazgos(clase, expediente["veredictos"])
                     if clase
@@ -84,13 +115,16 @@ def experimento(
         "generado_en": datetime.now(UTC).isoformat(),
         "pares": pares,
         "tabla": tabla,
+        "metricas": _metricas(pares, timeout_s),
     }
 
     resultados_dir.mkdir(parents=True, exist_ok=True)
     (resultados_dir / "experimento.json").write_text(
         json.dumps(resultado, ensure_ascii=False, indent=2) + "\n"
     )
-    (resultados_dir / "tabla.md").write_text(tabla_markdown(tabla))
+    (resultados_dir / "tabla.md").write_text(
+        tabla_markdown(tabla) + "\n" + metricas_markdown(resultado["metricas"])
+    )
     (resultados_dir / "reporte.html").write_text(reporte_html(resultado))
     return resultado
 
@@ -116,6 +150,134 @@ def _tabla(pares: list[Par]) -> Tabla:
         }
         for config in CONFIGURACIONES
     }
+
+
+def _metricas(pares: list[Par], timeout_s: float) -> Metricas:
+    capas = CONFIGURACIONES["C"]
+    correctos = [p for p in pares if p["clase"] == "correcto"]
+    return {
+        "falsos_rechazos": {
+            config: {
+                "por_falla": sum(p["veredictos"][config] == "rechazado" for p in correctos),
+                "por_no_concluyente": sum(
+                    p["veredictos"][config] == "no_concluyente" for p in correctos
+                ),
+                "total": len(correctos),
+            }
+            for config in CONFIGURACIONES
+        },
+        "deteccion_marginal": _deteccion_marginal(pares),
+        "no_concluyentes": {
+            capa: sum(p["capas"][capa] == "no_concluyente" for p in pares) for capa in capas
+        },
+        "costo_por_capa": {capa: _costo([p["duraciones"][capa] for p in pares]) for capa in capas},
+        "timeout_s": timeout_s,
+    }
+
+
+def _costo(duraciones: list[float]) -> Costo:
+    if not duraciones:
+        return {"mediana_s": 0.0, "maximo_s": 0.0}
+    return {"mediana_s": statistics.median(duraciones), "maximo_s": max(duraciones)}
+
+
+def _deteccion_marginal(pares: list[Par]) -> dict[str, dict[str, list[str]]]:
+    def acepta(p: Par, config: str | None) -> bool:
+        return config is None or p["veredictos"][config] == "evidencia_favorable"
+
+    configs = list(CONFIGURACIONES)
+    return {
+        config: {
+            clase: [
+                f"{p['caso']}/{p['parche']}"
+                for p in pares
+                if p["clase"] == clase and acepta(p, anterior) and not acepta(p, config)
+            ]
+            for clase in CLASES
+        }
+        for anterior, config in zip([None, *configs], configs, strict=False)
+    }
+
+
+class Seccion(TypedDict):
+    """Una tabla de métricas, lista para Markdown o HTML."""
+
+    titulo: str
+    nota: str
+    encabezados: list[str]
+    filas: list[list[str]]
+
+
+def _secciones(m: Metricas) -> list[Seccion]:
+    def marginal(nombres: list[str]) -> str:
+        return f"{len(nombres)}: {', '.join(nombres)}" if nombres else "0"
+
+    return [
+        {
+            "titulo": "Falsos rechazos",
+            "nota": "Parches correctos que la configuración no acepta.",
+            "encabezados": ["Configuración", "Por falla", "Por no concluyente", "Correctos"],
+            "filas": [
+                [c, str(f["por_falla"]), str(f["por_no_concluyente"]), str(f["total"])]
+                for c, f in m["falsos_rechazos"].items()
+            ],
+        },
+        {
+            "titulo": "No concluyentes por capa",
+            "nota": "Pares (caso, parche) en que la capa no dio ni pasa ni falla.",
+            "encabezados": ["Capa", "Pares"],
+            "filas": [[capa, str(n)] for capa, n in m["no_concluyentes"].items()],
+        },
+        {
+            "titulo": "Costo temporal por capa",
+            "nota": f"Segundos de reloj por parche. Tiempo límite por capa: {m['timeout_s']:g} s.",
+            "encabezados": ["Capa", "Mediana (s)", "Máximo (s)"],
+            "filas": [
+                [capa, f"{c['mediana_s']:.2f}", f"{c['maximo_s']:.2f}"]
+                for capa, c in m["costo_por_capa"].items()
+            ],
+        },
+        {
+            "titulo": "Detección marginal",
+            "nota": "Parches que la configuración no acepta y la anterior sí (A: todo lo que "
+            "A no acepta).",
+            "encabezados": ["Configuración", "Superficiales", "Regresivos", "Correctos"],
+            "filas": [
+                [c, *(marginal(por_clase[clase]) for clase in CLASES)]
+                for c, por_clase in m["deteccion_marginal"].items()
+            ],
+        },
+    ]
+
+
+def metricas_markdown(metricas: Metricas) -> str:
+    bloques: list[str] = []
+    for s in _secciones(metricas):
+        filas = [
+            f"## {s['titulo']}",
+            "",
+            s["nota"],
+            "",
+            "| " + " | ".join(s["encabezados"]) + " |",
+            "|" + " --- |" * len(s["encabezados"]),
+            *("| " + " | ".join(f) + " |" for f in s["filas"]),
+        ]
+        bloques.append("\n".join(filas) + "\n")
+    return "\n".join(bloques)
+
+
+def _metricas_html(metricas: Metricas) -> str:
+    return "".join(
+        f"<h2>{escape(s['titulo'])}</h2><p>{escape(s['nota'])}</p>"
+        '<div class="envoltorio"><table><thead><tr>'
+        + "".join(f"<th>{escape(e)}</th>" for e in s["encabezados"])
+        + "</tr></thead><tbody>"
+        + "".join(
+            "<tr>" + "".join(f"<td>{escape(c)}</td>" for c in f) + "</tr>" for f in s["filas"]
+        )
+        + "</tbody></table></div>\n"
+        for s in _secciones(metricas)
+    )
 
 
 def tabla_markdown(tabla: Tabla) -> str:
@@ -168,7 +330,7 @@ ul {{ margin: 0; padding-left: 1.1rem; }}
 <thead><tr><th>Configuración</th><th>Superficiales aceptados</th><th>Regresivos aceptados</th><th>Correctos aceptados</th></tr></thead>
 <tbody>{filas_tabla}</tbody>
 </table></div>
-<h2>Pares (caso, parche)</h2>
+{_metricas_html(resultado["metricas"])}<h2>Pares (caso, parche)</h2>
 <div class="envoltorio"><table>
 <thead><tr><th>Caso</th><th>Parche</th><th>Clase</th><th>Capas</th><th>A / B / C</th><th>Hallazgos</th><th>Observaciones</th><th>Pendientes</th></tr></thead>
 <tbody>{filas_pares}</tbody>

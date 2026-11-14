@@ -92,3 +92,77 @@ def test_escribe_json_html_markdown_y_un_expediente_por_par(tmp_path: Path) -> N
     assert "falso negativo de A" in html
     assert "| C |" in (resultados / "tabla.md").read_text()
     assert (tmp_path / "expedientes" / "precio_final" / "rango.json").exists()
+
+
+def verificador_que_no_confirma(directorio: Path, timeout_s: float) -> ResultadoCapa:
+    return ResultadoCapa(
+        resultado="no_concluyente",
+        herramienta="crosshair",
+        version="stub",
+        comando="crosshair check",
+        duracion_s=0.0,
+        salida="",
+        detalle="no confirmado",
+    )
+
+
+def correr_sin_confirmar(tmp_path: Path) -> ResultadoExperimento:
+    return experimento(
+        corpus(tmp_path),
+        expedientes_dir=tmp_path / "expedientes",
+        resultados_dir=tmp_path / "resultados",
+        verificar=verificador_que_no_confirma,
+        timeout_s=7,
+    )
+
+
+def test_falsos_rechazos_separan_falla_de_no_concluyente(tmp_path: Path) -> None:
+    metricas = correr_sin_confirmar(tmp_path)["metricas"]
+
+    assert metricas["falsos_rechazos"]["A"] == {
+        "por_falla": 0, "por_no_concluyente": 0, "total": 1
+    }  # fmt: skip
+    assert metricas["falsos_rechazos"]["C"] == {
+        "por_falla": 0, "por_no_concluyente": 1, "total": 1
+    }  # fmt: skip
+
+
+def test_deteccion_marginal_lista_lo_que_cada_configuracion_detiene_y_la_anterior_no(
+    tmp_path: Path,
+) -> None:
+    marginal = correr_sin_confirmar(tmp_path)["metricas"]["deteccion_marginal"]
+
+    assert marginal == {
+        "A": {"superficial": [], "regresivo": [], "correcto": []},
+        "B": {"superficial": ["precio_final/control"], "regresivo": [], "correcto": []},
+        "C": {"superficial": [], "regresivo": [], "correcto": ["precio_final/rango"]},
+    }
+
+
+def test_cuenta_no_concluyentes_por_capa(tmp_path: Path) -> None:
+    metricas = correr_sin_confirmar(tmp_path)["metricas"]
+
+    assert metricas["no_concluyentes"] == {"funcional": 0, "exploit": 0, "verificador": 2}
+
+
+def test_costo_por_capa_da_mediana_y_maximo_junto_al_tiempo_limite(tmp_path: Path) -> None:
+    metricas = correr_sin_confirmar(tmp_path)["metricas"]
+
+    assert metricas["timeout_s"] == 7
+    assert metricas["costo_por_capa"]["verificador"] == {"mediana_s": 0.0, "maximo_s": 0.0}
+    funcional = metricas["costo_por_capa"]["funcional"]
+    assert 0 < funcional["mediana_s"] <= funcional["maximo_s"]
+
+
+def test_markdown_y_html_muestran_las_metricas_secundarias(tmp_path: Path) -> None:
+    correr_sin_confirmar(tmp_path)
+
+    resultados = tmp_path / "resultados"
+    markdown = (resultados / "tabla.md").read_text()
+    assert "| C | 0 | 1 | 1 |" in markdown  # falsos rechazos: por falla, no concluyente, total
+    assert "| verificador | 2 |" in markdown  # no concluyentes
+    assert "Tiempo límite por capa: 7 s" in markdown
+    assert "1: precio_final/rango" in markdown  # detección marginal de C
+    html = (resultados / "reporte.html").read_text()
+    assert "Falsos rechazos" in html
+    assert "1: precio_final/rango" in html
