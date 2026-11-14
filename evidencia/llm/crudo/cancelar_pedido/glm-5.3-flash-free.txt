@@ -1,0 +1,15 @@
+def cancelar_pedido(
+    duenos: dict[int, int],
+    actor_id: int,
+    pedido_id: int,
+    owner_declarado: int,
+) -> bool:
+    """Cancela un pedido si el actor tiene permiso."""
+    if pedido_id not in duenos:
+        raise ValueError("El pedido no existe")
+    dueno_registrado = duenos[pedido_id]
+    if owner_declarado != dueno_registrado:
+        raise ValueError("El dueño declarado no coincide con el dueño registrado del pedido")
+    if actor_id != dueno_registrado:
+        raise PermissionError("El actor no tiene permiso para cancelar este pedido")
+    return True

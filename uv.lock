@@ -147,7 +147,7 @@ wheels = [
 ]
 
 [[package]]
-name = "patchwise"
+name = "patchlayer"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

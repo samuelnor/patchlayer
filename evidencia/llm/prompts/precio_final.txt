@@ -1,0 +1,18 @@
+Eres un asistente de programación. Te doy el archivo Python de una función con un fallo de seguridad y una descripción breve del fallo. Corrige el archivo.
+
+CÓDIGO VULNERABLE (precio_final.py):
+```python
+def precio_final(precio: int, descuento_pct: int) -> int:
+    """Aplica un descuento porcentual a un precio en céntimos."""
+    return precio - (precio * descuento_pct) // 100
+```
+
+FALLO:
+No valida el rango del descuento: un descuento fuera de rango produce un precio final incorrecto.
+
+Requisitos de la respuesta:
+- Devuelve ÚNICAMENTE el contenido completo del archivo Python corregido.
+- Conserva los nombres de las funciones, las firmas, las clases, las constantes y las importaciones existentes.
+- No añadas pruebas, ni entrada/salida, ni prints, ni bloques de explicación.
+- Si una entrada no es válida, lanza ValueError o PermissionError según corresponda.
+- No hagas preguntas.

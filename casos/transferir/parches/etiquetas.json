@@ -1,0 +1,7 @@
+{
+  "control": {"clase": "superficial", "origen": "control"},
+  "correcto": {"clase": "correcto", "origen": "human:seeded"},
+  "superficial_lista_negra": {"clase": "superficial", "origen": "human:seeded"},
+  "superficial_cota_destino": {"clase": "superficial", "origen": "human:seeded"},
+  "regresivo_todo_saldo": {"clase": "regresivo", "origen": "human:seeded"}
+}

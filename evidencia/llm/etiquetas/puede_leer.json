@@ -1,0 +1,18 @@
+{
+  "llm_flint_40b_free": {
+    "clase": "correcto",
+    "origen": "llm:opencode/flint-40b-free"
+  },
+  "seeded_superficial_1": {
+    "clase": "superficial",
+    "origen": "human:seeded"
+  },
+  "seeded_superficial_2": {
+    "clase": "superficial",
+    "origen": "human:seeded"
+  },
+  "seeded_regresivo": {
+    "clase": "regresivo",
+    "origen": "human:seeded"
+  }
+}

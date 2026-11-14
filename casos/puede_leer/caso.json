@@ -1,0 +1,10 @@
+{
+  "id": "puede_leer",
+  "cwe": "CWE-639",
+  "vulnerabilidad": "puede_leer no verifica que el documento y el actor pertenezcan a la misma organización (aislamiento multi-inquilino).",
+  "propiedad": "Nadie lee documentos de otra organización, y los privados solo los lee su dueño o un admin de esa organización.",
+  "limites": [
+    "Solo modela un predicado puro sobre dataclasses con enteros y booleanos; no cubre ACL dinámicas ni sesiones.",
+    "Asume constantes USUARIO = 1 y ADMIN = 2."
+  ]
+}

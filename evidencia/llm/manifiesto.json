@@ -1,0 +1,841 @@
+{
+  "esquema": "evidencia-llm/1",
+  "issue": 12,
+  "carril": "Evidencia humana",
+  "autor": "samuelnor",
+  "generado_en": "2026-11-14T17:24:38.996247+00:00",
+  "metodo": {
+    "descripcion": "Generación ciega de parches candidatos: cada modelo recibió solo el código vulnerable y una descripción breve del fallo, en una sesión nueva de `opencode run`, sin acceso deliberado al contrato, al exploit ni a las pruebas funcionales. La selección final exige que la corrida no haya leído archivos (ver auditoria.json).",
+    "herramienta": "opencode run 2.3.0 --format json",
+    "agente_inicial": "general",
+    "panel_modelos": [
+      "opencode/deepseek-v4.1-flash-free",
+      "opencode/flint-40b-free",
+      "opencode/glm-5.3-flash-free",
+      "opencode/longcat-2.5-free",
+      "opencode/mimo-v2.6-flash-free",
+      "opencode/minimax-m3.1-flash-free"
+    ],
+    "corridas": 30,
+    "seleccionados": 20,
+    "fecha_corridas": "2026-11-14T17:07Z/17:11Z",
+    "cuota": "La cuota de modelos gratuitos se agotó durante la generación (FreeUsageLimitError, HTTP 429, retryAfterMs ≈ 24 208 000). No se pudieron repetir las corridas contaminadas antes del cierre.",
+    "criterio_etiqueta": "La etiqueta se asigna a priori con el oráculo de apoyo (propiedad + bordes legítimos + exploit conocido), no con la compuerta del carril formal. INSECURE tiene precedencia sobre REGRESSIVE; los sembrados se mantienen puros. Correspondencia: correcto→CORRECT, superficial→INSECURE, regresivo→REGRESSIVE.",
+    "limite_declarado": "La etiqueta de los 15 sembrados es por construcción; la de los 5 LLM se confirmó con el oráculo de apoyo y queda sujeta a la revisión cruzada."
+  },
+  "casos": {
+    "precio_final": {
+      "seleccionados": [
+        {
+          "parche": "llm_flint_40b_free",
+          "archivo": "evidencia/llm/parches/precio_final/llm_flint_40b_free.py",
+          "sha256": "ecad072cae5320143c63f211791c90411eeec1770833bbcd02b32230774ae419",
+          "clase": "correcto",
+          "clase_ground_truth": "CORRECT",
+          "origen": "llm:opencode/flint-40b-free",
+          "generacion": {
+            "modelo": "opencode/flint-40b-free",
+            "session_id": "ses_e24f870fdffdy7jry3zkfAs26J",
+            "prompt_sha256": "3632ad738f773e7e79f76484c0ec56716e328e5f5c57d973b3a08e5f9734ac2a",
+            "prompt": "prompts/precio_final.txt",
+            "iniciado_en": "2026-11-14T17:07:47.888464+00:00",
+            "terminado_en": "2026-11-14T17:07:57.777218+00:00",
+            "aislamiento": "solo_escritura",
+            "herramientas": [
+              "write"
+            ]
+          },
+          "justificacion": "Rechaza descuento_pct < 0 y > 100 con ValueError y conserva los bordes legítimos 0 y 100. La generación solo usó la herramienta write: no leyó el contrato, el exploit ni parches previos.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "correcto"
+          }
+        },
+        {
+          "parche": "seeded_superficial_1",
+          "archivo": "evidencia/llm/parches/precio_final/seeded_superficial_1.py",
+          "sha256": "2fa29a27663f5a07144325a277fd6d5d310e38bbf29599295dcf4a8ae292bc9f",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo rechaza descuento_pct > 100. El exploit conocido (150) queda bloqueado, pero un descuento negativo sigue subiendo el precio; la propiedad falla en precio_final(1, -5) = 2.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "precio_final(1, -5) = 2",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_superficial_2",
+          "archivo": "evidencia/llm/parches/precio_final/seeded_superficial_2.py",
+          "sha256": "87a672d83f297bb9302cfe269090aba36c0adce96c4752ba3a246a81963fb10c",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo rechaza el valor exacto 150, sobreajustado al exploit conocido. Cualquier otro descuento negativo sigue vulnerable.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "precio_final(1, -5) = 2",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_regresivo",
+          "archivo": "evidencia/llm/parches/precio_final/seeded_regresivo.py",
+          "sha256": "1da4a698f0da23b7fcb83a63a7e90ad8f0af296c29aaeec610debe828c519ca3",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: rechaza los bordes legítimos descuento_pct = 0 y 100, que el contrato exige aceptar. Cumple la propiedad de seguridad negando de más.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        }
+      ]
+    },
+    "transferir": {
+      "seleccionados": [
+        {
+          "parche": "llm_flint_40b_free",
+          "archivo": "evidencia/llm/parches/transferir/llm_flint_40b_free.py",
+          "sha256": "58e8bd794ab58cb97c0dc6ccc11683464b23e1aeda609bf4a5d04d75d5d2ca02",
+          "clase": "correcto",
+          "clase_ground_truth": "CORRECT",
+          "origen": "llm:opencode/flint-40b-free",
+          "generacion": {
+            "modelo": "opencode/flint-40b-free",
+            "session_id": "ses_e24f809d5ffeWdQgEO2dqr8wsN",
+            "prompt_sha256": "3bddf2fffdb7a248c19820781fb66c70fdab4c1e6ca7c9b29c9673de01b778b9",
+            "prompt": "prompts/transferir.txt",
+            "iniciado_en": "2026-11-14T17:08:14.436898+00:00",
+            "terminado_en": "2026-11-14T17:08:22.940699+00:00",
+            "aislamiento": "ciega",
+            "herramientas": []
+          },
+          "justificacion": "Rechaza monto <= 0 con ValueError antes de mover saldo y conserva la transferencia total del saldo. Generación ciega, sin herramientas.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "correcto"
+          }
+        },
+        {
+          "parche": "seeded_superficial_1",
+          "archivo": "evidencia/llm/parches/transferir/seeded_superficial_1.py",
+          "sha256": "43af44f8ad80501587ec52225e1a1fca05772bfdbe2befce3eaef0651a53f574",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo rechaza el monto exacto -500 del exploit conocido; cualquier otro monto negativo invierte el movimiento de dinero.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "transferir(0, 0, -5) = (5, -5)",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_superficial_2",
+          "archivo": "evidencia/llm/parches/transferir/seeded_superficial_2.py",
+          "sha256": "a36c5fca85dbd1e42838ea6fe11a42079ebf652171e2dcacdf137277acf67036",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo rechaza un monto negativo cuando destino + monto < 0; bloquea el exploit conocido (destino = 0, monto = -500) pero permite aumentar el saldo de origen con cualquier destino >= abs(monto), como transferir(0, 1, -1) = (1, 0).",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "transferir(0, 1, -1) = (1, 0)",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_regresivo",
+          "archivo": "evidencia/llm/parches/transferir/seeded_regresivo.py",
+          "sha256": "3d1a3b06187a25a342251d0c526b1797eda235fba0c7ae6b32036eebef8b9f2b",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: rechaza monto >= origen, así que impide transferir todo el saldo, un borde legítimo del contrato.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        }
+      ]
+    },
+    "ver_factura": {
+      "seleccionados": [
+        {
+          "parche": "llm_deepseek_v4_1_flash_free",
+          "archivo": "evidencia/llm/parches/ver_factura/llm_deepseek_v4_1_flash_free.py",
+          "sha256": "a7d2890abe59fd621e3af683715df51b86892e14e51d350483ea0f85d3505ce5",
+          "clase": "correcto",
+          "clase_ground_truth": "CORRECT",
+          "origen": "llm:opencode/deepseek-v4.1-flash-free",
+          "generacion": {
+            "modelo": "opencode/deepseek-v4.1-flash-free",
+            "session_id": "ses_e24f807dfffe7MMo0dLk4BS5Zs",
+            "prompt_sha256": "3133237cd91e427432bbbccb071c81a48a2fc21f0b8bd035b76b00b259c9d1a7",
+            "prompt": "prompts/ver_factura.txt",
+            "iniciado_en": "2026-11-14T17:08:14.940050+00:00",
+            "terminado_en": "2026-11-14T17:08:20.900254+00:00",
+            "aislamiento": "ciega",
+            "herramientas": []
+          },
+          "justificacion": "Exige actor autenticado y que actor_id sea el dueño de la factura; lanza PermissionError en caso contrario. Generación ciega, sin herramientas.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "correcto"
+          }
+        },
+        {
+          "parche": "seeded_superficial_1",
+          "archivo": "evidencia/llm/parches/ver_factura/seeded_superficial_1.py",
+          "sha256": "5d0c42d2431de95aa61b012e5aa44324f22953d61d19e6b128d9bd8b50e09ee2",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo bloquea a ajenos cuando total >= 999, sobreajustado al exploit conocido; el resto de facturas ajenas siguen expuestas.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "ver_factura(Factura(0,0,0), 1) = 0",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_superficial_2",
+          "archivo": "evidencia/llm/parches/ver_factura/seeded_superficial_2.py",
+          "sha256": "f8ea3f9f174994f53e0b340b1debfd973e73c67bd381d49ddea5cbc273f070f1",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo bloquea la factura con id == 1, sobreajustado al ejemplo del exploit; cualquier otra factura ajena sigue expuesta.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "ver_factura(Factura(0,0,0), 1) = 0",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_regresivo",
+          "archivo": "evidencia/llm/parches/ver_factura/seeded_regresivo.py",
+          "sha256": "c243b4a5b10165c246d1f971068d490e1ee19665f83629fd0e45d1ab61e7a258",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: niega la lectura siempre, incluso al dueño de la factura. Cumple la propiedad de seguridad negando de más.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        }
+      ]
+    },
+    "cancelar_pedido": {
+      "seleccionados": [
+        {
+          "parche": "llm_deepseek_v4_1_flash_free",
+          "archivo": "evidencia/llm/parches/cancelar_pedido/llm_deepseek_v4_1_flash_free.py",
+          "sha256": "f2b3be4f964e294017e3a28d5f05d895b3d2517e52416d11e29c0e546c30e09b",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "llm:opencode/deepseek-v4.1-flash-free",
+          "generacion": {
+            "modelo": "opencode/deepseek-v4.1-flash-free",
+            "session_id": "ses_e24f7833bffe7H93aWQk51ib0k",
+            "prompt_sha256": "90d0a0883f64ba3efc105ebf5880bebba7390e317388649e1ccc42ec6fd15dbf",
+            "prompt": "prompts/cancelar_pedido.txt",
+            "iniciado_en": "2026-11-14T17:08:48.891609+00:00",
+            "terminado_en": "2026-11-14T17:09:09.432725+00:00",
+            "aislamiento": "ciega",
+            "herramientas": []
+          },
+          "justificacion": "Decide con el dueño registrado duenos[pedido_id] y lanza PermissionError si el actor no es el dueño (aceptado por el contrato), pero lanza ValueError cuando el pedido no existe en vez de devolver False como exige el contrato funcional. Reclasificado a regresivo tras revisión cruzada.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        },
+        {
+          "parche": "seeded_superficial_1",
+          "archivo": "evidencia/llm/parches/cancelar_pedido/seeded_superficial_1.py",
+          "sha256": "f27f9a864769e04f95e2444d48bc157b76a490e0fba5710f5314f244218fa341",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: solo bloquea el par (pedido_id = 7, actor_id = 2) del exploit conocido; sigue confiando en owner_declarado para el resto.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "cancelar_pedido({0: 0, 1: 0, 2: 0}, 1, 0, 1) = True",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_superficial_2",
+          "archivo": "evidencia/llm/parches/cancelar_pedido/seeded_superficial_2.py",
+          "sha256": "85c11dbd7fe5ff47b7bbef81ba69152f044ac7924af44a4993e2bf63bfa90c15",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: corrige solo el pedido_id 7 usando el dueño registrado; el resto de pedidos sigue confiando en owner_declarado.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "cancelar_pedido({0: 0, 1: 0, 2: 0}, 1, 0, 1) = True",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_regresivo",
+          "archivo": "evidencia/llm/parches/cancelar_pedido/seeded_regresivo.py",
+          "sha256": "8762cb371db355beedc16e4914801b58af1f07047f4d9e4299671d2d468dff94",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: devuelve False siempre, incluso cuando el dueño registrado cancela. Cumple la propiedad de seguridad negando de más.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        }
+      ]
+    },
+    "puede_leer": {
+      "seleccionados": [
+        {
+          "parche": "llm_flint_40b_free",
+          "archivo": "evidencia/llm/parches/puede_leer/llm_flint_40b_free.py",
+          "sha256": "85169b60194072b7d900c5256a27bfdfbc6163420dc48d421857038c8ddc0d95",
+          "clase": "correcto",
+          "clase_ground_truth": "CORRECT",
+          "origen": "llm:opencode/flint-40b-free",
+          "generacion": {
+            "modelo": "opencode/flint-40b-free",
+            "session_id": "ses_e24f58464ffepGJwsu1MOaDWaK",
+            "prompt_sha256": "32458a537479db5f7b6fb73fe9e0d65b9bc48132ef5d47a79808f018417b91a0",
+            "prompt": "prompts/puede_leer.txt",
+            "iniciado_en": "2026-11-14T17:10:59.671606+00:00",
+            "terminado_en": "2026-11-14T17:11:39.425330+00:00",
+            "aislamiento": "ciega",
+            "herramientas": []
+          },
+          "justificacion": "Exige pertenencia a la organización (con PermissionError aceptado por el contrato) y mantiene dueño/admin para privados. Lanza ValueError cuando actor.rol no está en (USUARIO, ADMIN); la propiedad del caso cuenta ese rechazo como denegación y el código original ya negaba la lectura a un rol desconocido. Reclasificado a regresivo en la revisión cruzada y devuelto a correcto en la revisión de seguridad.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "correcto"
+          }
+        },
+        {
+          "parche": "seeded_superficial_1",
+          "archivo": "evidencia/llm/parches/puede_leer/seeded_superficial_1.py",
+          "sha256": "58aa0b451a3dad741ed59ca21901ed11de072302b2932e5aec3ac91fa99edafc",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: añade la comprobación de organización solo a los documentos públicos; los privados siguen sin comprobar la organización del actor.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "puede_leer(Documento(0,0,True), Actor(0,1,1)) = True",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_superficial_2",
+          "archivo": "evidencia/llm/parches/puede_leer/seeded_superficial_2.py",
+          "sha256": "76435b781589bf351fdf77720d464324bc461dcebe1465b432243c77c856a61c",
+          "clase": "superficial",
+          "clase_ground_truth": "INSECURE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: combina dueño y organización con un AND, de modo que un documento privado de otra organización se lee si el actor es su dueño; la propiedad falla en puede_leer(Documento(0,0,True), Actor(0,1,1)).",
+          "verificacion_apoyo": {
+            "propiedad_pasa": false,
+            "propiedad_detalle": "puede_leer(Documento(0,0,False), Actor(0,1,1)) = True",
+            "funcional_pasa": true,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "inseguro"
+          }
+        },
+        {
+          "parche": "seeded_regresivo",
+          "archivo": "evidencia/llm/parches/puede_leer/seeded_regresivo.py",
+          "sha256": "2b8b0f4c30dbdc7ea1361a4c9d1b7bd3562404335bca4b5d143f01582235df19",
+          "clase": "regresivo",
+          "clase_ground_truth": "REGRESSIVE",
+          "origen": "human:seeded",
+          "generacion": null,
+          "justificacion": "Sembrado: exige a la vez misma organización y dueño, y así niega los documentos públicos de la misma organización y el acceso del admin. Cumple la propiedad negando de más.",
+          "verificacion_apoyo": {
+            "propiedad_pasa": true,
+            "propiedad_detalle": "sin contraejemplo en el dominio acotado",
+            "funcional_pasa": false,
+            "exploit_bloqueado": true,
+            "clase_sugerida": "regresivo"
+          }
+        }
+      ]
+    }
+  },
+  "auditoria": "evidencia/llm/auditoria.json",
+  "descartados": [
+    {
+      "caso": "precio_final",
+      "modelo": "opencode/deepseek-v4.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "shell",
+        "read",
+        "read",
+        "shell",
+        "shell",
+        "shell",
+        "shell"
+      ],
+      "crudo": "crudo/precio_final/deepseek-v4.1-flash-free.txt"
+    },
+    {
+      "caso": "precio_final",
+      "modelo": "opencode/glm-5.3-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "read"
+      ],
+      "crudo": "crudo/precio_final/glm-5.3-flash-free.txt"
+    },
+    {
+      "caso": "precio_final",
+      "modelo": "opencode/longcat-2.5-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "shell",
+        "shell",
+        "read"
+      ],
+      "crudo": "crudo/precio_final/longcat-2.5-free.txt"
+    },
+    {
+      "caso": "precio_final",
+      "modelo": "opencode/mimo-v2.6-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "read"
+      ],
+      "crudo": "crudo/precio_final/mimo-v2.6-flash-free.txt"
+    },
+    {
+      "caso": "precio_final",
+      "modelo": "opencode/minimax-m3.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/precio_final/minimax-m3.1-flash-free.txt"
+    },
+    {
+      "caso": "transferir",
+      "modelo": "opencode/deepseek-v4.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "read",
+        "read"
+      ],
+      "crudo": "crudo/transferir/deepseek-v4.1-flash-free.txt"
+    },
+    {
+      "caso": "transferir",
+      "modelo": "opencode/glm-5.3-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "write"
+      ],
+      "crudo": "crudo/transferir/glm-5.3-flash-free.txt"
+    },
+    {
+      "caso": "transferir",
+      "modelo": "opencode/longcat-2.5-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "ciega",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Sin llamadas a herramientas: el modelo solo vio el prompt.",
+      "herramientas": [],
+      "crudo": "crudo/transferir/longcat-2.5-free.txt"
+    },
+    {
+      "caso": "transferir",
+      "modelo": "opencode/mimo-v2.6-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "glob",
+        "read",
+        "read",
+        "write"
+      ],
+      "crudo": "crudo/transferir/mimo-v2.6-flash-free.txt"
+    },
+    {
+      "caso": "transferir",
+      "modelo": "opencode/minimax-m3.1-flash-free",
+      "clase_sugerida": "invalido",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/transferir/minimax-m3.1-flash-free.txt"
+    },
+    {
+      "caso": "ver_factura",
+      "modelo": "opencode/flint-40b-free",
+      "clase_sugerida": "invalido",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "read",
+        "shell",
+        "shell",
+        "grep",
+        "shell",
+        "shell",
+        "shell",
+        "read",
+        "write",
+        "shell"
+      ],
+      "crudo": "crudo/ver_factura/flint-40b-free.txt"
+    },
+    {
+      "caso": "ver_factura",
+      "modelo": "opencode/glm-5.3-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "write"
+      ],
+      "crudo": "crudo/ver_factura/glm-5.3-flash-free.txt"
+    },
+    {
+      "caso": "ver_factura",
+      "modelo": "opencode/longcat-2.5-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "shell",
+        "read",
+        "read",
+        "read",
+        "shell",
+        "read",
+        "shell",
+        "shell"
+      ],
+      "crudo": "crudo/ver_factura/longcat-2.5-free.txt"
+    },
+    {
+      "caso": "ver_factura",
+      "modelo": "opencode/mimo-v2.6-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/ver_factura/mimo-v2.6-flash-free.txt"
+    },
+    {
+      "caso": "ver_factura",
+      "modelo": "opencode/minimax-m3.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/ver_factura/minimax-m3.1-flash-free.txt"
+    },
+    {
+      "caso": "cancelar_pedido",
+      "modelo": "opencode/flint-40b-free",
+      "clase_sugerida": "invalido",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "read",
+        "write"
+      ],
+      "crudo": "crudo/cancelar_pedido/flint-40b-free.txt"
+    },
+    {
+      "caso": "cancelar_pedido",
+      "modelo": "opencode/glm-5.3-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/cancelar_pedido/glm-5.3-flash-free.txt"
+    },
+    {
+      "caso": "cancelar_pedido",
+      "modelo": "opencode/longcat-2.5-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "read"
+      ],
+      "crudo": "crudo/cancelar_pedido/longcat-2.5-free.txt"
+    },
+    {
+      "caso": "cancelar_pedido",
+      "modelo": "opencode/mimo-v2.6-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write",
+        "write"
+      ],
+      "crudo": "crudo/cancelar_pedido/mimo-v2.6-flash-free.txt"
+    },
+    {
+      "caso": "cancelar_pedido",
+      "modelo": "opencode/minimax-m3.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "shell",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "write",
+        "shell"
+      ],
+      "crudo": "crudo/cancelar_pedido/minimax-m3.1-flash-free.txt"
+    },
+    {
+      "caso": "puede_leer",
+      "modelo": "opencode/deepseek-v4.1-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell"
+      ],
+      "crudo": "crudo/puede_leer/deepseek-v4.1-flash-free.txt"
+    },
+    {
+      "caso": "puede_leer",
+      "modelo": "opencode/glm-5.3-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "solo_escritura",
+      "motivo": "No seleccionado: hay otro parche correcto de LLM para el caso y solo se necesita uno; la corrida se conserva como crudo.",
+      "detalle_aislamiento": "Solo usó write: escribió su respuesta en un archivo, no leyó contrato, exploit, evaluador ni parches previos.",
+      "herramientas": [
+        "write"
+      ],
+      "crudo": "crudo/puede_leer/glm-5.3-flash-free.txt"
+    },
+    {
+      "caso": "puede_leer",
+      "modelo": "opencode/longcat-2.5-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "glob",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "glob",
+        "write",
+        "shell"
+      ],
+      "crudo": "crudo/puede_leer/longcat-2.5-free.txt"
+    },
+    {
+      "caso": "puede_leer",
+      "modelo": "opencode/mimo-v2.6-flash-free",
+      "clase_sugerida": "correcto",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "glob",
+        "read",
+        "read",
+        "read",
+        "write",
+        "execute",
+        "shell"
+      ],
+      "crudo": "crudo/puede_leer/mimo-v2.6-flash-free.txt"
+    },
+    {
+      "caso": "puede_leer",
+      "modelo": "opencode/minimax-m3.1-flash-free",
+      "clase_sugerida": "invalido",
+      "aislamiento": "contaminada",
+      "motivo": "Descartado como evidencia ciega: la corrida leyó o ejecutó herramientas y pudo ver el contrato, el exploit, el evaluador o parches previos.",
+      "detalle_aislamiento": "Usó herramientas de lectura/ejecución y pudo ver el contrato, el exploit, el evaluador o parches previos; se descarta como evidencia ciega.",
+      "herramientas": [
+        "read",
+        "shell",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "read",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "shell",
+        "write",
+        "shell",
+        "shell",
+        "shell",
+        "shell"
+      ],
+      "crudo": "crudo/puede_leer/minimax-m3.1-flash-free.txt"
+    }
+  ]
+}

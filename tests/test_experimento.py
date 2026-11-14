@@ -4,8 +4,8 @@ import json
 import shutil
 from pathlib import Path
 
-from patchwise.capas import ResultadoCapa
-from patchwise.experimento import ResultadoExperimento, experimento
+from patchlayer.capas import ResultadoCapa
+from patchlayer.experimento import ResultadoExperimento, experimento
 
 CASOS = Path(__file__).resolve().parents[1] / "casos"
 
