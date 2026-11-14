@@ -97,6 +97,10 @@ Un parche correcto que una configuración no acepta.
 Un parche superficial o regresivo que una configuración acepta (le da evidencia favorable). Es el error que la compuerta existe para evitar.
 _Avoid_: falso positivo, parche colado
 
+**Detección marginal**:
+Los parches que una configuración no acepta y la anterior sí: lo que aporta la capa añadida.
+_Avoid_: ganancia, mejora
+
 **Reporte del experimento**:
-La página HTML estática (`resultados/reporte.html`) que muestra la tabla A/B/C y, por cada par (caso, parche), sus veredictos, hallazgos, observaciones y pendientes. Es del experimento, no de un parche: lo que la compuerta sabe de un parche es su expediente.
+La página HTML estática (`resultados/reporte.html`; la corrida oficial, en `evidencia/experimento/`) que muestra la tabla A/B/C, las métricas secundarias (falsos rechazos, no concluyentes por capa, costo temporal por capa y detección marginal) y, por cada par (caso, parche), sus veredictos, hallazgos, observaciones y pendientes. Es del experimento, no de un parche: lo que la compuerta sabe de un parche es su expediente.
 _Avoid_: reporte a secas para referirse a un expediente
